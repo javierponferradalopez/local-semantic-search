@@ -1,0 +1,28 @@
+2026-09-12 17:30:39.136 node[16728:9693853] 2026-09-12 17:30:39.136666 [E:onnxruntime:, sequential_executor.cc:572 ExecuteKernel] Non-zero status code returned while running Add node. Name:'/text_model/embeddings/Add' Status Message: /Users/cloudtest/vss/_work/1/s/onnxruntime/core/providers/cpu/math/element_wise_ops.h:560 void onnxruntime::BroadcastIterator::Append(ptrdiff_t, ptrdiff_t) axis == 1 || axis == largest was false. Attempting to broadcast an axis by a dimension other than 1. 64 by 181
+An error occurred during model execution: "Error: Non-zero status code returned while running Add node. Name:'/text_model/embeddings/Add' Status Message: /Users/cloudtest/vss/_work/1/s/onnxruntime/core/providers/cpu/math/element_wise_ops.h:560 void onnxruntime::BroadcastIterator::Append(ptrdiff_t, ptrdiff_t) axis == 1 || axis == largest was false. Attempting to broadcast an axis by a dimension other than 1. 64 by 181
+".
+Inputs given to model: {
+  input_ids: {
+    type: 'int64',
+    dims: [ 1, 181 ],
+    location: 'cpu',
+    data: BigInt64Array(181) [
+       25560n,  54562n,  16333n, 235269n,   1170n,   3836n,    685n,
+       24217n,    578n, 108353n, 235269n,    603n,    476n,   6815n,
+        2480n,   6883n,    674n,  74888n,    573n,   8131n,   2567n,
+       14855n,    576n,    671n,   4724n,    774n,    573n,   5162n,
+        2134n, 235265n,    714n,   8131n,  32550n,  24217n, 235269n,
+         948n,    708n,  41742n,    674n,  12637n,   1212n,    573n,
+        4724n,   4026n,    689n,   6952n, 235265n,  37804n,   1518n,
+        7133n,   1941n,  24217n,    578n,   9616n,    573n,   8131n,
+         577n,  45084n, 235269n,   3969n,  89829n, 235269n,   2744n,
+       70774n, 235269n,    578n,   2482n,   5188n, 235265n,  10323n,
+         573n,   8131n,  12014n,   1297n,    611n,   1277n,   1997n,
+      186444n, 235269n,    665n,    798n,    614n,  12272n,   2346n,
+        1089n,  16888n, 235265n,    586n,   2121n,    798n,   7919n,
+         476n,   1879n,   8746n,  21850n,    675n,    671n,    575n,
+      235290n,  19541n,
+      ... 81 more items
+    ]
+  }
+}

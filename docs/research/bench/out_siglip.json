@@ -1,0 +1,55 @@
+[
+  {
+    "name": "SigLIP base/16-224 fp32",
+    "id": "Xenova/siglip-base-patch16-224",
+    "dtype": "fp32",
+    "load_ms": 47139,
+    "tokens_untruncated": 207,
+    "tokens_after_default_truncation": 207,
+    "tokenizer_model_max_length": 64,
+    "dim": 768,
+    "text_1": {
+      "n": 6,
+      "mean": 16,
+      "median": 15.8,
+      "min": 14.8,
+      "max": 18.1
+    },
+    "text_8": {
+      "n": 4,
+      "mean": 112.4,
+      "median": 110.5,
+      "min": 108.6,
+      "max": 120.4
+    },
+    "img_dim": 768,
+    "image_1": {
+      "n": 5,
+      "mean": 40,
+      "median": 38.5,
+      "min": 35.7,
+      "max": 50.1
+    },
+    "image_4": {
+      "n": 3,
+      "mean": 139.4,
+      "median": 137.8,
+      "min": 136.1,
+      "max": 144.3
+    },
+    "preprocess_1": {
+      "n": 5,
+      "mean": 2.7,
+      "median": 2.2,
+      "min": 2,
+      "max": 4.1
+    },
+    "decode_1": {
+      "n": 5,
+      "mean": 3.1,
+      "median": 3.1,
+      "min": 2.5,
+      "max": 3.6
+    }
+  }
+]

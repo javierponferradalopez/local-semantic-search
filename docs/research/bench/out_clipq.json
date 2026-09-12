@@ -1,0 +1,55 @@
+[
+  {
+    "name": "CLIP ViT-B/32 q8",
+    "id": "Xenova/clip-vit-base-patch32",
+    "dtype": "q8",
+    "load_ms": 8879,
+    "tokens_untruncated": 199,
+    "tokens_after_default_truncation": 199,
+    "tokenizer_model_max_length": 77,
+    "dim": 512,
+    "text_1": {
+      "n": 6,
+      "mean": 7.9,
+      "median": 7.5,
+      "min": 7,
+      "max": 9.4
+    },
+    "text_8": {
+      "n": 4,
+      "mean": 53.8,
+      "median": 54.8,
+      "min": 47.4,
+      "max": 60.9
+    },
+    "img_dim": 512,
+    "image_1": {
+      "n": 5,
+      "mean": 16,
+      "median": 16.1,
+      "min": 14.7,
+      "max": 17.4
+    },
+    "image_4": {
+      "n": 3,
+      "mean": 51.4,
+      "median": 51,
+      "min": 49.6,
+      "max": 53.6
+    },
+    "preprocess_1": {
+      "n": 5,
+      "mean": 2.4,
+      "median": 2.4,
+      "min": 2.3,
+      "max": 2.6
+    },
+    "decode_1": {
+      "n": 5,
+      "mean": 3.2,
+      "median": 2.6,
+      "min": 2.6,
+      "max": 4.6
+    }
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "SigLIP2 base/16-224 q8",
+    "id": "onnx-community/siglip2-base-patch16-224-ONNX",
+    "dtype": "q8",
+    "load_ms": 43248,
+    "tokens_untruncated": 191,
+    "tokens_after_default_truncation": 191,
+    "tokenizer_model_max_length": 1e+30,
+    "error": "Error: Non-zero status code returned while running Add node. Name:'/text_model/embeddings/Add' Status Message: /Users/cloudtest/vss/_work/1/s/onnxruntime/core/providers/cpu/math/element_wise_ops.h:560 void onnxruntime::BroadcastIterator::Append(ptrdiff_t, ptrdiff_t) axis == 1 || axis == largest was false. Attempting to broadcast an axis by a dimension other than 1. 64 by 181\n"
+  }
+]

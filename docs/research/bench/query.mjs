@@ -1,0 +1,16 @@
+import { AutoTokenizer, AutoModel, CLIPTextModelWithProjection, env } from '@huggingface/transformers';
+import { performance } from 'node:perf_hooks';
+env.allowLocalModels=false;
+const st=ts=>{const s=[...ts].sort((a,b)=>a-b);return{median:+s[s.length>>1].toFixed(2),mean:+(ts.reduce((a,b)=>a+b)/ts.length).toFixed(2)};};
+const T=async(fn,r=20)=>{for(let i=0;i<3;i++)await fn();const ts=[];for(let i=0;i<r;i++){const t=performance.now();await fn();ts.push(performance.now()-t);}return st(ts);};
+const Q='a photo of a cat sitting on a sofa';
+const mt=await AutoTokenizer.from_pretrained('Xenova/all-MiniLM-L6-v2');
+const mm=await AutoModel.from_pretrained('Xenova/all-MiniLM-L6-v2',{dtype:'q8'});
+const ct=await AutoTokenizer.from_pretrained('Xenova/clip-vit-base-patch32');
+const cm=await CLIPTextModelWithProjection.from_pretrained('Xenova/clip-vit-base-patch32',{dtype:'q8'});
+const a=await T(async()=>{await mm(mt(Q,{padding:true,truncation:true}));});
+const b=await T(async()=>{await cm(ct(Q,{padding:true,truncation:true}));});
+const c=await T(async()=>{await Promise.all([mm(mt(Q,{padding:true,truncation:true})),cm(ct(Q,{padding:true,truncation:true}))]);});
+console.log('MiniLM query only     :',JSON.stringify(a));
+console.log('CLIP text query only  :',JSON.stringify(b));
+console.log('both, in parallel     :',JSON.stringify(c));
