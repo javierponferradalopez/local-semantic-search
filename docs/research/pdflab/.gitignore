@@ -1,0 +1,7 @@
+# This directory is a throwaway experiment, kept only so the report's numbers
+# can be reproduced. Never commit what `npm i` or a model download creates.
+node_modules/
+package-lock.json
+*.traineddata
+.cache/
+rendered.png
