@@ -1,0 +1,1 @@
+{"name":"pdflab","type":"module","private":true,"dependencies":{"@napi-rs/canvas":"^1.0.9","pdf-parse":"^2.4.5","pdf2json":"^4.1.0","pdfjs-dist":"^6.3.289","tesseract.js":"^7.0.0","unpdf":"^1.8.1"}}

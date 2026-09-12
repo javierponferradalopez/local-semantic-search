@@ -1,0 +1,16 @@
+import { extractText, getDocumentProxy, getMeta } from 'unpdf'
+import { readFile } from 'node:fs/promises'
+const buf = new Uint8Array(await readFile('fixtures/text.pdf'))
+const pdf = await getDocumentProxy(buf)
+const r1 = await extractText(pdf)
+console.log('== extractText default ==')
+console.log(JSON.stringify(r1, null, 2))
+const r2 = await extractText(pdf, { mergePages: true })
+console.log('== mergePages:true ==')
+console.log(JSON.stringify(r2, null, 2))
+console.log('== getMeta ==')
+console.log(JSON.stringify(await getMeta(pdf), null, 2).slice(0, 900))
+console.log('== underlying proxy is pdf.js? ==', typeof pdf.getPage, pdf.numPages)
+const pg = await pdf.getPage(2)
+const tc = await pg.getTextContent()
+console.log('item0 via unpdf proxy:', JSON.stringify(tc.items[0]))

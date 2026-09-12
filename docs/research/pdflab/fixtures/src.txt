@@ -1,0 +1,5 @@
+Local Semantic Search
+Chapter One: Extraction
+
+The quick brown fox jumps over the lazy dog.
+Text extraction must preserve the page number.
