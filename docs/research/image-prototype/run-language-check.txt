@@ -1,0 +1,291 @@
+27 images, 14 queries
+
+=== CLIP ViT-B/32 fp32 ===
+load 311 ms
+indexed 27 images: 0.8s total, 22.2 ms median/image
+
+"animales acuaticos"  (9.9 ms)
+  1. 0.2447  michael_luenen-penguins-4710224_1920.jpg
+  2. 0.2409  suju-foto-whale-10467525_1920.jpg
+  3. 0.2386  krissiegwynne-penguins-3994532_1920.jpg
+  4. 0.2341  stevebidmead-deckchairs-355596_1920.jpg
+  5. 0.2334  franziska_stier-diver-10408812_1920.jpg
+  6. 0.2302  bitnikgao-bird-10147034_1280.jpg
+  7. 0.2253  kranich17-beach-7502900_1920.jpg
+  8. 0.2240  jscreativelab-simba-8618301_1920.jpg
+
+"animales acuáticos"  (3.4 ms)
+  1. 0.2251  michael_luenen-penguins-4710224_1920.jpg
+  2. 0.2243  suju-foto-whale-10467525_1920.jpg
+  3. 0.2234  krissiegwynne-penguins-3994532_1920.jpg
+  4. 0.2190  franziska_stier-diver-10408812_1920.jpg
+  5. 0.2165  stevebidmead-deckchairs-355596_1920.jpg
+  6. 0.2156  kranich17-beach-7502900_1920.jpg
+  7. 0.2150  jscreativelab-simba-8618301_1920.jpg
+  8. 0.2141  falkenpost-desert-1654439.jpg
+
+"playa"  (2.9 ms)
+  1. 0.2531  njbateman526-beach-5264739_1920.jpg
+  2. 0.2495  kranich17-beach-7502900_1920.jpg
+  3. 0.2492  walkerssk-beach-1824855_1920.jpg
+  4. 0.2419  mariya_m-woman-6954155_1920.jpg
+  5. 0.2393  stevebidmead-deckchairs-355596_1920.jpg
+  6. 0.2371  falkenpost-desert-1654439.jpg
+  7. 0.2356  michael_luenen-penguins-4710224_1920.jpg
+  8. 0.2323  krissiegwynne-penguins-3994532_1920.jpg
+
+"una playa"  (3.4 ms)
+  1. 0.2877  walkerssk-beach-1824855_1920.jpg
+  2. 0.2733  njbateman526-beach-5264739_1920.jpg
+  3. 0.2727  kranich17-beach-7502900_1920.jpg
+  4. 0.2700  michael_luenen-penguins-4710224_1920.jpg
+  5. 0.2678  stevebidmead-deckchairs-355596_1920.jpg
+  6. 0.2627  krissiegwynne-penguins-3994532_1920.jpg
+  7. 0.2584  mariya_m-woman-6954155_1920.jpg
+  8. 0.2550  falkenpost-desert-1654439.jpg
+
+"una foto de una playa"  (3.5 ms)
+  1. 0.3027  walkerssk-beach-1824855_1920.jpg
+  2. 0.2868  kranich17-beach-7502900_1920.jpg
+  3. 0.2839  stevebidmead-deckchairs-355596_1920.jpg
+  4. 0.2787  njbateman526-beach-5264739_1920.jpg
+  5. 0.2693  mariya_m-woman-6954155_1920.jpg
+  6. 0.2598  falkenpost-desert-1654439.jpg
+  7. 0.2595  michael_luenen-penguins-4710224_1920.jpg
+  8. 0.2588  krissiegwynne-penguins-3994532_1920.jpg
+
+"mujer"  (3.1 ms)
+  1. 0.2559  counselling-hammer-443673_1920.jpg
+  2. 0.2530  tattybadger-iron-1405850_1920.jpg
+  3. 0.2510  abelalemseged-traditional-attire-10269735_640.jpg
+  4. 0.2382  pexels-auto-1868726_1920.jpg
+  5. 0.2317  wikimediaimages-anishia-davis-876169_1920.jpg
+  6. 0.2295  falkenpost-desert-1654439.jpg
+  7. 0.2256  mariya_m-woman-6954155_1920.jpg
+  8. 0.2255  kranich17-beach-7502900_1920.jpg
+
+"una mujer"  (3.4 ms)
+  1. 0.2495  tattybadger-iron-1405850_1920.jpg
+  2. 0.2410  counselling-hammer-443673_1920.jpg
+  3. 0.2408  abelalemseged-traditional-attire-10269735_640.jpg
+  4. 0.2327  pexels-auto-1868726_1920.jpg
+  5. 0.2268  falkenpost-desert-1654439.jpg
+  6. 0.2238  laney5569-old-workshop-7617875_1920.jpg
+  7. 0.2219  wikimediaimages-anishia-davis-876169_1920.jpg
+  8. 0.2206  kranich17-beach-7502900_1920.jpg
+
+"una foto de una mujer"  (3.6 ms)
+  1. 0.2509  abelalemseged-traditional-attire-10269735_640.jpg
+  2. 0.2434  tattybadger-iron-1405850_1920.jpg
+  3. 0.2405  franziska_stier-diver-10408812_1920.jpg
+  4. 0.2398  mariya_m-woman-6954155_1920.jpg
+  5. 0.2397  falkenpost-desert-1654439.jpg
+  6. 0.2331  laney5569-old-workshop-7617875_1920.jpg
+  7. 0.2287  kranich17-beach-7502900_1920.jpg
+  8. 0.2279  walkerssk-beach-1824855_1920.jpg
+
+"persona nadando"  (3.3 ms)
+  1. 0.2418  counselling-hammer-443673_1920.jpg
+  2. 0.2397  michael_luenen-penguins-4710224_1920.jpg
+  3. 0.2378  krissiegwynne-penguins-3994532_1920.jpg
+  4. 0.2359  abelalemseged-traditional-attire-10269735_640.jpg
+  5. 0.2357  franziska_stier-diver-10408812_1920.jpg
+  6. 0.2295  walkerssk-beach-1824855_1920.jpg
+  7. 0.2272  wikimediaimages-anishia-davis-876169_1920.jpg
+  8. 0.2260  falkenpost-desert-1654439.jpg
+
+"una persona nadando"  (3.4 ms)
+  1. 0.2314  abelalemseged-traditional-attire-10269735_640.jpg
+  2. 0.2291  counselling-hammer-443673_1920.jpg
+  3. 0.2264  franziska_stier-diver-10408812_1920.jpg
+  4. 0.2224  falkenpost-desert-1654439.jpg
+  5. 0.2217  pexels-adult-1866533_1920.jpg
+  6. 0.2180  pexels-auto-1868726_1920.jpg
+  7. 0.2180  stevebidmead-deckchairs-355596_1920.jpg
+  8. 0.2154  jscreativelab-simba-8618301_1920.jpg
+
+"a beach"  (3.1 ms)
+  1. 0.2977  walkerssk-beach-1824855_1920.jpg
+  2. 0.2920  kranich17-beach-7502900_1920.jpg
+  3. 0.2856  stevebidmead-deckchairs-355596_1920.jpg
+  4. 0.2837  njbateman526-beach-5264739_1920.jpg
+  5. 0.2542  falkenpost-desert-1654439.jpg
+  6. 0.2530  michael_luenen-penguins-4710224_1920.jpg
+  7. 0.2509  pexels-man-1283944_1920.jpg
+  8. 0.2493  krissiegwynne-penguins-3994532_1920.jpg
+
+"a photo of a beach"  (3.2 ms)
+  1. 0.3182  walkerssk-beach-1824855_1920.jpg
+  2. 0.3019  stevebidmead-deckchairs-355596_1920.jpg
+  3. 0.3002  kranich17-beach-7502900_1920.jpg
+  4. 0.2976  njbateman526-beach-5264739_1920.jpg
+  5. 0.2703  falkenpost-desert-1654439.jpg
+  6. 0.2656  pexels-man-1283944_1920.jpg
+  7. 0.2585  mariya_m-woman-6954155_1920.jpg
+  8. 0.2559  krissiegwynne-penguins-3994532_1920.jpg
+
+"a woman"  (3.1 ms)
+  1. 0.2461  abelalemseged-traditional-attire-10269735_640.jpg
+  2. 0.2262  wikimediaimages-anishia-davis-876169_1920.jpg
+  3. 0.2159  mxj_files-lotus-20604_128.gif
+  4. 0.2093  mariya_m-woman-6954155_1920.jpg
+  5. 0.2081  tattybadger-iron-1405850_1920.jpg
+  6. 0.2030  jscreativelab-simba-8618301_1920.jpg
+  7. 0.2005  pexels-auto-1868726_1920.jpg
+  8. 0.1963  counselling-hammer-443673_1920.jpg
+
+"aquatic animals"  (3.1 ms)
+  1. 0.2485  franziska_stier-diver-10408812_1920.jpg
+  2. 0.2471  suju-foto-whale-10467525_1920.jpg
+  3. 0.2462  mxj_files-lotus-20604_128.gif
+  4. 0.2409  michael_luenen-penguins-4710224_1920.jpg
+  5. 0.2314  krissiegwynne-penguins-3994532_1920.jpg
+  6. 0.2151  stevebidmead-deckchairs-355596_1920.jpg
+  7. 0.2079  walkerssk-beach-1824855_1920.jpg
+  8. 0.2011  njbateman526-beach-5264739_1920.jpg
+
+=== SigLIP2 base/16 fp32 ===
+load 1502 ms
+indexed 27 images: 1.8s total, 58.3 ms median/image
+
+"animales acuaticos"  (22.3 ms)
+  1. 0.0804  suju-foto-whale-10467525_1920.jpg
+  2. 0.0781  michael_luenen-penguins-4710224_1920.jpg
+  3. 0.0682  krissiegwynne-penguins-3994532_1920.jpg
+  4. 0.0646  mxj_files-lotus-20604_128.gif
+  5. 0.0645  franziska_stier-diver-10408812_1920.jpg
+  6. 0.0409  stevebidmead-deckchairs-355596_1920.jpg
+  7. 0.0362  njbateman526-beach-5264739_1920.jpg
+  8. 0.0343  yinet_87-kid-7898379_1920.jpg
+
+"animales acuáticos"  (12.2 ms)
+  1. 0.0863  suju-foto-whale-10467525_1920.jpg
+  2. 0.0813  michael_luenen-penguins-4710224_1920.jpg
+  3. 0.0719  franziska_stier-diver-10408812_1920.jpg
+  4. 0.0701  krissiegwynne-penguins-3994532_1920.jpg
+  5. 0.0647  mxj_files-lotus-20604_128.gif
+  6. 0.0476  stevebidmead-deckchairs-355596_1920.jpg
+  7. 0.0419  njbateman526-beach-5264739_1920.jpg
+  8. 0.0414  yinet_87-kid-7898379_1920.jpg
+
+"playa"  (18.3 ms)
+  1. 0.1086  njbateman526-beach-5264739_1920.jpg
+  2. 0.0938  walkerssk-beach-1824855_1920.jpg
+  3. 0.0930  mariya_m-woman-6954155_1920.jpg
+  4. 0.0801  stevebidmead-deckchairs-355596_1920.jpg
+  5. 0.0770  kranich17-beach-7502900_1920.jpg
+  6. 0.0733  pexels-man-1283944_1920.jpg
+  7. 0.0598  mxj_files-lotus-20604_128.gif
+  8. 0.0594  michael_luenen-penguins-4710224_1920.jpg
+
+"una playa"  (11.5 ms)
+  1. 0.1105  njbateman526-beach-5264739_1920.jpg
+  2. 0.1006  walkerssk-beach-1824855_1920.jpg
+  3. 0.0900  mariya_m-woman-6954155_1920.jpg
+  4. 0.0887  stevebidmead-deckchairs-355596_1920.jpg
+  5. 0.0864  kranich17-beach-7502900_1920.jpg
+  6. 0.0782  pexels-man-1283944_1920.jpg
+  7. 0.0697  michael_luenen-penguins-4710224_1920.jpg
+  8. 0.0665  falkenpost-desert-1654439.jpg
+
+"una foto de una playa"  (11.9 ms)
+  1. 0.1197  njbateman526-beach-5264739_1920.jpg
+  2. 0.1187  walkerssk-beach-1824855_1920.jpg
+  3. 0.1066  kranich17-beach-7502900_1920.jpg
+  4. 0.0953  stevebidmead-deckchairs-355596_1920.jpg
+  5. 0.0885  mariya_m-woman-6954155_1920.jpg
+  6. 0.0795  pexels-man-1283944_1920.jpg
+  7. 0.0739  falkenpost-desert-1654439.jpg
+  8. 0.0701  michael_luenen-penguins-4710224_1920.jpg
+
+"mujer"  (9.8 ms)
+  1. 0.0833  mariya_m-woman-6954155_1920.jpg
+  2. 0.0826  abelalemseged-traditional-attire-10269735_640.jpg
+  3. 0.0675  yinet_87-kid-7898379_1920.jpg
+  4. 0.0645  tattybadger-iron-1405850_1920.jpg
+  5. 0.0573  wikimediaimages-anishia-davis-876169_1920.jpg
+  6. 0.0549  mxj_files-lotus-20604_128.gif
+  7. 0.0539  pexels-man-1283944_1920.jpg
+  8. 0.0490  franziska_stier-diver-10408812_1920.jpg
+
+"una mujer"  (11.4 ms)
+  1. 0.0978  abelalemseged-traditional-attire-10269735_640.jpg
+  2. 0.0873  mariya_m-woman-6954155_1920.jpg
+  3. 0.0756  wikimediaimages-anishia-davis-876169_1920.jpg
+  4. 0.0698  tattybadger-iron-1405850_1920.jpg
+  5. 0.0622  yinet_87-kid-7898379_1920.jpg
+  6. 0.0557  laney5569-old-workshop-7617875_1920.jpg
+  7. 0.0548  mxj_files-lotus-20604_128.gif
+  8. 0.0511  pexels-man-1283944_1920.jpg
+
+"una foto de una mujer"  (16.2 ms)
+  1. 0.0983  abelalemseged-traditional-attire-10269735_640.jpg
+  2. 0.0771  mariya_m-woman-6954155_1920.jpg
+  3. 0.0695  wikimediaimages-anishia-davis-876169_1920.jpg
+  4. 0.0599  yinet_87-kid-7898379_1920.jpg
+  5. 0.0572  laney5569-old-workshop-7617875_1920.jpg
+  6. 0.0559  pexels-man-1283944_1920.jpg
+  7. 0.0523  tattybadger-iron-1405850_1920.jpg
+  8. 0.0509  franziska_stier-diver-10408812_1920.jpg
+
+"persona nadando"  (12.8 ms)
+  1. 0.1150  yinet_87-kid-7898379_1920.jpg
+  2. 0.0928  franziska_stier-diver-10408812_1920.jpg
+  3. 0.0720  mariya_m-woman-6954155_1920.jpg
+  4. 0.0667  mxj_files-lotus-20604_128.gif
+  5. 0.0639  suju-foto-whale-10467525_1920.jpg
+  6. 0.0398  njbateman526-beach-5264739_1920.jpg
+  7. 0.0398  walkerssk-beach-1824855_1920.jpg
+  8. 0.0334  pexels-man-1283944_1920.jpg
+
+"una persona nadando"  (17.2 ms)
+  1. 0.1184  yinet_87-kid-7898379_1920.jpg
+  2. 0.0991  franziska_stier-diver-10408812_1920.jpg
+  3. 0.0759  suju-foto-whale-10467525_1920.jpg
+  4. 0.0719  mariya_m-woman-6954155_1920.jpg
+  5. 0.0657  mxj_files-lotus-20604_128.gif
+  6. 0.0454  walkerssk-beach-1824855_1920.jpg
+  7. 0.0437  njbateman526-beach-5264739_1920.jpg
+  8. 0.0347  abelalemseged-traditional-attire-10269735_640.jpg
+
+"a beach"  (10.4 ms)
+  1. 0.1274  walkerssk-beach-1824855_1920.jpg
+  2. 0.1272  njbateman526-beach-5264739_1920.jpg
+  3. 0.1106  kranich17-beach-7502900_1920.jpg
+  4. 0.1026  stevebidmead-deckchairs-355596_1920.jpg
+  5. 0.0950  mariya_m-woman-6954155_1920.jpg
+  6. 0.0904  pexels-man-1283944_1920.jpg
+  7. 0.0767  falkenpost-desert-1654439.jpg
+  8. 0.0755  michael_luenen-penguins-4710224_1920.jpg
+
+"a photo of a beach"  (13 ms)
+  1. 0.1291  njbateman526-beach-5264739_1920.jpg
+  2. 0.1290  walkerssk-beach-1824855_1920.jpg
+  3. 0.1249  kranich17-beach-7502900_1920.jpg
+  4. 0.1051  stevebidmead-deckchairs-355596_1920.jpg
+  5. 0.0905  pexels-man-1283944_1920.jpg
+  6. 0.0891  mariya_m-woman-6954155_1920.jpg
+  7. 0.0819  falkenpost-desert-1654439.jpg
+  8. 0.0755  michael_luenen-penguins-4710224_1920.jpg
+
+"a woman"  (13.8 ms)
+  1. 0.1178  abelalemseged-traditional-attire-10269735_640.jpg
+  2. 0.1052  wikimediaimages-anishia-davis-876169_1920.jpg
+  3. 0.0946  mariya_m-woman-6954155_1920.jpg
+  4. 0.0852  tattybadger-iron-1405850_1920.jpg
+  5. 0.0755  yinet_87-kid-7898379_1920.jpg
+  6. 0.0629  pexels-man-1283944_1920.jpg
+  7. 0.0590  franziska_stier-diver-10408812_1920.jpg
+  8. 0.0536  ryanmcguire-man-362150_1920.jpg
+
+"aquatic animals"  (13.2 ms)
+  1. 0.0923  suju-foto-whale-10467525_1920.jpg
+  2. 0.0917  michael_luenen-penguins-4710224_1920.jpg
+  3. 0.0801  franziska_stier-diver-10408812_1920.jpg
+  4. 0.0784  krissiegwynne-penguins-3994532_1920.jpg
+  5. 0.0648  mxj_files-lotus-20604_128.gif
+  6. 0.0587  stevebidmead-deckchairs-355596_1920.jpg
+  7. 0.0522  yinet_87-kid-7898379_1920.jpg
+  8. 0.0511  njbateman526-beach-5264739_1920.jpg
+
+wrote results.html
