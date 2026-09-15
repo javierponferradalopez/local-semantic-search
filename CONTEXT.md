@@ -42,6 +42,37 @@ To read a File, to make its Chunks or its Picture, and to store them with their
 Vectors.
 _Avoid_: Index as a verb. The word "index" is only the index of the database.
 
+**Checksum**:
+The fingerprint of the bytes of a File. It is the identity of the content, as
+against the name, which is only a label.
+_Avoid_: Hash, Fingerprint, Digest
+
+### Ingestion
+
+**Ingest state**:
+How far a Resource has got through its Ingest. It has three values, and it is
+the only thing about the Ingest that the user sees.
+_Avoid_: Status, Phase, Stage
+
+**Ingesting**:
+The Ingest state of a Resource whose File is stored and whose work is running.
+_Avoid_: Pending, Processing, Running
+
+**Ready**:
+The Ingest state of a Resource whose Chunks or Picture are stored with their
+Vectors.
+_Avoid_: Done, Complete, Indexed, Searchable
+
+**Failed**:
+The Ingest state of a Resource whose Ingest broke. It keeps its Reason and its
+File, so it can be ingested again.
+_Avoid_: Error, Broken, Rejected
+
+**Reason**:
+The short text that a Failed Resource keeps. It is written for the user, and it
+is not a developer trace.
+_Avoid_: Error, Message, Trace, Cause
+
 ### Search
 
 **Query**:
