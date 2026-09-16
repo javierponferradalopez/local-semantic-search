@@ -1,0 +1,54 @@
+--- fp32 ONNX download size, from the Hub API ---
+Xenova/ms-marco-MiniLM-L-6-v2                  91.0 MB  (English, 6 layers)
+jinaai/jina-reranker-v1-tiny-en                132.4 MB  (English, 4 layers)
+mixedbread-ai/mxbai-rerank-xsmall-v1           284.2 MB  (English)
+jinaai/jina-reranker-v2-base-multilingual      1114.0 MB  (multilingual)
+onnx-community/bge-reranker-v2-m3-ONNX         2271.7 MB  (multilingual, XLM-R large)
+Xenova/bge-reranker-base                       1112.5 MB  (not run here)
+
+=== Xenova/ms-marco-MiniLM-L-6-v2 fp32 ===
+load (cold, includes download) 53 ms
+1 pair at a time: median 2.4 ms
+50 pairs in one batch: median 96 ms (1.9 ms per candidate)
+top logit, english, answer present n=15 min -6.6861 median 3.9106 max 8.2369
+top logit, spanish, answer present n=15 min -11.3948 median -11.2792 max -6.4074  right subject 6/15
+top logit, answer absent           n=8 min -11.1786 median -11.0084 max -10.2374
+separation: worst english present -6.6861 against best absent -10.2374 -> gap 3.5513
+as sigmoid: worst present 0.0012 best absent 0.0000
+a logit of 0 as the gate: english 11/15, spanish 0/15, absent 0/8
+
+=== jinaai/jina-reranker-v1-tiny-en fp32 ===
+load (cold, includes download) 86 ms
+1 pair at a time: median 2.0 ms
+50 pairs in one batch: median 70 ms (1.4 ms per candidate)
+top logit, english, answer present n=15 min -0.7292 median 1.2958 max 3.0423
+top logit, spanish, answer present n=15 min -1.3341 median -1.1064 max 0.0669  right subject 8/15
+top logit, answer absent           n=8 min -1.3510 median -1.1064 max -0.8899
+separation: worst english present -0.7292 against best absent -0.8899 -> gap 0.1608
+as sigmoid: worst present 0.3254 best absent 0.2911
+a logit of 0 as the gate: english 11/15, spanish 1/15, absent 0/8
+
+=== mixedbread-ai/mxbai-rerank-xsmall-v1 fp32 ===
+load (cold, includes download) 301 ms
+1 pair at a time: median 6.4 ms
+50 pairs in one batch: median 313 ms (6.3 ms per candidate)
+top logit, english, answer present n=15 min -3.1636 median 0.9036 max 2.6090
+top logit, spanish, answer present n=15 min -4.9372 median -3.2265 max -1.3628  right subject 10/15
+top logit, answer absent           n=8 min -4.8254 median -3.6390 max -1.6298
+separation: worst english present -3.1636 against best absent -1.6298 -> gap -1.5338
+as sigmoid: worst present 0.0406 best absent 0.1639
+a logit of 0 as the gate: english 11/15, spanish 0/15, absent 0/8
+
+=== jinaai/jina-reranker-v2-base-multilingual fp32 ===
+FAILED to load: Error: Unsupported model type: null
+
+=== onnx-community/bge-reranker-v2-m3-ONNX fp32 ===
+load (cold, includes download) 241544 ms
+1 pair at a time: median 53.9 ms
+50 pairs in one batch: median 3124 ms (62.5 ms per candidate)
+top logit, english, answer present n=15 min -6.5547 median 1.5106 max 5.1652
+top logit, spanish, answer present n=15 min -8.4926 median -2.3404 max 3.4374  right subject 15/15
+top logit, answer absent           n=8 min -11.0108 median -10.1347 max -8.0681
+separation: worst english present -6.5547 against best absent -8.0681 -> gap 1.5134
+as sigmoid: worst present 0.0014 best absent 0.0003
+a logit of 0 as the gate: english 11/15, spanish 4/15, absent 0/8
