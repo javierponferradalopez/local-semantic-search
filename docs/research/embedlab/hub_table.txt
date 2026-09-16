@@ -1,0 +1,47 @@
+Xenova/all-MiniLM-L6-v2                                    lic=apache-2.0     type=bert           dim=384   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+sentence-transformers/all-MiniLM-L6-v2                     lic=apache-2.0     type=bert           dim=384   maxpos=512    tokmax=512      onnx=9 tags=sentence-transformers,onnx
+Xenova/bge-small-en-v1.5                                   lic=null           type=bert           dim=384   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+Xenova/bge-base-en-v1.5                                    lic=mit            type=bert           dim=768   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+BAAI/bge-small-en-v1.5                                     lic=mit            type=bert           dim=384   maxpos=512    tokmax=512      onnx=1 tags=sentence-transformers,onnx
+BAAI/bge-base-en-v1.5                                      lic=mit            type=bert           dim=768   maxpos=512    tokmax=512      onnx=1 tags=sentence-transformers,onnx
+BAAI/bge-m3                                                lic=mit            type=xlm-roberta    dim=1024  maxpos=8194   tokmax=8192     onnx=2 tags=sentence-transformers,onnx
+Xenova/gte-small                                           lic=null           type=bert           dim=384   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+Xenova/gte-base                                            lic=null           type=bert           dim=768   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+Alibaba-NLP/gte-multilingual-base                          lic=apache-2.0     type=new            dim=768   maxpos=8192   tokmax=32768    onnx=0 tags=sentence-transformers
+onnx-community/gte-multilingual-base-ONNX                  HTTP 401
+Xenova/e5-small-v2                                         lic=null           type=bert           dim=384   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+Xenova/multilingual-e5-small                               lic=null           type=bert           dim=384   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+Xenova/multilingual-e5-base                                lic=null           type=xlm-roberta    dim=768   maxpos=514    tokmax=512      onnx=8 tags=transformers.js,onnx
+intfloat/multilingual-e5-small                             lic=mit            type=bert           dim=384   maxpos=512    tokmax=512      onnx=3 tags=sentence-transformers,onnx
+intfloat/multilingual-e5-base                              lic=mit            type=xlm-roberta    dim=768   maxpos=514    tokmax=512      onnx=3 tags=sentence-transformers,onnx
+intfloat/multilingual-e5-large                             lic=mit            type=xlm-roberta    dim=1024  maxpos=514    tokmax=512      onnx=4 tags=sentence-transformers,onnx
+nomic-ai/nomic-embed-text-v1.5                             lic=apache-2.0     type=nomic_bert     dim=768   maxpos=2048   tokmax=8192     onnx=8 tags=sentence-transformers,onnx,transformers.js
+nomic-ai/nomic-embed-text-v2-moe                           lic=apache-2.0     type=nomic_bert     dim=null  maxpos=null   tokmax=512      onnx=0 tags=sentence-transformers
+Snowflake/snowflake-arctic-embed-s                         lic=apache-2.0     type=bert           dim=384   maxpos=512    tokmax=512      onnx=7 tags=sentence-transformers,onnx,transformers.js
+Snowflake/snowflake-arctic-embed-m                         lic=apache-2.0     type=bert           dim=768   maxpos=512    tokmax=512      onnx=7 tags=sentence-transformers,onnx,transformers.js
+Snowflake/snowflake-arctic-embed-m-v1.5                    lic=apache-2.0     type=bert           dim=768   maxpos=512    tokmax=512      onnx=7 tags=sentence-transformers,onnx,transformers.js
+Snowflake/snowflake-arctic-embed-m-v2.0                    lic=apache-2.0     type=gte            dim=768   maxpos=8192   tokmax=32768    onnx=8 tags=sentence-transformers,onnx,transformers.js
+Snowflake/snowflake-arctic-embed-l-v2.0                    lic=apache-2.0     type=xlm-roberta    dim=1024  maxpos=8194   tokmax=8192     onnx=10 tags=sentence-transformers,onnx,transformers.js
+Xenova/snowflake-arctic-embed-s                            HTTP 401
+jinaai/jina-embeddings-v2-small-en                         lic=apache-2.0     type=bert           dim=512   maxpos=8192   tokmax=2147483648 onnx=2 tags=sentence-transformers,onnx
+jinaai/jina-embeddings-v2-base-en                          lic=apache-2.0     type=bert           dim=768   maxpos=8192   tokmax=2147483648 onnx=2 tags=sentence-transformers,onnx
+jinaai/jina-embeddings-v2-base-es                          lic=apache-2.0     type=bert           dim=768   maxpos=8192   tokmax=512      onnx=2 tags=sentence-transformers,onnx
+jinaai/jina-embeddings-v2-base-code                        lic=apache-2.0     type=bert           dim=768   maxpos=8192   tokmax=8192     onnx=3 tags=sentence-transformers,onnx,transformers.js
+jinaai/jina-embeddings-v3                                  lic=cc-by-nc-4.0   type=null           dim=1024  maxpos=8194   tokmax=8194     onnx=3 tags=onnx,sentence-transformers
+onnx-community/jina-embeddings-v3                          HTTP 401
+Xenova/paraphrase-multilingual-MiniLM-L12-v2               lic=null           type=bert           dim=384   maxpos=512    tokmax=512      onnx=8 tags=transformers.js,onnx
+sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 lic=apache-2.0     type=bert           dim=384   maxpos=512    tokmax=512      onnx=9 tags=sentence-transformers,onnx
+sentence-transformers/static-retrieval-mrl-en-v1           lic=apache-2.0     type=undefined      dim=undefined maxpos=undefined tokmax=undefined onnx=8 tags=sentence-transformers,onnx
+sentence-transformers/static-similarity-mrl-multilingual-v1 lic=apache-2.0     type=undefined      dim=undefined maxpos=undefined tokmax=undefined onnx=8 tags=sentence-transformers,onnx
+google/embeddinggemma-300m                                 lic=gemma          type=undefined      dim=undefined maxpos=undefined tokmax=undefined onnx=0 tags=sentence-transformers
+onnx-community/embeddinggemma-300m-ONNX                    lic=gemma          type=gemma3_text    dim=768   maxpos=2048   tokmax=2048     onnx=12 tags=transformers.js,onnx
+onnx-community/Qwen3-Embedding-0.6B-ONNX                   lic=null           type=qwen3          dim=1024  maxpos=32768  tokmax=131072   onnx=10 tags=transformers.js,onnx
+Qwen/Qwen3-Embedding-0.6B                                  lic=apache-2.0     type=qwen3          dim=1024  maxpos=32768  tokmax=131072   onnx=0 tags=sentence-transformers
+mixedbread-ai/mxbai-embed-large-v1                         lic=apache-2.0     type=bert           dim=1024  maxpos=512    tokmax=512      onnx=3 tags=sentence-transformers,onnx,transformers.js
+ibm-granite/granite-embedding-107m-multilingual            lic=apache-2.0     type=xlm-roberta    dim=384   maxpos=514    tokmax=512      onnx=1 tags=onnx
+ibm-granite/granite-embedding-278m-multilingual            lic=apache-2.0     type=xlm-roberta    dim=768   maxpos=514    tokmax=512      onnx=1 tags=onnx,sentence-transformers
+ibm-granite/granite-embedding-english-r2                   lic=apache-2.0     type=modernbert     dim=768   maxpos=8192   tokmax=8192     onnx=0 tags=sentence-transformers
+minishlab/potion-multilingual-128M                         lic=mit            type=model2vec      dim=null  maxpos=null   tokmax=1e+30    onnx=1 tags=onnx,sentence-transformers
+minishlab/potion-base-8M                                   lic=mit            type=model2vec      dim=null  maxpos=null   tokmax=1000000  onnx=1 tags=onnx,sentence-transformers
+
+wrote hub.json

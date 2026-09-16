@@ -1,0 +1,1382 @@
+{
+  "Xenova/all-MiniLM-L6-v2": {
+    "id": "Xenova/all-MiniLM-L6-v2",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 2831733,
+    "likes": 147,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 90387606,
+      "onnx/model_bnb4.onnx": 53915448,
+      "onnx/model_fp16.onnx": 45297825,
+      "onnx/model_int8.onnx": 22972370,
+      "onnx/model_q4.onnx": 54578772,
+      "onnx/model_q4f16.onnx": 30018257,
+      "onnx/model_quantized.onnx": 22972370,
+      "onnx/model_uint8.onnx": 22845806
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "sentence-transformers/all-MiniLM-L6-v2": {
+    "id": "sentence-transformers/all-MiniLM-L6-v2",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 256481161,
+    "likes": 6014,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_O1.onnx",
+      "onnx/model_O2.onnx",
+      "onnx/model_O3.onnx",
+      "onnx/model_O4.onnx",
+      "onnx/model_qint8_arm64.onnx",
+      "onnx/model_qint8_avx512.onnx",
+      "onnx/model_qint8_avx512_vnni.onnx",
+      "onnx/model_quint8_avx2.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 90405214,
+      "onnx/model_O1.onnx": 90360328,
+      "onnx/model_O2.onnx": 90326566,
+      "onnx/model_O3.onnx": 90326497,
+      "onnx/model_O4.onnx": 45212349,
+      "onnx/model_qint8_arm64.onnx": 23026053,
+      "onnx/model_qint8_avx512.onnx": 23026053,
+      "onnx/model_qint8_avx512_vnni.onnx": 23026053,
+      "onnx/model_quint8_avx2.onnx": 23046789
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Xenova/bge-small-en-v1.5": {
+    "id": "Xenova/bge-small-en-v1.5",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 436821,
+    "likes": 20,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 133093490,
+      "onnx/model_bnb4.onnx": 60147542,
+      "onnx/model_fp16.onnx": 66749212,
+      "onnx/model_int8.onnx": 33760831,
+      "onnx/model_q4.onnx": 61474190,
+      "onnx/model_q4f16.onnx": 36190171,
+      "onnx/model_quantized.onnx": 34014426,
+      "onnx/model_uint8.onnx": 33760859
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Xenova/bge-base-en-v1.5": {
+    "id": "Xenova/bge-base-en-v1.5",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 2465442,
+    "likes": 10,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 435811539,
+      "onnx/model_bnb4.onnx": 143893454,
+      "onnx/model_fp16.onnx": 218108236,
+      "onnx/model_int8.onnx": 109622386,
+      "onnx/model_q4.onnx": 149201342,
+      "onnx/model_q4f16.onnx": 95979115,
+      "onnx/model_quantized.onnx": 110083337,
+      "onnx/model_uint8.onnx": 109622423
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "BAAI/bge-small-en-v1.5": {
+    "id": "BAAI/bge-small-en-v1.5",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 64638739,
+    "likes": 582,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 133093490
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "BAAI/bge-base-en-v1.5": {
+    "id": "BAAI/bge-base-en-v1.5",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 10534497,
+    "likes": 499,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 435811539
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "BAAI/bge-m3": {
+    "id": "BAAI/bge-m3",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 38136809,
+    "likes": 3563,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model.onnx_data"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 724923,
+      "onnx/model.onnx_data": 2266820608
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 1024,
+    "max_position_embeddings": 8194,
+    "auto_map": null,
+    "tokenizer_model_max_length": 8192,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "Xenova/gte-small": {
+    "id": "Xenova/gte-small",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 55029,
+    "likes": 23,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 133093490,
+      "onnx/model_bnb4.onnx": 60147542,
+      "onnx/model_fp16.onnx": 66749212,
+      "onnx/model_int8.onnx": 33760831,
+      "onnx/model_q4.onnx": 61474190,
+      "onnx/model_q4f16.onnx": 36190171,
+      "onnx/model_quantized.onnx": 34014426,
+      "onnx/model_uint8.onnx": 33760859
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Xenova/gte-base": {
+    "id": "Xenova/gte-base",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 2177,
+    "likes": 0,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 435811539,
+      "onnx/model_bnb4.onnx": 143893454,
+      "onnx/model_fp16.onnx": 218108236,
+      "onnx/model_int8.onnx": 109622386,
+      "onnx/model_q4.onnx": 149201342,
+      "onnx/model_q4f16.onnx": 95979115,
+      "onnx/model_quantized.onnx": 110083337,
+      "onnx/model_uint8.onnx": 109622423
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Alibaba-NLP/gte-multilingual-base": {
+    "id": "Alibaba-NLP/gte-multilingual-base",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 1324593,
+    "likes": 376,
+    "tags": [
+      "sentence-transformers"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [],
+    "sizes": {},
+    "model_type": "new",
+    "hidden_size": 768,
+    "max_position_embeddings": 8192,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModelForMaskedLM",
+      "AutoModel",
+      "AutoModelForMultipleChoice",
+      "AutoModelForQuestionAnswering",
+      "AutoModelForSequenceClassification",
+      "AutoModelForTokenClassification"
+    ],
+    "tokenizer_model_max_length": 32768,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "onnx-community/gte-multilingual-base-ONNX": {
+    "id": "onnx-community/gte-multilingual-base-ONNX",
+    "error": "HTTP 401"
+  },
+  "Xenova/e5-small-v2": {
+    "id": "Xenova/e5-small-v2",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 23034,
+    "likes": 4,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 133093467,
+      "onnx/model_bnb4.onnx": 60147558,
+      "onnx/model_fp16.onnx": 66749153,
+      "onnx/model_int8.onnx": 33760847,
+      "onnx/model_q4.onnx": 61474206,
+      "onnx/model_q4f16.onnx": 36190187,
+      "onnx/model_quantized.onnx": 34014367,
+      "onnx/model_uint8.onnx": 33760883
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Xenova/multilingual-e5-small": {
+    "id": "Xenova/multilingual-e5-small",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 196472,
+    "likes": 20,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 470268533,
+      "onnx/model_bnb4.onnx": 397322585,
+      "onnx/model_fp16.onnx": 235336732,
+      "onnx/model_int8.onnx": 118054593,
+      "onnx/model_q4.onnx": 398649233,
+      "onnx/model_q4f16.onnx": 204777691,
+      "onnx/model_quantized.onnx": 118308185,
+      "onnx/model_uint8.onnx": 118054630
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "Xenova/multilingual-e5-base": {
+    "id": "Xenova/multilingual-e5-base",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 17442,
+    "likes": 3,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 1110059084,
+      "onnx/model_bnb4.onnx": 818139458,
+      "onnx/model_fp16.onnx": 555234024,
+      "onnx/model_int8.onnx": 278184162,
+      "onnx/model_q4.onnx": 823447346,
+      "onnx/model_q4f16.onnx": 433102303,
+      "onnx/model_quantized.onnx": 278647662,
+      "onnx/model_uint8.onnx": 278184193
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 768,
+    "max_position_embeddings": 514,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "intfloat/multilingual-e5-small": {
+    "id": "intfloat/multilingual-e5-small",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 12377202,
+    "likes": 417,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_O4.onnx",
+      "onnx/model_qint8_avx512_vnni.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 470268510,
+      "onnx/model_O4.onnx": 235052531,
+      "onnx/model_qint8_avx512_vnni.onnx": 118346824
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "intfloat/multilingual-e5-base": {
+    "id": "intfloat/multilingual-e5-base",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 7460971,
+    "likes": 386,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_O4.onnx",
+      "onnx/model_qint8_avx512_vnni.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 1110059084,
+      "onnx/model_O4.onnx": 554948118,
+      "onnx/model_qint8_avx512_vnni.onnx": 278686411
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 768,
+    "max_position_embeddings": 514,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "intfloat/multilingual-e5-large": {
+    "id": "intfloat/multilingual-e5-large",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 6966155,
+    "likes": 1250,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model.onnx_data",
+      "onnx/model_O4.onnx",
+      "onnx/model_qint8_avx512_vnni.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 545850,
+      "onnx/model.onnx_data": 2235363328,
+      "onnx/model_O4.onnx": 80602,
+      "onnx/model_qint8_avx512_vnni.onnx": 561845741
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 1024,
+    "max_position_embeddings": 514,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "nomic-ai/nomic-embed-text-v1.5": {
+    "id": "nomic-ai/nomic-embed-text-v1.5",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 15135151,
+    "likes": 931,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 547310275,
+      "onnx/model_bnb4.onnx": 158035801,
+      "onnx/model_fp16.onnx": 273859028,
+      "onnx/model_int8.onnx": 137296292,
+      "onnx/model_q4.onnx": 165113221,
+      "onnx/model_q4f16.onnx": 111076526,
+      "onnx/model_quantized.onnx": 137296292,
+      "onnx/model_uint8.onnx": 137296322
+    },
+    "model_type": "nomic_bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 2048,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModel",
+      "AutoModelForMaskedLM",
+      "AutoModelForSequenceClassification",
+      "AutoModelForMultipleChoice",
+      "AutoModelForQuestionAnswering",
+      "AutoModelForTokenClassification"
+    ],
+    "tokenizer_model_max_length": 8192,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "nomic-ai/nomic-embed-text-v2-moe": {
+    "id": "nomic-ai/nomic-embed-text-v2-moe",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 1984512,
+    "likes": 500,
+    "tags": [
+      "sentence-transformers"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [],
+    "sizes": {},
+    "model_type": "nomic_bert",
+    "hidden_size": null,
+    "max_position_embeddings": null,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModel",
+      "AutoModelForMaskedLM",
+      "AutoModelForMultipleChoice",
+      "AutoModelForQuestionAnswering",
+      "AutoModelForSequenceClassification",
+      "AutoModelForTokenClassification"
+    ],
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "Snowflake/snowflake-arctic-embed-s": {
+    "id": "Snowflake/snowflake-arctic-embed-s",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 615911,
+    "likes": 27,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 133093492,
+      "onnx/model_bnb4.onnx": 60113951,
+      "onnx/model_fp16.onnx": 66749214,
+      "onnx/model_int8.onnx": 34015111,
+      "onnx/model_q4.onnx": 61440599,
+      "onnx/model_quantized.onnx": 34015111,
+      "onnx/model_uint8.onnx": 34015108
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Snowflake/snowflake-arctic-embed-m": {
+    "id": "Snowflake/snowflake-arctic-embed-m",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 399690,
+    "likes": 166,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 435811541,
+      "onnx/model_bnb4.onnx": 143859863,
+      "onnx/model_fp16.onnx": 218108238,
+      "onnx/model_int8.onnx": 110084023,
+      "onnx/model_q4.onnx": 149167751,
+      "onnx/model_quantized.onnx": 110084023,
+      "onnx/model_uint8.onnx": 110084023
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Snowflake/snowflake-arctic-embed-m-v1.5": {
+    "id": "Snowflake/snowflake-arctic-embed-m-v1.5",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 152026,
+    "likes": 73,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 435939137,
+      "onnx/model_bnb4.onnx": 143987459,
+      "onnx/model_fp16.onnx": 218155826,
+      "onnx/model_int8.onnx": 110145162,
+      "onnx/model_q4.onnx": 149295347,
+      "onnx/model_quantized.onnx": 110145162,
+      "onnx/model_uint8.onnx": 110145162
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "Snowflake/snowflake-arctic-embed-m-v2.0": {
+    "id": "Snowflake/snowflake-arctic-embed-m-v2.0",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 135934,
+    "likes": 108,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 1226099913,
+      "onnx/model_bnb4.onnx": 836823604,
+      "onnx/model_fp16.onnx": 613266244,
+      "onnx/model_int8.onnx": 310916060,
+      "onnx/model_q4.onnx": 843901108,
+      "onnx/model_q4f16.onnx": 450481991,
+      "onnx/model_quantized.onnx": 310916060,
+      "onnx/model_uint8.onnx": 310916060
+    },
+    "model_type": "gte",
+    "hidden_size": 768,
+    "max_position_embeddings": 8192,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModel"
+    ],
+    "tokenizer_model_max_length": 32768,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "Snowflake/snowflake-arctic-embed-l-v2.0": {
+    "id": "Snowflake/snowflake-arctic-embed-l-v2.0",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 870640,
+    "likes": 252,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model.onnx_data",
+      "onnx/model_O4.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 702280,
+      "onnx/model.onnx_data": 2266886160,
+      "onnx/model_O4.onnx": 452256,
+      "onnx/model_bnb4.onnx": 1229495907,
+      "onnx/model_fp16.onnx": 1134153607,
+      "onnx/model_int8.onnx": 569721975,
+      "onnx/model_q4.onnx": 1248369099,
+      "onnx/model_q4f16.onnx": 700064306,
+      "onnx/model_quantized.onnx": 569721975,
+      "onnx/model_uint8.onnx": 569721975
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 1024,
+    "max_position_embeddings": 8194,
+    "auto_map": null,
+    "tokenizer_model_max_length": 8192,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "Xenova/snowflake-arctic-embed-s": {
+    "id": "Xenova/snowflake-arctic-embed-s",
+    "error": "HTTP 401"
+  },
+  "jinaai/jina-embeddings-v2-small-en": {
+    "id": "jinaai/jina-embeddings-v2-small-en",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 928484,
+    "likes": 143,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "model-w-mean-pooling.onnx",
+      "model.onnx"
+    ],
+    "sizes": {
+      "model-w-mean-pooling.onnx": 129802922,
+      "model.onnx": 129809014
+    },
+    "model_type": "bert",
+    "hidden_size": 512,
+    "max_position_embeddings": 8192,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModelForMaskedLM",
+      "AutoModel",
+      "AutoModelForSequenceClassification"
+    ],
+    "tokenizer_model_max_length": 2147483648,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "jinaai/jina-embeddings-v2-base-en": {
+    "id": "jinaai/jina-embeddings-v2-base-en",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 391530,
+    "likes": 736,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "model-w-mean-pooling.onnx",
+      "model.onnx"
+    ],
+    "sizes": {
+      "model-w-mean-pooling.onnx": 547365958,
+      "model.onnx": 547390322
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 8192,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModelForMaskedLM",
+      "AutoModel",
+      "AutoModelForSequenceClassification"
+    ],
+    "tokenizer_model_max_length": 2147483648,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "jinaai/jina-embeddings-v2-base-es": {
+    "id": "jinaai/jina-embeddings-v2-base-es",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 7154,
+    "likes": 36,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_quantized.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 641419238,
+      "onnx/model_quantized.onnx": 161789773
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 8192,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModel",
+      "AutoModelForMaskedLM",
+      "AutoModelForQuestionAnswering",
+      "AutoModelForSequenceClassification",
+      "AutoModelForTokenClassification"
+    ],
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "RobertaTokenizer"
+  },
+  "jinaai/jina-embeddings-v2-base-code": {
+    "id": "jinaai/jina-embeddings-v2-base-code",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 283250,
+    "likes": 144,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_quantized.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 641517466,
+      "onnx/model_fp16.onnx": 321072580,
+      "onnx/model_quantized.onnx": 161895621
+    },
+    "model_type": "bert",
+    "hidden_size": 768,
+    "max_position_embeddings": 8192,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModel",
+      "AutoModelForMaskedLM",
+      "AutoModelForSequenceClassification"
+    ],
+    "tokenizer_model_max_length": 8192,
+    "tokenizer_class": "RobertaTokenizer"
+  },
+  "jinaai/jina-embeddings-v3": {
+    "id": "jinaai/jina-embeddings-v3",
+    "license": "cc-by-nc-4.0",
+    "license_name": null,
+    "downloads30d": 1971908,
+    "likes": 1157,
+    "tags": [
+      "onnx",
+      "sentence-transformers"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model.onnx_data",
+      "onnx/model_fp16.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 1513159,
+      "onnx/model.onnx_data": 2291339168,
+      "onnx/model_fp16.onnx": 1147151362
+    },
+    "model_type": null,
+    "hidden_size": 1024,
+    "max_position_embeddings": 8194,
+    "auto_map": [
+      "AutoConfig",
+      "AutoModel",
+      "AutoModelForMaskedLM",
+      "AutoModelForPreTraining"
+    ],
+    "tokenizer_model_max_length": 8194,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "onnx-community/jina-embeddings-v3": {
+    "id": "onnx-community/jina-embeddings-v3",
+    "error": "HTTP 401"
+  },
+  "Xenova/paraphrase-multilingual-MiniLM-L12-v2": {
+    "id": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 654544,
+    "likes": 18,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 470268510,
+      "onnx/model_bnb4.onnx": 397322601,
+      "onnx/model_fp16.onnx": 235336673,
+      "onnx/model_int8.onnx": 118054609,
+      "onnx/model_q4.onnx": 398649249,
+      "onnx/model_q4f16.onnx": 204777707,
+      "onnx/model_quantized.onnx": 118308126,
+      "onnx/model_uint8.onnx": 118054642
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2": {
+    "id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 45865568,
+    "likes": 1403,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_O1.onnx",
+      "onnx/model_O2.onnx",
+      "onnx/model_O3.onnx",
+      "onnx/model_O4.onnx",
+      "onnx/model_qint8_arm64.onnx",
+      "onnx/model_qint8_avx512.onnx",
+      "onnx/model_qint8_avx512_vnni.onnx",
+      "onnx/model_quint8_avx2.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 470301610,
+      "onnx/model_O1.onnx": 470212363,
+      "onnx/model_O2.onnx": 470145917,
+      "onnx/model_O3.onnx": 470145772,
+      "onnx/model_O4.onnx": 235166264,
+      "onnx/model_qint8_arm64.onnx": 118412398,
+      "onnx/model_qint8_avx512.onnx": 118412398,
+      "onnx/model_qint8_avx512_vnni.onnx": 118412398,
+      "onnx/model_quint8_avx2.onnx": 118453870
+    },
+    "model_type": "bert",
+    "hidden_size": 384,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "PreTrainedTokenizerFast"
+  },
+  "sentence-transformers/static-retrieval-mrl-en-v1": {
+    "id": "sentence-transformers/static-retrieval-mrl-en-v1",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 0,
+    "likes": 61,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 125022572,
+      "onnx/model_bnb4.onnx": 125022591,
+      "onnx/model_fp16.onnx": 62513753,
+      "onnx/model_int8.onnx": 31259319,
+      "onnx/model_q4.onnx": 125022591,
+      "onnx/model_q4f16.onnx": 62513772,
+      "onnx/model_quantized.onnx": 31259319,
+      "onnx/model_uint8.onnx": 31259319
+    }
+  },
+  "sentence-transformers/static-similarity-mrl-multilingual-v1": {
+    "id": "sentence-transformers/static-similarity-mrl-multilingual-v1",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 0,
+    "likes": 82,
+    "tags": [
+      "sentence-transformers",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 433684847,
+      "onnx/model_bnb4.onnx": 433684866,
+      "onnx/model_fp16.onnx": 216844889,
+      "onnx/model_int8.onnx": 108424888,
+      "onnx/model_q4.onnx": 433684866,
+      "onnx/model_q4f16.onnx": 216844908,
+      "onnx/model_quantized.onnx": 108424888,
+      "onnx/model_uint8.onnx": 108424888
+    }
+  },
+  "google/embeddinggemma-300m": {
+    "id": "google/embeddinggemma-300m",
+    "license": "gemma",
+    "license_name": null,
+    "downloads30d": 2355810,
+    "likes": 1916,
+    "tags": [
+      "sentence-transformers"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [],
+    "sizes": {}
+  },
+  "onnx-community/embeddinggemma-300m-ONNX": {
+    "id": "onnx-community/embeddinggemma-300m-ONNX",
+    "license": "gemma",
+    "license_name": null,
+    "downloads30d": 273216,
+    "likes": 73,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model.onnx_data",
+      "onnx/model_fp16.onnx",
+      "onnx/model_fp16.onnx_data",
+      "onnx/model_no_gather_q4.onnx",
+      "onnx/model_no_gather_q4.onnx_data",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4.onnx_data",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_q4f16.onnx_data",
+      "onnx/model_quantized.onnx",
+      "onnx/model_quantized.onnx_data"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 479932,
+      "onnx/model.onnx_data": 1234521088,
+      "onnx/model_fp16.onnx": 655263,
+      "onnx/model_fp16.onnx_data": 617434112,
+      "onnx/model_no_gather_q4.onnx": 529476,
+      "onnx/model_no_gather_q4.onnx_data": 194628608,
+      "onnx/model_q4.onnx": 519322,
+      "onnx/model_q4.onnx_data": 196725760,
+      "onnx/model_q4f16.onnx": 705221,
+      "onnx/model_q4f16.onnx_data": 175410176,
+      "onnx/model_quantized.onnx": 567874,
+      "onnx/model_quantized.onnx_data": 308890624
+    },
+    "model_type": "gemma3_text",
+    "hidden_size": 768,
+    "max_position_embeddings": 2048,
+    "auto_map": null,
+    "tokenizer_model_max_length": 2048,
+    "tokenizer_class": "GemmaTokenizer"
+  },
+  "onnx-community/Qwen3-Embedding-0.6B-ONNX": {
+    "id": "onnx-community/Qwen3-Embedding-0.6B-ONNX",
+    "license": null,
+    "license_name": null,
+    "downloads30d": 21533,
+    "likes": 42,
+    "tags": [
+      "transformers.js",
+      "onnx"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model.onnx_data",
+      "onnx/model_bnb4.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_fp16.onnx_data",
+      "onnx/model_int8.onnx",
+      "onnx/model_q4.onnx",
+      "onnx/model_q4f16.onnx",
+      "onnx/model_quantized.onnx",
+      "onnx/model_uint8.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 307161415,
+      "onnx/model.onnx_data": 2093436928,
+      "onnx/model_bnb4.onnx": 886593402,
+      "onnx/model_fp16.onnx": 583522,
+      "onnx/model_fp16.onnx_data": 1199927296,
+      "onnx/model_int8.onnx": 613527539,
+      "onnx/model_q4.onnx": 914121462,
+      "onnx/model_q4f16.onnx": 567458583,
+      "onnx/model_quantized.onnx": 613527631,
+      "onnx/model_uint8.onnx": 613527631
+    },
+    "model_type": "qwen3",
+    "hidden_size": 1024,
+    "max_position_embeddings": 32768,
+    "auto_map": null,
+    "tokenizer_model_max_length": 131072,
+    "tokenizer_class": "Qwen2Tokenizer"
+  },
+  "Qwen/Qwen3-Embedding-0.6B": {
+    "id": "Qwen/Qwen3-Embedding-0.6B",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 8526863,
+    "likes": 1224,
+    "tags": [
+      "sentence-transformers"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [],
+    "sizes": {},
+    "model_type": "qwen3",
+    "hidden_size": 1024,
+    "max_position_embeddings": 32768,
+    "auto_map": null,
+    "tokenizer_model_max_length": 131072,
+    "tokenizer_class": "Qwen2Tokenizer"
+  },
+  "mixedbread-ai/mxbai-embed-large-v1": {
+    "id": "mixedbread-ai/mxbai-embed-large-v1",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 2523873,
+    "likes": 825,
+    "tags": [
+      "sentence-transformers",
+      "onnx",
+      "transformers.js"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [
+      "onnx/model.onnx",
+      "onnx/model_fp16.onnx",
+      "onnx/model_quantized.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 1336854282,
+      "onnx/model_fp16.onnx": 668828772,
+      "onnx/model_quantized.onnx": 336983163
+    },
+    "model_type": "bert",
+    "hidden_size": 1024,
+    "max_position_embeddings": 512,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "BertTokenizer"
+  },
+  "ibm-granite/granite-embedding-107m-multilingual": {
+    "id": "ibm-granite/granite-embedding-107m-multilingual",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 71813,
+    "likes": 52,
+    "tags": [
+      "onnx"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "model.onnx"
+    ],
+    "sizes": {
+      "model.onnx": 428102968
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 384,
+    "max_position_embeddings": 514,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "ibm-granite/granite-embedding-278m-multilingual": {
+    "id": "ibm-granite/granite-embedding-278m-multilingual",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 63311,
+    "likes": 86,
+    "tags": [
+      "onnx",
+      "sentence-transformers"
+    ],
+    "pipeline": "sentence-similarity",
+    "onnx": [
+      "model.onnx"
+    ],
+    "sizes": {
+      "model.onnx": 1112413925
+    },
+    "model_type": "xlm-roberta",
+    "hidden_size": 768,
+    "max_position_embeddings": 514,
+    "auto_map": null,
+    "tokenizer_model_max_length": 512,
+    "tokenizer_class": "XLMRobertaTokenizer"
+  },
+  "ibm-granite/granite-embedding-english-r2": {
+    "id": "ibm-granite/granite-embedding-english-r2",
+    "license": "apache-2.0",
+    "license_name": null,
+    "downloads30d": 61234,
+    "likes": 87,
+    "tags": [
+      "sentence-transformers"
+    ],
+    "pipeline": "feature-extraction",
+    "onnx": [],
+    "sizes": {},
+    "model_type": "modernbert",
+    "hidden_size": 768,
+    "max_position_embeddings": 8192,
+    "auto_map": null,
+    "tokenizer_model_max_length": 8192,
+    "tokenizer_class": "PreTrainedTokenizer"
+  },
+  "minishlab/potion-multilingual-128M": {
+    "id": "minishlab/potion-multilingual-128M",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 64998,
+    "likes": 59,
+    "tags": [
+      "onnx",
+      "sentence-transformers"
+    ],
+    "pipeline": null,
+    "onnx": [
+      "onnx/model.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 512365657
+    },
+    "model_type": "model2vec",
+    "hidden_size": null,
+    "max_position_embeddings": null,
+    "auto_map": null,
+    "tokenizer_model_max_length": 1e+30,
+    "tokenizer_class": "XLMRobertaTokenizerFast"
+  },
+  "minishlab/potion-base-8M": {
+    "id": "minishlab/potion-base-8M",
+    "license": "mit",
+    "license_name": null,
+    "downloads30d": 510502,
+    "likes": 79,
+    "tags": [
+      "onnx",
+      "sentence-transformers"
+    ],
+    "pipeline": null,
+    "onnx": [
+      "onnx/model.onnx"
+    ],
+    "sizes": {
+      "onnx/model.onnx": 30240854
+    },
+    "model_type": "model2vec",
+    "hidden_size": null,
+    "max_position_embeddings": null,
+    "auto_map": null,
+    "tokenizer_model_max_length": 1000000,
+    "tokenizer_class": "BertTokenizer"
+  }
+}
