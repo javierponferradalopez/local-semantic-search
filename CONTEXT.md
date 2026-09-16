@@ -13,6 +13,13 @@ One item of content that the user added, with its name, its type and its stored
 copy. It is what the user sees in a list and deletes.
 _Avoid_: File, Asset, Document, Item
 
+**Content type**:
+The kind of content that a Resource holds. It is one of a closed set of values
+that the system names. It decides the shape of the Locator, and it decides how
+the Resource is ingested. An extension is not a Content type: an extension is
+one way to find out which Content type a File holds.
+_Avoid_: MIME type, Format, Extension, Kind
+
 **File**:
 The bytes that the user selected on their disk, and the copy that a Resource
 owns. A File is never a record. The record is the Resource.
@@ -49,6 +56,12 @@ _Avoid_: Hash, Fingerprint, Digest
 
 ### Ingestion
 
+**Gate**:
+The check that a File passes before its Resource exists. It judges only what it
+can judge without opening the File, and it refuses. A refusal leaves no Resource
+and no File, so it keeps no Reason.
+_Avoid_: Validator, Filter, Guard, Check
+
 **Ingest state**:
 How far a Resource has got through its Ingest. It has three values, and it is
 the only thing about the Ingest that the user sees.
@@ -69,8 +82,9 @@ File, so it can be ingested again.
 _Avoid_: Error, Broken, Rejected
 
 **Reason**:
-The short text that a Failed Resource keeps. It is written for the user, and it
-is not a developer trace.
+The motive that a Failed Resource keeps. It is one of a closed set of values,
+and the interface turns it into the words that the user reads. The Reason is
+never a sentence and never a developer trace.
 _Avoid_: Error, Message, Trace, Cause
 
 ### Search
