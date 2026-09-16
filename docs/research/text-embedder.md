@@ -665,71 +665,133 @@ the ingest and the query path must make the same one.
 
 ## 9. Published retrieval quality — not measured here
 
-Everything in this section comes from a model card or a paper. **None of it was
-measured on this machine, and none of it is this corpus.** The older cards report
-the MTEB v1 56-task average. Only EmbeddingGemma, Qwen3 and granite R2 report the
-v2 suites, so the two families of numbers are not comparable with each other.
+Every number in this section was read off a model card or a paper on 2026-09-16.
+**None of it was measured on this machine, and none of it is this corpus.** Each
+row names the page it came from. Where a card publishes no aggregate, the row
+says so instead of borrowing a number from somewhere else.
 
-### 9.1 English
+The older cards report the MTEB v1 56-task average. EmbeddingGemma, Qwen3 and
+granite R2 report the v2 suites. Snowflake reports BEIR, MIRACL and CLEF. **The
+three families are not comparable with each other.** Compare inside a block, not
+across blocks.
 
-| Model | params | MTEB v1 average (56) | MTEB Retrieval (15) |
+### 9.1 English, MTEB v1
+
+Read from the card named in the last column.
+
+| Model | MTEB average (56) | Retrieval (15) | source card |
 | --- | --- | --- | --- |
-| all-MiniLM-L6-v2 | 22.7 M | not published | not published |
-| gte-small | 33.4 M | 61.36 | 49.46 |
-| bge-small-en-v1.5 | 33.4 M | 62.17 | 51.68 |
-| e5-small-v2 | 33.4 M | 59.93 | 49.04 |
-| arctic-embed-s | 33.2 M | — | 51.98 |
-| gte-base | 109.5 M | 62.39 | 51.14 |
-| bge-base-en-v1.5 | 109.5 M | 63.55 | 53.25 |
-| arctic-embed-m-v1.5 | 108.9 M | — | 55.14 (54.2 at 256 dims) |
-| nomic-embed-text-v1.5 | 136.7 M | 62.28 at 768; 61.96 at 512; 61.04 at 256; 59.34 at 128; 56.10 at 64 | not published |
-| mxbai-embed-large-v1 | 335.1 M | **64.68** | **54.39** |
+| gte-small | 61.36 | 49.46 | `thenlper/gte-small` |
+| gte-base | 62.39 | 51.14 | `thenlper/gte-small` |
+| bge-small-en-v1.5 | 62.17 | 51.68 | `BAAI/bge-small-en-v1.5` |
+| bge-base-en-v1.5 | 63.55 | 53.25 | `BAAI/bge-small-en-v1.5` |
+| nomic-embed-text-v1 | 62.39 | 52.81 | `mixedbread-ai/mxbai-embed-large-v1` |
+| jina-embeddings-v2-base-en | 60.38 | 47.87 | `mixedbread-ai/mxbai-embed-large-v1` |
+| **mxbai-embed-large-v1** | **64.68** | **54.39** | `mixedbread-ai/mxbai-embed-large-v1` |
+| e5-small-v2 | **no aggregate on the card** | **no aggregate on the card** | `intfloat/e5-small-v2` |
+| multilingual-e5-small / base / large | **no aggregate on the card** | **no aggregate on the card** | `intfloat/multilingual-e5-small` |
 
-`all-MiniLM-L6-v2` publishes no MTEB number of its own. The Sentence Transformers
-static-embedding blog measures it at **0.5623 NanoBEIR NDCG@10**, as the dense
-baseline it compares against.
+### 9.2 English, MTEB Retrieval only, as Snowflake reports it
 
-### 9.2 Multilingual, and the few numbers that separate Spanish
+| Model | params | dim | MTEB Retrieval nDCG@10 | source card |
+| --- | --- | --- | --- | --- |
+| **all-MiniLM-L6-v2** | — | 384 | **41.95** | `Snowflake/snowflake-arctic-embed-s` |
+| arctic-embed-xs | 22 M | 384 | 50.15 | `Snowflake/snowflake-arctic-embed-s` |
+| arctic-embed-s | 33 M | 384 | 51.98 | `Snowflake/snowflake-arctic-embed-s` |
+| arctic-embed-m | 110 M | 768 | 54.90 | `Snowflake/snowflake-arctic-embed-s` |
+| arctic-embed-m-v1.5 | 109 M | 768 | **55.14** | `Snowflake/snowflake-arctic-embed-m-v1.5` |
+| arctic-embed-m-v1.5 at 256 dims | 109 M | 256 | 54.2 | `Snowflake/snowflake-arctic-embed-m-v1.5` |
+| nomic-embed-text-v1.5 at 256 dims | 138 M | 256 | 50.8 | `Snowflake/snowflake-arctic-embed-m-v1.5` |
 
-| Model | params | benchmark | score |
-| --- | --- | --- | --- |
-| multilingual-e5-small | 117.7 M | MIRACL dev nDCG@10 | 60.8 |
-| multilingual-e5-base | 278.0 M | MIRACL dev nDCG@10 | 62.3 |
-| multilingual-e5-large | 559.9 M | MIRACL dev nDCG@10 | 66.5 |
-| arctic-embed-m-v2.0 | 305.4 M | BEIR (15) / MIRACL (4) | 55.4 / 55.2 |
-| arctic-embed-l-v2.0 | 567.8 M | BEIR (15) / MIRACL (4) | 55.6 / 55.8 |
-| embeddinggemma-300m | 302.9 M | MTEB Multilingual v2, mean(Task) | 61.15 at 768; 60.71 at 512; 59.68 at 256; 58.23 at 128 |
-| Qwen3-Embedding-0.6B | 595.8 M | MTEB Multilingual, mean(Task) | **64.33** |
-| granite-embedding-97m-r2 | 97.4 M | MTEB Multilingual Retrieval (18) | 60.3 |
-| granite-embedding-311m-r2 | 311.7 M | MTEB Multilingual Retrieval (18) | **65.2** |
-| granite-embedding-107m-multilingual (R1) | 107.0 M | **MTEB Spanish (2)** | **48.7** |
-| granite-embedding-278m-multilingual (R1) | 278.0 M | **MTEB Spanish (2)** | **52.6** |
-| jina-embeddings-v3 | 572.3 M | Spanish task average | 47.75 |
-| bge-m3 (dense) | ~568 M | **MIRACL es** | **56.1** |
-| multilingual-e5-large | 559.9 M | **MIRACL es** (from the BGE-M3 paper) | **52.9** |
-| paraphrase-multilingual-MiniLM-L12-v2 | 117.7 M | none published | — |
-| jina-embeddings-v2-base-es | 160.9 M | **none published** — the card still says `<!-- TODO: add evaluation results here -->` | — |
+The first row is the only published English retrieval number found for
+`all-MiniLM-L6-v2` anywhere, and it comes from a competitor's card. 41.95 against
+51.98 for a model of the same size. Treat a competitor's table with the caution
+it deserves, but note that no Sentence Transformers page contradicts it.
 
-**Only five Spanish-separated numbers exist in public**, and they come from three
-different papers with three different task sets. IBM publishes MTEB Spanish for
-the R1 granite pair but not for R2. No vendor publishes a Spanish split for
-EmbeddingGemma, Qwen3, arctic v2 or `jina-embeddings-v2-base-es`. Section 8 is
-the only Spanish evidence in this report that was measured at all.
+### 9.3 Matryoshka, as the two vendors that trained for it report it
 
-### 9.3 The models the cards call English-only, in their own words
+| Model | 768 | 512 | 384 | 256 | 128 | 64 | source |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nomic-embed-text-v1.5, MTEB average | 62.28 | 61.96 | — | 61.04 | 59.34 | 56.10 | `nomic-ai/nomic-embed-text-v1.5` |
+| embeddinggemma-300m, MTEB Multilingual v2 mean(Task) | 61.15 | 60.71 | — | 59.68 | 58.23 | — | `onnx-community/embeddinggemma-300m-ONNX` |
+| arctic-embed-m-v2.0, BEIR (15) | 55.4 | — | — | 54.4 | — | — | `Snowflake/snowflake-arctic-embed-m-v2.0` |
+| arctic-embed-l-v2.0, BEIR (15) | — | — | — | 54.3 (from 1024: 55.6) | — | — | `Snowflake/snowflake-arctic-embed-l-v2.0` |
+
+Nomic loses **1.24 points** going from 768 to 256 and **6.18** going to 64.
+EmbeddingGemma loses **1.47** to 256 and **2.92** to 128. Arctic v2 loses about
+**1 point** to 256. These are the only real Matryoshka figures in this report;
+section 7 could not reproduce a difference on twenty passages.
+
+`granite-embedding-311m-multilingual-r2` declares Matryoshka dimensions
+"768, 512, 384, 256, 128" but publishes no score for them. **The 97 M granite R2
+model declares no Matryoshka dimensions at all** — section 7 truncated it anyway,
+as a control.
+
+### 9.4 Multilingual, and the two numbers that separate Spanish
+
+| Model | params | dim | benchmark | score | source card |
+| --- | --- | --- | --- | --- | --- |
+| arctic-embed-m-v2.0 | 305 M | 768 | BEIR (15) / MIRACL (4) / CLEF focused / CLEF full | 55.4 / 55.2 / 51.7 / 53.9 | `Snowflake/snowflake-arctic-embed-m-v2.0` |
+| arctic-embed-l-v2.0 | 568 M | 1024 | the same four | 55.6 / 55.8 / 52.9 / 54.3 | `Snowflake/snowflake-arctic-embed-l-v2.0` |
+| bge-m3 | 568 M | 1024 | BEIR (15) / MIRACL (4) | 48.8 / **56.8** | `Snowflake/snowflake-arctic-embed-l-v2.0` |
+| gte-multilingual-base | 305 M | 768 | BEIR (15) / MIRACL (4) | 51.1 / 52.3 | `Snowflake/snowflake-arctic-embed-l-v2.0` |
+| embeddinggemma-300m | 300 M | 768 | MTEB Multilingual v2 mean(Task) | 61.15 | `onnx-community/embeddinggemma-300m-ONNX` |
+| embeddinggemma-300m | 300 M | 768 | MTEB English v2 mean(Task) | 68.36 | the same |
+| **Qwen3-Embedding-0.6B** | 0.6 B | 1024 | MTEB Multilingual mean(Task) / Retrieval | **64.33** / 64.64 | `Qwen/Qwen3-Embedding-0.6B` |
+| granite-embedding-97m-r2 | 97 M | 384 | MTEB Multilingual Retrieval (18) | 60.3 | `ibm-granite/granite-embedding-97m-multilingual-r2` |
+| **granite-embedding-311m-r2** | 311 M | 768 | MTEB Multilingual Retrieval (18) | **65.2** | the same |
+| granite-embedding-107m-multilingual (R1) | 107 M | 384 | MIRACL (18) / **MTEB Spanish (2)** | 55.9 / **48.7** | `ibm-granite/granite-embedding-107m-multilingual` |
+| granite-embedding-278m-multilingual (R1) | 278 M | 768 | MIRACL (18) / **MTEB Spanish (2)** | 58.3 / **52.6** | `ibm-granite/granite-embedding-278m-multilingual` |
+| jina-embeddings-v2-base-es | 137 M | 768 | per-task MTEB results only, no aggregate and no Spanish split | — | `jinaai/jina-embeddings-v2-base-es` |
+| paraphrase-multilingual-MiniLM-L12-v2 | — | 384 | none published | — | its card |
+
+**Only two Spanish-separated numbers were found anywhere**, and both are IBM's,
+for the **R1** granite pair: 48.7 and 52.6 on MTEB Spanish (2 tasks). IBM does
+not publish a Spanish split for the R2 pair, which is the pair that has an ONNX
+export and that section 8 measured. Nobody publishes a Spanish split for
+EmbeddingGemma, Qwen3, arctic v2 or `jina-embeddings-v2-base-es`.
+
+**Section 8 is therefore the only Spanish evidence in this report that was
+measured at all, and it is twenty passages.**
+
+### 9.5 The static embedding models
+
+From the Sentence Transformers post "Train 400x faster Static Embedding Models":
+
+| Model | NanoBEIR NDCG@10 | speed claim |
+| --- | --- | --- |
+| bge-base-en-v1.5 | 0.6376 | 264.83 sentences/s on CPU |
+| all-MiniLM-L6-v2 | 0.5623 | 1,739.31 sentences/s on CPU |
+| **static-retrieval-mrl-en-v1** | **0.5032** | "**397x** faster on CPU" than all-mpnet-base-v2 |
+| static-similarity-mrl-multilingual-v1 | not a retrieval model | "approximately ~125x faster on CPU" than multilingual-e5-small |
+
+The multilingual one carries its own warning, verbatim: "We want to reiterate
+that this model is not intended for retrieval use cases." Neither model loads in
+`@huggingface/transformers` — see section 3.
+
+### 9.6 What the cards say about language, in their own words
 
 * **gte-small / gte-base**: "This model exclusively caters to English texts, and
   any lengthy texts will be truncated to a maximum of 512 tokens."
 * **e5-small-v2**: "This model only works for English texts."
-* **jina-embeddings-v2-base-en**: "an English, monolingual embedding model".
-* **all-MiniLM-L6-v2**, **nomic-embed-text-v1.5**, **mxbai-embed-large-v1**:
-  `language: en` in the card front matter.
+* **all-MiniLM-L6-v2**: `language: en` in the front matter of
+  `sentence-transformers/all-MiniLM-L6-v2`. The `Xenova` mirror carries no
+  `language` field.
+* **mxbai-embed-large-v1**: one language tag, `en`.
 * **bge-small/base-en-v1.5**: the card's own model list marks them "English".
-* **arctic-embed-s / m-v1.5**: **no explicit statement either way.** There is no
-  `language` tag on the repository. The evidence is indirect: English-only
-  benchmarks, a `bert-base-uncased` lineage, and Snowflake's own v2 release note
-  that v2 is the generation built "with multilingual workloads in mind". Section
-  8 measures the consequence; the card does not state it.
+* **nomic-embed-text-v1.5**: **no `language` field and no sentence about language
+  anywhere on the card.** Section 8 measured 7/10 in Spanish against 10/10 in
+  English.
+* **arctic-embed-s and arctic-embed-m-v1.5**: **no `language` field either.**
+  Their v2 siblings carry **77** language tags each; the v1 models carry none.
+  That difference is the only statement Snowflake makes.
+* **multilingual-e5-small**: **94** language tags, MIT.
+* **paraphrase-multilingual-MiniLM-L12-v2**: **50** language tags.
+* **granite-embedding-97m/311m-r2**: **52** language tags; the card text says
+  "200+ supported" with 52 given enhanced support, and Spanish is in the 52.
+* **embeddinggemma-300m**: "trained with data in 100+ spoken languages".
+* **jina-embeddings-v2-base-es**: no `language` field, but the card names the
+  model bilingual Spanish and English, at 8192 tokens and 137 M parameters.
 
 ## 10. Quantisation: is q8 only smaller, or also worse?
 
@@ -819,6 +881,138 @@ State these plainly at the grilling.
     model card or a paper, not from the live leaderboard.
 12. **Chunking.** This report gives the token ceiling of each model. It does not
     say what chunk size retrieves best.
+
+## 13. Appendix — published evidence, checked against its source
+
+Section 9 gives the scores this report uses. This appendix records the rest of
+what the cards and papers actually say, each item fetched from the raw card
+(`huggingface.co/<id>/raw/main/README.md`), the Hub models API, or the named
+paper. **None of it was measured here.** It is separate from section 9 because
+it is detail a later decision may need and this report does not use.
+
+### 13.1 Matryoshka, as the vendors publish it
+
+Section 7 could not validate Matryoshka truncation with a twenty-passage probe.
+The vendors do publish the cost, and it is small:
+
+| Model | full | 512 | 384 | 256 | 128 | 64 |
+| --- | --- | --- | --- | --- | --- | --- |
+| nomic-embed-text-v1.5, MTEB | 62.28 | 61.96 | — | 61.04 | 59.34 | 56.10 |
+| embeddinggemma-300m, MTEB ML v2 | 61.15 | 60.71 | — | 59.68 | 58.23 | — |
+| granite-311m-r2, MTEB eng v2 | 52.6 | 52.5 | 52.1 | 51.6 | — | — |
+| arctic-embed-m-v2.0, BEIR (15) | 55.4 | — | — | 54.4 | — | — |
+| arctic-embed-m-v2.0, MIRACL (4) | 55.2 | — | — | 54.0 | — | — |
+| arctic-embed-l-v2.0, BEIR (15) | 55.6 | — | — | 54.3 | — | — |
+| static-retrieval-mrl-en-v1, NanoBEIR | 0.5031 | 0.4957 | — | 0.4819 | 0.4622 | 0.4176 |
+
+Cutting to 256 costs about one point on every model that claims MRL. Note the
+disagreement with section 7: the probe here found no cut that preserved the full
+ranking, and found a model claiming no MRL beating one that claims it. The
+published tables measure a different thing — an average over many datasets, not
+the order of twenty passages — so both can be true. **Neither is evidence about
+this corpus.**
+
+Snowflake also publishes a cross-model comparison at 256 dimensions:
+arctic-embed-m-v1.5 54.2, Google gecko 52.4, OpenAI text-embedding-3-large 51.7,
+nomic-embed-text-v1.5 50.8.
+
+### 13.2 Arctic v2 on the European benchmark
+
+The arctic v2 cards carry CLEF columns beside BEIR and MIRACL, all average
+NDCG@10. CLEF is the multilingual European suite, so it is the closest published
+proxy for a Spanish corpus:
+
+| Model | BEIR (15) | MIRACL (4) | CLEF (Focused) | CLEF (Full) |
+| --- | --- | --- | --- | --- |
+| arctic-embed-m-v2.0 | 55.4 | 55.2 | 51.7 | 53.9 |
+| arctic-embed-l-v2.0 | 55.6 | 55.8 | 52.9 | 54.3 |
+| multilingual-e5-base | 51.4 | 54.0 | 43.0 | 34.6 |
+| bge-m3 | 48.8 | 56.8 | 40.8 | 41.3 |
+| arctic-embed-m (v1) | 54.9 | 24.9 | 34.4 | 29.1 |
+
+The v1 row is the sharpest number in this report about the v1 family's language
+reach: 24.9 on MIRACL against 54.9 on BEIR. Section 9.3 recorded that the v1
+cards make no language statement; this is Snowflake's own measurement of the
+consequence.
+
+### 13.3 granite R2, throughput as IBM publishes it
+
+`granite-embedding-97m-multilingual-r2` 2,534 documents/second,
+`granite-embedding-311m-multilingual-r2` 1,828. Both ModernBERT, 32,768-token
+context, Apache-2.0, 200+ languages with "enhanced support for 52", Spanish
+among them. Both ship an official `onnx/model.onnx` and an
+`onnx/model_quint8_avx2.onnx` — the file name that defeats `dtype: 'q8'` in
+section 2.
+
+### 13.4 Licence text, quoted
+
+**`jinaai/jina-embeddings-v3`**, from its card:
+
+> "jina-embeddings-v3 is listed on AWS & Azure. If you need to use it beyond
+> those platforms or on-premises within your company, note that the models is
+> licensed under CC BY-NC 4.0."
+
+CC BY-NC 4.0 §2(a)(1) grants the licence "for NonCommercial purposes only", and
+§1 defines NonCommercial as "not primarily intended for or directed towards
+commercial advantage or monetary compensation".
+
+**`google/embeddinggemma-300m`** carries the `gemma` licence tag. The Gemma Terms
+of Use, §3.2 Use Restrictions, in full:
+
+> "You must not use any of the Gemma Services: for the restricted uses set forth
+> in the Gemma Prohibited Use Policy at ai.google.dev/gemma/prohibited_use_policy
+> ("Prohibited Use Policy"), which is hereby incorporated by reference into this
+> Agreement; or in violation of applicable laws and regulations."
+
+That is the complete list, and commerce is not in it, so **this is not a
+non-commercial licence**. Two duties come with it: §3.1 obliges you to pass the
+§3.2 restrictions downstream as an enforceable term and to ship a notice reading
+"Gemma is provided under and subject to the Gemma Terms of Use found at
+ai.google.dev/gemma/terms"; and §3.2 closes with Google reserving "the right to
+restrict (remotely or otherwise) usage". §3.3 states "Google claims no rights in
+Outputs you generate using Gemma". Usable commercially, not OSI open source, and
+the `google/` repository is gated.
+
+**`snowflake-arctic-embed`**, from its card: "Arctic is licensed under the
+Apache-2. The released models can be used for commercial purposes free of
+charge."
+
+### 13.5 The static models, and what they would buy
+
+Section 3 records that neither static model loads in Transformers.js. The
+published gain is large enough to be worth writing down. From the Sentence
+Transformers static-embeddings post, comparing `static-retrieval-mrl-en-v1`
+against `all-mpnet-base-v2`: "87.4% as performant", "24x faster on GPU", "397x
+faster on CPU" — 107,419 sentences/second on CPU against 270. NanoBEIR NDCG@10:
+all-MiniLM-L6-v2 0.5623, bge-base-en-v1.5 0.6376, static-retrieval-mrl-en-v1
+0.5032, BM25 0.4518.
+
+`static-similarity-mrl-multilingual-v1` reaches "92.3% for STS, 95.52% for Pair
+Classification and 86.52% for Classification relative to multilingual-e5-small",
+at "~125x faster on CPU". Its card carries a warning that settles it for this
+project: **"this model is not intended for retrieval use cases."**
+
+### 13.6 Numbers that could not be confirmed
+
+* **The live MTEB leaderboard.** The space renders client-side; a fetch returns
+  only "Fetching metadata from the HF Docker repository". Every score in this
+  report comes from a card or a paper.
+* **MTEB(eng, v2) for the older models.** bge, gte, e5-small-v2, nomic, arctic
+  v1, jina v2, mxbai and all-MiniLM publish MTEB v1 56-task averages only. Do
+  not put them in one table with the v2 numbers from EmbeddingGemma, Qwen3 and
+  granite R2.
+* **`bge-m3` parameter count** is not published by BAAI. The ~568 M figure comes
+  from Snowflake's card.
+* **`paraphrase-multilingual-MiniLM-L12-v2`** publishes no benchmark of any
+  kind. Confirmed specs only: 117.7 M parameters, 384 dimensions, 49 languages
+  including Spanish, Apache-2.0, and the 128-token `max_seq_length` of 5.6.
+* **`jina-embeddings-v2-base-es` and `-base-en`** publish no evaluation. Both
+  cards still carry the literal comment `<!-- TODO: add evaluation results
+  here -->`. The `-base-es` licence was checked twice, on the card front matter
+  and on the API, and is genuinely Apache-2.0 on an ungated repository.
+* **`nomic-embed-text-v2-moe`** has no official ONNX and was not scored.
+* **`Alibaba-NLP/gte-multilingual-base`** is Apache-2.0 with 305.4 M parameters
+  and **no `onnx/` folder in its repository**.
 
 ## 12. Sources
 
