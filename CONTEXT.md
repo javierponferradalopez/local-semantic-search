@@ -97,6 +97,13 @@ The pointer that a Result shows. It is made from a Resource and a Locator. The
 system composes it to show it, and does not store it.
 _Avoid_: Reference, Source
 
+**Floor**:
+The least similarity that the best Match must reach, for a group to say that it
+found something. Each model has its own Floor, and a Floor never crosses from one
+model to the other. It decides only the empty answer, and it does not remove
+Results from the list.
+_Avoid_: Threshold, Cutoff, Minimum score
+
 ### Models
 
 **Text model**:
