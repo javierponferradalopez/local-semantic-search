@@ -742,18 +742,20 @@ passage first over the twenty-passage pool.
 tower that crashed above 16 tokens. Nothing of that kind happened: every q8
 export ran to its full window and returned finite numbers.
 
-**Two models change their answers, though.** `nomic-embed-text-v1.5` agrees with
-its own fp32 vector at only 0.9638, loses two of twenty top-1 answers, and — the
+**One model does change its answers.** `nomic-embed-text-v1.5` agrees with its
+own fp32 vector at only 0.9638, loses two of twenty top-1 answers, and — the
 number that matters here — drops from **7/10 to 5/10 on the Spanish task** of
-section 8. `jina-embeddings-v2-base-es` has the lowest agreement of all, 0.9478,
-although its ranking survived on this small set.
+section 8. That is the same shape of fault #7 recorded for SigLIP2 q8: not a
+crash, a worse ranking. `jina-embeddings-v2-base-es` has the lowest agreement of
+all, 0.9478, but its ranking survived on this small set, so it is a warning and
+not a result.
 
 **The full ranking never survives quantisation.** `identical ranking` is 0 or
 close to 0 for almost every model. The first row is stable; the order below it
 is not. This is the same shape of result as section 7.
 
-Note that q8 is not faster on this CPU. See section 6. Its value is download
-size and memory.
+And q8 buys no speed on this CPU. See section 6. What it buys is a smaller
+download and less memory.
 
 ## 11. What I did not test
 
