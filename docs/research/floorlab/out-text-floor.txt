@@ -1,0 +1,62 @@
+model Xenova/all-MiniLM-L6-v2 fp32
+load 92 ms
+passages 20, index 57 ms
+
+bucket      top1    top2    median  min     correct  winner     query
+present     0.6683  0.3585  0.0084  -0.0707  yes      coffee-1   "what water temperature should I use to brew coffee"
+present     0.6908  0.6193  0.0338  -0.0524  yes      coffee-4   "how fine should I grind for espresso"
+present     0.6390  0.3081  0.0874  -0.0804  yes      coffee-3   "how do I keep coffee beans fresh"
+present     0.6424  0.1565  0.0231  -0.0696  yes      pg-1       "how do I enable the vector type in postgres"
+present     0.4452  0.1874  0.0405  -0.0761  yes      pg-2       "does an approximate index lose results"
+present     0.6573  0.4388  0.0756  -0.0593  yes      pg-4       "what removes dead rows in postgres"
+present     0.4963  0.3395  -0.0246  -0.1202  yes      bike-1     "when should I replace a bicycle chain"
+present     0.5153  0.1756  -0.0123  -0.1144  yes      bike-2     "my brake lever feels soft"
+present     0.4577  0.1821  0.0021  -0.1329  yes      bike-3     "how much air should I put in my tyres"
+present     0.7757  0.3216  0.0632  -0.1084  yes      food-1     "how do I make a spanish omelette"
+present     0.6400  0.2921  0.0041  -0.1272  yes      food-2     "should I stir paella while it cooks"
+present     0.4970  0.3457  -0.0282  -0.1097  yes      food-3     "cold tomato soup recipe"
+present     0.5254  0.3614  0.0004  -0.0822  yes      rent-1     "when do I get my deposit back"
+present     0.6316  0.6070  0.0534  -0.0711  yes      rent-2     "how much notice to end the lease"
+present     0.5501  0.4775  0.0023  -0.1475  yes      rent-3     "who pays for repairs in a rented flat"
+present-es  0.2367  0.2353  0.0522  -0.1119  NO       food-1     "a qué temperatura debe estar el agua para hacer café"
+present-es  0.3847  0.3576  0.0520  -0.0980  yes      coffee-4   "qué molienda uso para el espresso"
+present-es  0.2513  0.2345  0.0599  -0.1111  NO       food-1     "cómo conservo los granos de café frescos"
+present-es  0.4735  0.2484  0.0653  -0.0617  yes      pg-1       "cómo activo el tipo vector en postgres"
+present-es  0.2684  0.1379  0.0179  -0.1119  NO       food-1     "un índice aproximado pierde resultados"
+present-es  0.3606  0.2979  0.0480  -0.0151  yes      pg-1       "qué elimina las filas muertas en postgres"
+present-es  0.1101  0.0817  0.0372  -0.0673  NO       food-1     "cuándo debo cambiar la cadena de la bicicleta"
+present-es  0.2326  0.1568  -0.0015  -0.1084  NO       food-1     "la maneta del freno está blanda"
+present-es  0.2720  0.1008  0.0465  -0.0943  NO       food-1     "cuánta presión pongo en las ruedas"
+present-es  0.3413  0.2104  0.0405  -0.0507  yes      food-1     "cómo se hace una tortilla de patatas"
+present-es  0.2876  0.2666  -0.0017  -0.0965  yes      food-2     "hay que remover la paella mientras se cocina"
+present-es  0.2108  0.1249  0.0419  -0.0822  yes      food-1     "receta de sopa fría de tomate"
+present-es  0.2267  0.1736  0.0260  -0.0753  NO       food-1     "cuándo me devuelven la fianza"
+present-es  0.1333  0.0920  0.0258  -0.1097  NO       food-1     "cuánto preaviso hay para terminar el contrato"
+present-es  0.1673  0.1366  0.0131  -0.1274  NO       food-2     "quién paga las reparaciones en un piso alquilado"
+absent      0.1210  0.0755  0.0090  -0.0640  -        coffee-1   "what are the side effects of ibuprofen"
+absent      0.1509  0.1151  -0.0005  -0.0909  -        pg-1       "how far is the nearest star from the sun"
+absent      0.0774  0.0662  -0.0199  -0.1084  -        coffee-4   "who won the world cup in 1986"
+absent      0.2440  0.2030  0.0379  -0.0436  -        bike-1     "how do I tune a violin"
+absent      0.1009  0.0616  -0.0170  -0.1059  -        rent-2     "how do I register a trademark in the european union"
+absent      0.1286  0.1172  -0.0198  -0.1157  -        food-4     "what visa do I need to visit japan"
+absent      0.1514  0.1228  0.0156  -0.0765  -        rent-1     "how often should I feed a kitten"
+absent      0.1360  0.1310  0.0090  -0.0730  -        bike-3     "what is the difference between a stock and a bond"
+noise       0.0668  0.0652  -0.0029  -0.0842  -        bike-4     "asdfghjkl"
+noise       0.1189  0.1157  -0.0034  -0.0761  -        food-3     "qwertyuiop zxcvbnm"
+noise       0.1353  0.1253  0.0122  -0.1441  -        rent-4     "xkcd blorp fnord"
+noise       0.0483  0.0390  -0.0146  -0.0823  -        food-1     "#### ???? ####"
+noise       0.1511  0.0770  0.0189  -0.0840  -        food-3     "aaaaaaaaaaaa"
+
+--- top-1 cosine by bucket ---
+present     n=15 min 0.4452 median 0.6316 max 0.7757
+present-es  n=15 min 0.1101 median 0.2513 max 0.4735
+absent      n=8 min 0.0774 median 0.1360 max 0.2440
+noise       n=5 min 0.0483 median 0.1189 max 0.1511
+
+right subject at rank 1: english 15/15, spanish 6/15
+
+--- the gap ---
+present     worst present 0.4452  best no-answer 0.2440  gap 0.2011  present below best no-answer: 0/15
+present-es  worst present 0.1101  best no-answer 0.2440  gap -0.1339  present below best no-answer: 7/15
+
+query embed median 1.1 ms
