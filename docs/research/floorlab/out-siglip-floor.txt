@@ -1,0 +1,114 @@
+model onnx-community/siglip2-base-patch16-224-ONNX fp32
+load 388031 ms
+images 16
+
+index 0.7750 s total, 48.3 ms median per image
+
+bucket      variant      top1    top2    median  min     margin  winner                query
+present     en-caption   0.1283  0.0295  -0.0139  -0.0436  0.0988  000000039769.jpg      "a photo of two cats"
+present     es-caption   0.1145  0.0308  -0.0129  -0.0382  0.0837  000000039769.jpg      "una foto de dos gatos"
+present     en-bare      0.1254  0.0549  0.0228  0.0024  0.0705  000000039769.jpg      "cats"
+present     es-bare      0.1191  0.0476  0.0094  -0.0169  0.0715  000000039769.jpg      "gatos"
+present     en-caption   0.1430  0.0723  -0.0091  -0.0289  0.0707  000000000285.jpg      "a photo of a brown bear"
+present     es-caption   0.1325  0.0575  -0.0181  -0.0432  0.0749  000000000285.jpg      "una foto de un oso pardo"
+present     en-bare      0.1338  0.0997  0.0274  0.0143  0.0341  000000000285.jpg      "bear"
+present     es-bare      0.1290  0.0912  0.0247  -0.0029  0.0379  000000000285.jpg      "oso"
+present     en-caption   0.1390  0.0547  -0.0032  -0.0295  0.0843  000000000632.jpg      "a photo of a bedroom"
+present     es-caption   0.1070  0.0489  -0.0097  -0.0365  0.0581  000000000632.jpg      "una foto de un dormitorio"
+present     en-bare      0.1139  0.0557  -0.0006  -0.0109  0.0582  000000000632.jpg      "bedroom"
+present     es-bare      0.0817  0.0473  -0.0107  -0.0425  0.0344  000000000632.jpg      "dormitorio"
+present     en-caption   0.1641  0.0182  -0.0073  -0.0335  0.1459  000000000724.jpg      "a photo of a stop sign"
+present     es-caption   0.1400  0.0103  -0.0028  -0.0406  0.1296  000000000724.jpg      "una foto de una señal de stop"
+present     en-bare      0.1608  0.0411  0.0110  -0.0057  0.1198  000000000724.jpg      "stop sign"
+present     es-bare      0.1285  0.0196  -0.0030  -0.0339  0.1089  000000000724.jpg      "señal de stop"
+present     en-caption   0.1614  0.0859  0.0106  -0.0186  0.0755  000000000776.jpg      "a photo of teddy bears"
+present     es-caption   0.1405  0.0691  -0.0022  -0.0361  0.0715  000000000776.jpg      "una foto de ositos de peluche"
+present     en-bare      0.1495  0.0893  0.0179  0.0033  0.0602  000000000776.jpg      "teddy bears"
+present     es-bare      0.1341  0.0682  -0.0053  -0.0271  0.0660  000000000776.jpg      "ositos de peluche"
+present     en-caption   0.1314  0.0851  0.0116  -0.0197  0.0463  000000000785.jpg      "a photo of a person who skis"
+present     es-caption   0.1306  0.0924  0.0086  -0.0435  0.0381  000000000785.jpg      "una foto de una persona esquiando"
+present     en-bare      0.1371  0.0668  0.0165  -0.0031  0.0703  000000000785.jpg      "skiing"
+present     es-bare      0.1298  0.0694  0.0064  -0.0157  0.0604  000000000785.jpg      "esquí"
+present     en-caption   0.1077  0.0473  -0.0117  -0.0345  0.0604  000000000802.jpg      "a photo of a kitchen"
+present     es-caption   0.0877  0.0464  -0.0117  -0.0356  0.0413  000000000802.jpg      "una foto de una cocina"
+present     en-bare      0.1251  0.0294  -0.0098  -0.0308  0.0957  000000000802.jpg      "kitchen"
+present     es-bare      0.0932  0.0360  -0.0050  -0.0394  0.0572  000000000802.jpg      "cocina"
+present     en-caption   0.1271  0.0439  0.0058  -0.0359  0.0832  000000000872.jpg      "a photo of a baseball game"
+present     es-caption   0.1086  0.0459  0.0015  -0.0464  0.0626  000000000872.jpg      "una foto de un partido de béisbol"
+present     en-bare      0.1356  0.0626  0.0176  -0.0064  0.0730  000000000872.jpg      "baseball"
+present     es-bare      0.1082  0.0659  0.0088  -0.0188  0.0424  000000000872.jpg      "béisbol"
+present     en-caption   0.1216  0.0764  0.0041  -0.0546  0.0453  000000000885.jpg      "a photo of a man who plays tennis"
+present     es-caption   0.1013  0.0574  -0.0216  -0.0868  0.0439  000000000885.jpg      "una foto de un hombre jugando al tenis"
+present     en-bare      0.1311  0.1133  0.0237  -0.0049  0.0178  000000001000.jpg      "tennis"
+present     es-bare      0.1229  0.1024  0.0198  -0.0035  0.0205  000000001000.jpg      "tenis"
+present     en-caption   0.1266  0.0719  -0.0071  -0.0477  0.0547  000000001296.jpg      "a photo of a woman with a mobile telephone"
+present     es-caption   0.1161  0.0707  -0.0097  -0.0564  0.0455  000000001296.jpg      "una foto de una mujer con un teléfono móvil"
+present     en-bare      0.0891  0.0520  0.0148  -0.0139  0.0371  000000001296.jpg      "mobile telephone"
+present     es-bare      0.0834  0.0529  0.0030  -0.0201  0.0305  000000001296.jpg      "teléfono móvil"
+present     en-caption   0.1385  0.0340  -0.0269  -0.0535  0.1045  000000001503.jpg      "a photo of a computer on a desk"
+present     es-caption   0.1303  0.0172  -0.0299  -0.0632  0.1131  000000001503.jpg      "una foto de un ordenador en un escritorio"
+present     en-bare      0.1279  0.0474  0.0216  0.0015  0.0804  000000001503.jpg      "computer"
+present     es-bare      0.1175  0.0343  0.0100  -0.0135  0.0831  000000001503.jpg      "ordenador"
+present     en-caption   0.1540  0.0260  -0.0254  -0.0835  0.1280  000000001490.jpg      "a photo of a man on a paddleboard"
+present     es-caption   0.1583  0.0088  -0.0407  -0.1175  0.1495  000000001490.jpg      "una foto de un hombre en una tabla de paddle surf"
+present     en-bare      0.1479  0.0404  0.0093  -0.0169  0.1075  000000001490.jpg      "paddleboard"
+present     es-bare      0.1507  0.0488  -0.0073  -0.0459  0.1019  000000001490.jpg      "paddle surf"
+absent      en-caption   0.0265  0.0241  -0.0096  -0.0321  0.0024  000000001268.jpg      "a photo of a giraffe"
+absent      es-caption   0.0280  0.0230  -0.0057  -0.0406  0.0050  000000000285.jpg      "una foto de una jirafa"
+absent      en-bare      0.0322  0.0313  0.0136  -0.0088  0.0009  000000001268.jpg      "giraffe"
+absent      es-bare      0.0422  0.0302  0.0073  -0.0302  0.0121  000000001490.jpg      "jirafa"
+absent      en-caption   0.0171  0.0139  -0.0154  -0.0715  0.0032  000000000872.jpg      "a photo of an aeroplane that takes off"
+absent      es-caption   0.0367  0.0252  0.0028  -0.0333  0.0115  000000000724.jpg      "una foto de un avión despegando"
+absent      en-bare      0.0416  0.0376  0.0126  -0.0249  0.0040  000000001353.jpg      "aeroplane"
+absent      es-bare      0.0296  0.0260  0.0050  -0.0350  0.0037  000000001353.jpg      "avión"
+absent      en-caption   0.0297  0.0200  0.0071  -0.0178  0.0097  000000000632.jpg      "a photo of a chessboard"
+absent      es-caption   0.0191  0.0076  -0.0052  -0.0272  0.0115  000000001000.jpg      "una foto de un tablero de ajedrez"
+absent      en-bare      0.0554  0.0524  0.0219  0.0065  0.0030  000000001353.jpg      "chess"
+absent      es-bare      0.0464  0.0378  0.0101  -0.0138  0.0086  000000001000.jpg      "ajedrez"
+absent      en-caption   0.0350  0.0136  -0.0038  -0.0561  0.0214  000000000632.jpg      "a photo of a violin"
+absent      es-caption   0.0217  0.0180  -0.0071  -0.0641  0.0037  000000000632.jpg      "una foto de un violín"
+absent      en-bare      0.0428  0.0426  0.0132  -0.0224  0.0002  000000000632.jpg      "violin"
+absent      es-bare      0.0336  0.0276  0.0049  -0.0407  0.0060  000000001353.jpg      "violín"
+absent      en-caption   0.0183  0.0160  -0.0185  -0.0532  0.0024  000000000724.jpg      "a photo of a volcano that erupts"
+absent      es-caption   -0.0108  -0.0135  -0.0446  -0.0729  0.0027  000000000724.jpg      "una foto de un volcán en erupción"
+absent      en-bare      0.0542  0.0464  0.0191  -0.0085  0.0079  000000001425.jpg      "volcano"
+absent      es-bare      0.0415  0.0353  0.0054  -0.0096  0.0062  000000001425.jpg      "volcán"
+absent      en-caption   0.0103  -0.0074  -0.0417  -0.0743  0.0177  000000001490.jpg      "a photo of a submarine under the sea"
+absent      es-caption   0.0106  0.0079  -0.0278  -0.0660  0.0027  000000001490.jpg      "una foto de un submarino bajo el mar"
+absent      en-bare      0.0485  0.0474  0.0025  -0.0323  0.0011  000000001353.jpg      "submarine"
+absent      es-bare      0.0520  0.0455  0.0043  -0.0342  0.0065  000000001490.jpg      "submarino"
+absent      en-caption   0.0392  0.0081  -0.0193  -0.0490  0.0311  000000001425.jpg      "a photo of a wedding cake"
+absent      es-caption   0.0214  -0.0002  -0.0250  -0.0730  0.0216  000000001425.jpg      "una foto de una tarta de boda"
+absent      en-bare      0.0436  0.0128  -0.0133  -0.0371  0.0309  000000001425.jpg      "wedding cake"
+absent      es-bare      0.0197  0.0014  -0.0303  -0.0705  0.0184  000000001425.jpg      "tarta de boda"
+absent      en-caption   0.0306  0.0039  -0.0475  -0.0868  0.0266  000000001503.jpg      "a photo of a microscope in a laboratory"
+absent      es-caption   0.0286  -0.0151  -0.0594  -0.0963  0.0437  000000001503.jpg      "una foto de un microscopio en un laboratorio"
+absent      en-bare      0.0520  0.0355  0.0111  -0.0126  0.0165  000000001503.jpg      "microscope"
+absent      es-bare      0.0469  0.0198  0.0021  -0.0328  0.0271  000000001503.jpg      "microscopio"
+noise       noise        0.0850  0.0815  0.0582  0.0478  0.0036  000000001296.jpg      "asdfghjkl"
+noise       noise        0.0845  0.0814  0.0631  0.0550  0.0031  000000001503.jpg      "qwertyuiop zxcvbnm"
+noise       noise        0.0508  0.0415  0.0128  -0.0158  0.0093  000000001503.jpg      "xkcd blorp fnord"
+noise       noise        0.0824  0.0736  0.0611  0.0436  0.0088  000000001000.jpg      "lorem ipsum dolor sit amet"
+noise       noise        0.0734  0.0710  0.0504  0.0297  0.0024  000000001296.jpg      "#### ???? ####"
+
+--- top-1 cosine by bucket and variant ---
+present  all          n=48 min 0.0817 median 0.1290 max 0.1641
+         en-caption   n=12 min 0.1077 median 0.1385 max 0.1641
+         es-caption   n=12 min 0.0877 median 0.1303 max 0.1583
+         en-bare      n=12 min 0.0891 median 0.1338 max 0.1608
+         es-bare      n=12 min 0.0817 median 0.1229 max 0.1507
+absent   all          n=32 min -0.0108 median 0.0336 max 0.0554
+         en-caption   n=8 min 0.0103 median 0.0297 max 0.0392
+         es-caption   n=8 min -0.0108 median 0.0217 max 0.0367
+         en-bare      n=8 min 0.0322 median 0.0485 max 0.0554
+         es-bare      n=8 min 0.0197 median 0.0422 max 0.0520
+noise    all          n=5 min 0.0508 median 0.0824 max 0.0850
+
+--- the gap ---
+all          worst present 0.0817  best absent 0.0850  gap -0.0033  present below best absent: 2/48
+en-caption   worst present 0.1077  best absent 0.0392  gap 0.0685  present below best absent: 0/12
+es-caption   worst present 0.0877  best absent 0.0367  gap 0.0510  present below best absent: 0/12
+en-bare      worst present 0.0891  best absent 0.0554  gap 0.0337  present below best absent: 0/12
+es-bare      worst present 0.0817  best absent 0.0520  gap 0.0297  present below best absent: 0/12
+
+query embed median 11.7 ms
