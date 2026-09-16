@@ -1,0 +1,107 @@
+--- learned scalars, read from the checkpoint ---
+google/siglip2-base-patch16-224
+  logit_scale 4.724453  exp(logit_scale) 112.6689
+  logit_bias  -16.771725
+  p = 0.5 at cosine 0.148859
+google/siglip-base-patch16-224
+  logit_scale 4.764997  exp(logit_scale) 117.3308
+  logit_bias  -12.932437
+  p = 0.5 at cosine 0.110222
+
+--- check against the published number ---
+Hugging Face SigLIP docs: "31.9% that image 0 is 'a photo of 2 cats'"
+  "a photo of 2 cats"  cosine 0.0979  logit -1.4497  p 19.00%
+  "a photo of 2 dogs"  cosine 0.0184  logit -10.7716  p 0.00%
+
+--- SigLIP2 base/16 fp32: cosine and calibrated probability ---
+bucket      variant      cosine  logit     p            query
+present     en-caption   0.1283   -2.3171       8.97%  "a photo of two cats"
+present     es-caption   0.1145   -3.8706       2.04%  "una foto de dos gatos"
+present     en-bare      0.1254   -2.6378       6.67%  "cats"
+present     es-bare      0.1191   -3.3512       3.39%  "gatos"
+present     en-caption   0.1430   -0.6614      34.04%  "a photo of a brown bear"
+present     es-caption   0.1325   -1.8471      13.62%  "una foto de un oso pardo"
+present     en-bare      0.1338   -1.6973      15.48%  "bear"
+present     es-bare      0.1290   -2.2332       9.68%  "oso"
+present     en-caption   0.1390   -1.1105      24.78%  "a photo of a bedroom"
+present     es-caption   0.1070   -4.7107       0.89%  "una foto de un dormitorio"
+present     en-bare      0.1139   -3.9392       1.91%  "bedroom"
+present     es-bare      0.0817   -7.5699       0.05%  "dormitorio"
+present     en-caption   0.1641    1.7202      84.82%  "a photo of a stop sign"
+present     es-caption   0.1400   -1.0024      26.85%  "una foto de una señal de stop"
+present     en-bare      0.1608    1.3484      79.39%  "stop sign"
+present     es-bare      0.1285   -2.2975       9.13%  "señal de stop"
+present     en-caption   0.1614    1.4157      80.47%  "a photo of teddy bears"
+present     es-caption   0.1405   -0.9380      28.13%  "una foto de ositos de peluche"
+present     en-bare      0.1495    0.0694      51.74%  "teddy bears"
+present     es-bare      0.1341   -1.6618      15.95%  "ositos de peluche"
+present     en-caption   0.1314   -1.9641      12.30%  "a photo of a person who skis"
+present     es-caption   0.1306   -2.0612      11.29%  "una foto de una persona esquiando"
+present     en-bare      0.1371   -1.3257      20.99%  "skiing"
+present     es-bare      0.1298   -2.1450      10.48%  "esquí"
+present     en-caption   0.1077   -4.6396       0.96%  "a photo of a kitchen"
+present     es-caption   0.0877   -6.8875       0.10%  "una foto de una cocina"
+present     en-bare      0.1251   -2.6806       6.41%  "kitchen"
+present     es-bare      0.0932   -6.2677       0.19%  "cocina"
+present     en-caption   0.1271   -2.4566       7.90%  "a photo of a baseball game"
+present     es-caption   0.1086   -4.5391       1.06%  "una foto de un partido de béisbol"
+present     en-bare      0.1356   -1.4960      18.30%  "baseball"
+present     es-bare      0.1082   -4.5758       1.02%  "béisbol"
+present     en-caption   0.1216   -3.0704       4.43%  "a photo of a man who plays tennis"
+present     es-caption   0.1013   -5.3638       0.47%  "una foto de un hombre jugando al tenis"
+present     en-bare      0.1311   -2.0044      11.87%  "tennis"
+present     es-bare      0.1229   -2.9214       5.11%  "tenis"
+present     en-caption   0.1266   -2.5027       7.57%  "a photo of a woman with a mobile telephone"
+present     es-caption   0.1161   -3.6874       2.44%  "una foto de una mujer con un teléfono móvil"
+present     en-bare      0.0891   -6.7378       0.12%  "mobile telephone"
+present     es-bare      0.0834   -7.3751       0.06%  "teléfono móvil"
+present     en-caption   0.1385   -1.1667      23.75%  "a photo of a computer on a desk"
+present     es-caption   0.1303   -2.0911      11.00%  "una foto de un ordenador en un escritorio"
+present     en-bare      0.1279   -2.3641       8.60%  "computer"
+present     es-bare      0.1175   -3.5370       2.83%  "ordenador"
+present     en-caption   0.1540    0.5805      64.12%  "a photo of a man on a paddleboard"
+present     es-caption   0.1583    1.0676      74.41%  "una foto de un hombre en una tabla de paddle surf"
+present     en-bare      0.1479   -0.1117      47.21%  "paddleboard"
+present     es-bare      0.1507    0.2105      55.24%  "paddle surf"
+absent      en-caption   0.0265  -13.7840       0.00%  "a photo of a giraffe"
+absent      es-caption   0.0280  -13.6116       0.00%  "una foto de una jirafa"
+absent      en-bare      0.0322  -13.1455       0.00%  "giraffe"
+absent      es-bare      0.0422  -12.0117       0.00%  "jirafa"
+absent      en-caption   0.0171  -14.8433       0.00%  "a photo of an aeroplane that takes off"
+absent      es-caption   0.0367  -12.6335       0.00%  "una foto de un avión despegando"
+absent      en-bare      0.0416  -12.0864       0.00%  "aeroplane"
+absent      es-bare      0.0296  -13.4332       0.00%  "avión"
+absent      en-caption   0.0297  -13.4242       0.00%  "a photo of a chessboard"
+absent      es-caption   0.0191  -14.6142       0.00%  "una foto de un tablero de ajedrez"
+absent      en-bare      0.0554  -10.5316       0.00%  "chess"
+absent      es-bare      0.0464  -11.5434       0.00%  "ajedrez"
+absent      en-caption   0.0350  -12.8266       0.00%  "a photo of a violin"
+absent      es-caption   0.0217  -14.3217       0.00%  "una foto de un violín"
+absent      en-bare      0.0428  -11.9465       0.00%  "violin"
+absent      es-bare      0.0336  -12.9821       0.00%  "violín"
+absent      en-caption   0.0183  -14.7054       0.00%  "a photo of a volcano that erupts"
+absent      es-caption   -0.0108  -17.9863       0.00%  "una foto de un volcán en erupción"
+absent      en-bare      0.0542  -10.6610       0.00%  "volcano"
+absent      es-bare      0.0415  -12.0943       0.00%  "volcán"
+absent      en-caption   0.0103  -15.6118       0.00%  "a photo of a submarine under the sea"
+absent      es-caption   0.0106  -15.5786       0.00%  "una foto de un submarino bajo el mar"
+absent      en-bare      0.0485  -11.3085       0.00%  "submarine"
+absent      es-bare      0.0520  -10.9162       0.00%  "submarino"
+absent      en-caption   0.0392  -12.3530       0.00%  "a photo of a wedding cake"
+absent      es-caption   0.0214  -14.3605       0.00%  "una foto de una tarta de boda"
+absent      en-bare      0.0436  -11.8550       0.00%  "wedding cake"
+absent      es-bare      0.0197  -14.5503       0.00%  "tarta de boda"
+absent      en-caption   0.0306  -13.3288       0.00%  "a photo of a microscope in a laboratory"
+absent      es-caption   0.0286  -13.5509       0.00%  "una foto de un microscopio en un laboratorio"
+absent      en-bare      0.0520  -10.9101       0.00%  "microscope"
+absent      es-bare      0.0469  -11.4872       0.00%  "microscopio"
+noise       noise        0.0850   -7.1937       0.08%  "asdfghjkl"
+noise       noise        0.0845   -7.2500       0.07%  "qwertyuiop zxcvbnm"
+noise       noise        0.0508  -11.0506       0.00%  "xkcd blorp fnord"
+noise       noise        0.0824   -7.4827       0.06%  "lorem ipsum dolor sit amet"
+noise       noise        0.0734   -8.4983       0.02%  "#### ???? ####"
+
+--- how many top-1 hits pass p > 0.5 (the model's own neutral point) ---
+present  7/48 pass   p min 0.05% median 9.68% max 84.82%
+absent   0/32 pass   p min 0.00% median 0.00% max 0.00%
+noise    0/5 pass   p min 0.00% median 0.06% max 0.08%

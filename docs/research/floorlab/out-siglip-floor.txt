@@ -1,8 +1,8 @@
 model onnx-community/siglip2-base-patch16-224-ONNX fp32
-load 388031 ms
+load 1511 ms
 images 16
 
-index 0.7750 s total, 48.3 ms median per image
+index 1.5134 s total, 96.1 ms median per image
 
 bucket      variant      top1    top2    median  min     margin  winner                query
 present     en-caption   0.1283  0.0295  -0.0139  -0.0436  0.0988  000000039769.jpg      "a photo of two cats"
@@ -111,4 +111,4 @@ es-caption   worst present 0.0877  best absent 0.0367  gap 0.0510  present below
 en-bare      worst present 0.0891  best absent 0.0554  gap 0.0337  present below best absent: 0/12
 es-bare      worst present 0.0817  best absent 0.0520  gap 0.0297  present below best absent: 0/12
 
-query embed median 11.7 ms
+query embed median 13.8 ms
