@@ -1,0 +1,11 @@
+{
+  "name": "embedlab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway experiment for research #14. One .mjs file per probe.",
+  "license": "ISC",
+  "dependencies": {
+    "@huggingface/transformers": "4.3.0"
+  }
+}
