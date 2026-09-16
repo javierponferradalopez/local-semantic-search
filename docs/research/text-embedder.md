@@ -240,7 +240,7 @@ The probe feeds the graph a sequence of a known length and records what happens.
 | gte-small / gte-base | 512 | 512 | 512 | crash at 513 |
 | e5-small-v2 | 512 | 512 | 512 | crash at 513 |
 | multilingual-e5 small / base / large | 512 | 512 | 512 | crash at 513 |
-| paraphrase-multilingual-MiniLM-L12-v2 | 512 | 512 | 512 | crash at 513 |
+| paraphrase-multilingual-MiniLM-L12-v2 | 512 | 512 | 512 | crash at 513 — **but see 5.6** |
 | arctic-embed-s / m-v1.5 | 512 | 512 | 512 | crash at 513 |
 | mxbai-embed-large-v1 | 512 | 512 | 512 | crash at 513 |
 | **jina-embeddings-v2-base-es** | **512** | **512** | **4096 and more** | — |
@@ -296,6 +296,23 @@ instead. `tokenizer(text, { padding: 'max_length', truncation: true })` pads to
 `model_max_length`, so it produces a **32,768-token** sequence for
 `arctic-embed-m-v2.0` and granite R2, and a **131,072-token** sequence for
 Qwen3-Embedding. That is not a window you want to pay for by accident.
+
+### 5.6 A third fault: the window the library never reads
+
+`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` declares
+`model_max_length: 512` in `tokenizer_config.json`, which is what the table in
+5.1 measured, and its graph really does accept 512 tokens. But the model also
+ships a `sentence_bert_config.json`, and that file says **`max_seq_length: 128`**.
+
+Sentence-Transformers reads that file. **Transformers.js does not.** So the
+model was trained and is published to work at 128 tokens, and this library will
+happily embed 512 of them without a word. The vector is finite and looks
+ordinary. It is simply outside the regime the model was built for.
+
+This is a third shape of the same fault, after 5.3 and 5.5: the number that
+governs the model is written in a file the runtime does not open. Any chunk
+ceiling taken from `model_max_length` alone inherits this risk for every model
+that carries a `sentence_bert_config.json`.
 
 ### 5.5 A window that is declared is not a window that is tested
 
