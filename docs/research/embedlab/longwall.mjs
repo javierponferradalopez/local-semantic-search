@@ -34,11 +34,21 @@ function inputsOfLength(n) {
   return o;
 }
 
+// Attention is quadratic, so a long window is not free. Stop as soon as one
+// step costs more than the budget: a window that takes a minute per chunk is
+// not a window this product can use, and the next step would take four times
+// as long again.
+const BUDGET_MS = 12000;
+
 for (const n of [2048, 4096, 8192, 8193, 16384, 32768]) {
   try {
     const t0 = performance.now();
     const r = await model(inputsOfLength(n));
     const ms = Math.round(performance.now() - t0);
+    if (ms > BUDGET_MS) {
+      out.steps[n] = `ok in ${ms} ms, over the ${BUDGET_MS} ms budget, stopped here`;
+      break;
+    }
     const t = r.sentence_embedding ?? r.last_hidden_state ?? r.token_embeddings ?? Object.values(r)[0];
     let finite = true;
     for (let i = 0; i < Math.min(t.data.length, 4096); i++) {

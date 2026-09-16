@@ -13,6 +13,7 @@ const toks = read('out_tokens.jsonl');
 const lang = read('out_lang.jsonl');
 const mrl = read('out_matryoshka.jsonl');
 const quant = read('out_quant.jsonl');
+const wall = read('out_longwall.jsonl');
 
 console.log('## Loaded\n');
 console.log('| key | dtype | ok | class | dim | maxpos | tokenizer max | warm load ms | error |');
@@ -22,11 +23,11 @@ for (const d of load) {
 }
 
 console.log('\n## Speed\n');
-console.log('| key | dtype | tokens/chunk | batch 1 | batch 8 | batch 32 | per chunk @32 | query ms | RSS after load MB |');
-console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+console.log('| key | dtype | tokens/chunk | forward @1 | forward @32 | forward per chunk | embed per chunk | chunks/s | query fwd | query embed | RSS MB |');
+console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
 for (const d of speed) {
-  if (!d.batch_1) { console.log(`| ${d.key} | ${d.dtype} | FAILED | | | | | | |`); continue; }
-  console.log(`| ${d.key} | ${d.dtype} | ${d.tokens_per_chunk} | ${d.batch_1.median} | ${d.batch_8.median} | ${d.batch_32.median} | ${d.per_chunk_32} | ${d.query.median} | ${d.rss_after_load_mb} |`);
+  if (!d.forward_1) { console.log(`| ${d.key} | ${d.dtype} | FAILED | | | | | | | | |`); continue; }
+  console.log(`| ${d.key} | ${d.dtype} | ${d.tokens_per_chunk} | ${d.forward_1.median} | ${d.forward_32.median} | ${d.forward_per_chunk_32} | ${d.embed_per_chunk_32} | ${d.chunks_per_second_forward_32} | ${d.query_forward.median} | ${d.query_embed.median} | ${d.rss_after_load_mb} |`);
 }
 
 console.log('\n## Token window\n');
@@ -63,4 +64,11 @@ console.log('| --- | --- | --- | --- | --- | --- | --- |');
 for (const d of quant) {
   if (!d.identical_ranking) { console.log(`| ${d.key} | | FAILED | | | | |`); continue; }
   console.log(`| ${d.key} | ${d.dim} | ${d.long_text_cos} | ${d.identical_ranking} | ${d.same_top1} | ${d.hits_at_1_fp32} | ${d.hits_at_1_q8} |`);
+}
+
+console.log('\n## Long window wall\n');
+for (const d of wall) {
+  if (!d.steps) continue;
+  console.log(`\n### ${d.key} ${d.dtype} tokenizer=${d.model_max_length} maxpos=${d.max_position_embeddings}`);
+  for (const [n, v] of Object.entries(d.steps)) console.log(`  ${n}: ${v}`);
 }
