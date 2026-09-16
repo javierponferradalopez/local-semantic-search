@@ -1,0 +1,52 @@
+cached minilm q8
+cached minilm fp32
+cached bge-small q8
+cached bge-small fp32
+cached bge-base fp32
+cached gte-small fp32
+cached bge-base q8
+cached gte-small q8
+cached gte-base fp32
+cached e5-small-v2 fp32
+cached e5-small-v2 q8
+cached gte-base q8
+cached me5-small fp32
+cached nomic-1.5 q8
+cached me5-small q8
+cached nomic-1.5 fp32
+cached arctic-m-1.5 fp32
+cached arctic-s q8
+cached arctic-s fp32
+Unknown model class "gte", attempting to construct from base class.
+cached me5-base q8
+cached arctic-m-2.0 q8
+cached arctic-m-1.5 q8
+cached pmlm-l12 q8
+cached jina-v2-es q8
+cached arctic-l-2.0 q8
+failed jina-v2-small-en fp32: Could not locate file: "https://huggingface.co/jinaai/jina-embeddings-v2-small-en/resolve/main/onnx/model.onnx".
+failed static-en fp32: Cannot read properties of undefined (reading 'tokenizer_class')
+failed static-en q8: Cannot read properties of undefined (reading 'tokenizer_class')
+failed static-multi fp32: Cannot read properties of undefined (reading 'tokenizer_class')
+failed static-multi q8: Cannot read properties of undefined (reading 'tokenizer_class')
+Unknown model class "null", attempting to construct from base class.
+failed jina-v3 fp32: External data path validation failed for initializer: roberta.embeddings.word_embeddings.parametrizations.weight.0.lora_B. Error: tensorprotoutils.cc:461 ValidateExternalDataPathFromDir External data 
+cached embgemma q8
+cached pmlm-l12 fp32
+cached qwen3-0.6b q8
+failed granite-107m fp32: Could not locate file: "https://huggingface.co/ibm-granite/granite-embedding-107m-multilingual/resolve/main/onnx/model.onnx".
+Unknown model class "new", attempting to construct from base class.
+failed gte-multi fp32: Could not locate file: "https://huggingface.co/Alibaba-NLP/gte-multilingual-base/resolve/main/onnx/model.onnx".
+cached jina-v2-es fp32
+Unknown model class "model2vec", attempting to construct from base class.
+cached me5-base fp32
+cached embgemma fp32
+cached mxbai-large q8
+cached potion-multi fp32
+failed granite-r2-97m q8: Could not locate file: "https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2/resolve/main/onnx/model_quantized.onnx".
+failed granite-r2-311m q8: Could not locate file: "https://huggingface.co/ibm-granite/granite-embedding-311m-multilingual-r2/resolve/main/onnx/model_quantized.onnx".
+cached granite-r2-97m fp32
+cached granite-r2-311m fp32
+cached me5-large q8
+cached me5-large q8
+cached granite-r2-311m fp32

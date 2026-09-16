@@ -1,0 +1,14 @@
+--- minilm
+--- bge-small
+--- bge-base
+--- gte-small
+--- gte-base
+--- e5-small-v2
+--- me5-small
+--- me5-base
+--- nomic-1.5
+--- arctic-s
+--- arctic-m-1.5
+--- pmlm-l12
+--- jina-v2-es
+--- embgemma

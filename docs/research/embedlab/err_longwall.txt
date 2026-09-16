@@ -1,0 +1,95 @@
+--- nomic-1.5 q8
+--- nomic-1.5 q8
+--- nomic-1.5 q8
+--- arctic-m-2.0 q8
+Unknown model class "gte", attempting to construct from base class.
+2026-09-16 14:35:52.745 node[19830:2286296] 2026-09-16 14:35:52.745008 [E:onnxruntime:, sequential_executor.cc:671 ExecuteKernel] Non-zero status code returned while running Gather node. Name:'/0/auto_model/embeddings/word_embeddings/Gather' Status Message: /Users/cloudtest/vss/_work/1/s/onnxruntime/core/framework/op_kernel.cc:83 virtual OrtValue *onnxruntime::OpKernelContext::OutputMLValue(int, const TensorShape &) [ONNXRuntimeError] : 1 : FAIL : Shape mismatch attempting to re-use buffer. {1,8192,768} != {1,8193,768}. Validate usage of dim_value (values should be > 0) and dim_param (all values with the same string should equate to the same size) in shapes in the model.
+An error occurred during model execution: "Error: Non-zero status code returned while running Gather node. Name:'/0/auto_model/embeddings/word_embeddings/Gather' Status Message: /Users/cloudtest/vss/_work/1/s/onnxruntime/core/framework/op_kernel.cc:83 virtual OrtValue *onnxruntime::OpKernelContext::OutputMLValue(int, const TensorShape &) [ONNXRuntimeError] : 1 : FAIL : Shape mismatch attempting to re-use buffer. {1,8192,768} != {1,8193,768}. Validate usage of dim_value (values should be > 0) and dim_param (all values with the same string should equate to the same size) in shapes in the model.
+".
+Inputs given to model: {
+  input_ids: {
+    type: 'int64',
+    dims: [ 1, 8193 ],
+    location: 'cpu',
+    data: BigInt64Array(8193) [
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n, 965n, 2980n, 23n, 965n, 2980n, 23n, 965n, 2980n,
+      23n,
+      ... 8093 more items
+    ]
+  },
+  attention_mask: {
+    type: 'int64',
+    dims: [ 1, 8193 ],
+    location: 'cpu',
+    data: BigInt64Array(8193) [
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n,
+      ... 8093 more items
+    ]
+  }
+}
+--- arctic-l-2.0 q8
+--- jina-v2-es q8
+--- embgemma q8
+2026-09-16 14:36:50.827 node[20934:2292792] 2026-09-16 14:36:50.827290 [E:onnxruntime:, sequential_executor.cc:671 ExecuteKernel] Non-zero status code returned while running RotaryEmbedding node. Name:'/model/layers.0/attn/k_rotary/RotaryEmbedding' Status Message: Updating cos_cache and sin_cache in RotaryEmbedding is not currently supported
+An error occurred during model execution: "Error: Non-zero status code returned while running RotaryEmbedding node. Name:'/model/layers.0/attn/k_rotary/RotaryEmbedding' Status Message: Updating cos_cache and sin_cache in RotaryEmbedding is not currently supported".
+Inputs given to model: {
+  input_ids: {
+    type: 'int64',
+    dims: [ 1, 4096 ],
+    location: 'cpu',
+    data: BigInt64Array(4096) [
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,  53209n, 236743n,  53209n, 236743n,  53209n,
+      236743n,  53209n, 236743n,  53209n, 236743n,  53209n, 236743n,
+       53209n, 236743n,
+      ... 3996 more items
+    ]
+  },
+  attention_mask: {
+    type: 'int64',
+    dims: [ 1, 4096 ],
+    location: 'cpu',
+    data: BigInt64Array(4096) [
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n, 1n,
+      1n, 1n, 1n, 1n,
+      ... 3996 more items
+    ]
+  }
+}
+--- granite-r2-97m fp32
