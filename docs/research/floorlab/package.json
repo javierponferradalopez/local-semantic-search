@@ -1,0 +1,11 @@
+{
+  "name": "floorlab",
+  "version": "1.0.0",
+  "description": "Throwaway probes for issue #19 -- deciding that a search found nothing.",
+  "private": true,
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "@huggingface/transformers": "^4.2.0"
+  }
+}

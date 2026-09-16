@@ -1,0 +1,9 @@
+# This directory is a throwaway experiment, kept only so the report's numbers
+# can be reproduced. Never commit what `npm i` or a model download creates:
+# Transformers.js caches model weights under node_modules, and that reached
+# several gigabytes on the run that produced this report.
+node_modules/
+package-lock.json
+.cache/
+images/
+results.html
