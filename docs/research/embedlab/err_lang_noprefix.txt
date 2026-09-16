@@ -1,0 +1,6 @@
+--- e5-small-v2 fp32
+--- me5-small q8
+--- bge-small fp32
+--- arctic-s fp32
+--- nomic-1.5 fp32
+--- embgemma q8

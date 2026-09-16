@@ -471,9 +471,9 @@ only when it finishes.
 
 ## 7. Dimensions, and whether Matryoshka truncation really works
 
-Five models claim Matryoshka Representation Learning: `nomic-embed-text-v1.5`
-(64…768), `arctic-embed-m-v1.5` and `-l-v2.0` (256), `embeddinggemma-300m`
-(128/256/512) and the granite R2 pair (128…768). The probe cuts the vector,
+Six models claim Matryoshka Representation Learning: `nomic-embed-text-v1.5`
+(64…768), `arctic-embed-m-v1.5` and `arctic-embed-l-v2.0` (256),
+`embeddinggemma-300m` (128/256/512) and the two granite R2 models (128…768). The probe cuts the vector,
 renormalises it, and re-ranks the twenty passages of section 8. Every other
 model is cut the same way as a control, to show what a plain cut costs.
 
@@ -515,9 +515,10 @@ width below the full vector, for every model. The top-1 answer survives; the
 order below it always moves. If the product ever shows more than the first row,
 a cut vector changes what the user sees.
 
-One number stands out: granite R2 at 97 M has a **mean cosine shift of 0.35** at
-128 dimensions, ten times larger than most models, while still keeping 16 of 20
-top-1 answers. The scores move a long way; the order mostly does not. A `Floor`
+One number stands out, from the `mean_abs_score_shift` field of
+`out_matryoshka.jsonl`: granite R2 at 97 M shifts its cosines by **0.35** on
+average at 128 dimensions, ten times more than most models, while still keeping
+16 of 20 top-1 answers. The scores move a long way; the order mostly does not. A `Floor`
 constant tuned at 384 dimensions would be meaningless at 128.
 
 ## 8. Spanish and English — a probe, not a benchmark
@@ -591,8 +592,8 @@ misses a user would notice.
 **Cross-language is where the English-only models collapse.** For an English
 query over Spanish passages, `all-MiniLM-L6-v2` scored **2/10**. Its mean
 reciprocal rank was 0.475, which means the right passage was usually second or
-third, not first. This matters if the corpus holds both languages, which a
-personal corpus in Spain does.
+third, not first. This matters as soon as one corpus holds both languages, and
+this report cannot say how often that happens in the owner's files.
 
 **A similarity model is not a retrieval model.**
 `paraphrase-multilingual-MiniLM-L12-v2` is perfect at en→es (10/10) and good at
@@ -616,15 +617,34 @@ and the bottom of a twenty-passage list was 0.63 for `all-MiniLM-L6-v2` and
 already fixed that the `Floor` is a gate and not a filter, but the number itself
 will have to be found again for whichever model is chosen.
 
-### 8.4 The prefix is not optional
+### 8.4 The prefix, and what forgetting it costs
 
-Six of these models ask for a prefix: `query: ` / `passage: ` for the E5 family,
-`Represent this sentence for searching relevant passages: ` for BGE and Arctic
-v1, `search_query: ` / `search_document: ` for Nomic,
+Several of these models ask for a prefix: `query: ` / `passage: ` for the E5
+family, `Represent this sentence for searching relevant passages: ` for BGE and
+Arctic v1, `search_query: ` / `search_document: ` for Nomic,
 `task: search result | query: ` for EmbeddingGemma, and an instruction line for
 Qwen3. Every number in section 8.2 was measured **with** the prefix the model
-card asks for. `lang.mjs` accepts a `noprefix` argument to measure the cost of
-forgetting it.
+card asks for.
+
+`lang.mjs` takes a `noprefix` argument, which drops it. Measured on six models:
+
+| Model | dtype | es→es with / without | en→en with / without | es→en with / without | mixed with / without |
+| --- | --- | --- | --- | --- | --- |
+| e5-small-v2 | fp32 | 6/10 → **7/10** | 10/10 → 10/10 | 5/10 → 5/10 | 6/10 → **7/10** |
+| bge-small-en-v1.5 | fp32 | 7/10 → **8/10** | 10/10 → **9/10** | 3/10 → **4/10** | 7/10 → **8/10** |
+| arctic-embed-s | fp32 | 7/10 → **6/10** | 10/10 → 10/10 | 5/10 → **2/10** | 7/10 → **6/10** |
+| nomic-embed-text-v1.5 | fp32 | 7/10 → 7/10 | 10/10 → 10/10 | 5/10 → 5/10 | 7/10 → 7/10 |
+| multilingual-e5-small | q8 | 10/10 → **9/10** | 10/10 → 10/10 | 9/10 → 9/10 | 10/10 → **9/10** |
+| embeddinggemma-300m | q8 | 10/10 → 10/10 | 10/10 → 10/10 | 10/10 → 10/10 | 9/10 → **10/10** |
+
+The prefix moves the answer, and it does not always move it the right way. It
+helps `multilingual-e5-small` and `arctic-embed-s`, it does nothing for
+`nomic-embed-text-v1.5`, and on `e5-small-v2`, `bge-small` and the mixed pool of
+`embeddinggemma-300m` the **no-prefix** run scored higher. On twenty queries a difference
+of one is noise, so read this as "the prefix is not free and is not obviously
+worth it on a set this small", not as a result. The honest statement is that
+prefixes must be tested on the real corpus, and that whichever choice is made,
+the ingest and the query path must make the same one.
 
 ## 9. Published retrieval quality — not measured here
 
@@ -673,7 +693,7 @@ baseline it compares against.
 | paraphrase-multilingual-MiniLM-L12-v2 | 117.7 M | none published | — |
 | jina-embeddings-v2-base-es | 160.9 M | **none published** — the card still says `<!-- TODO: add evaluation results here -->` | — |
 
-**Only four Spanish-separated numbers exist in public**, and they come from three
+**Only five Spanish-separated numbers exist in public**, and they come from three
 different papers with three different task sets. IBM publishes MTEB Spanish for
 the R1 granite pair but not for R2. No vendor publishes a Spanish split for
 EmbeddingGemma, Qwen3, arctic v2 or `jina-embeddings-v2-base-es`. Section 8 is
