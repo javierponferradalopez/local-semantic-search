@@ -42,6 +42,8 @@ _Avoid_: Position, Coordinates, Offset, Anchor
 
 **Vector**:
 The list of numbers that a model calculates for a Chunk, a Picture or a Query.
+A Vector knows which model calculated it. Two Vectors that come from different
+models are never compared.
 _Avoid_: Embedding as a noun. Use "embed" only as a verb.
 
 **Ingest**:
