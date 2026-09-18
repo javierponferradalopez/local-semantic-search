@@ -27,6 +27,17 @@ A shared kernel holds what both halves truly use: `Vector`, and the
 `TextEmbedder` and `ImageEmbedder` ports. Ingestion embeds Chunks and Pictures,
 Search embeds the Query, and the model is the same one.
 
+**Amended by
+[How the two models load and stay warm](https://github.com/javierponferradalopez/local-semantic-search/issues/15).**
+`core/shared/` is a module with the same folders as a context, and it holds the
+**adapters** of those two ports as well, in its `infrastructure/`. Any other
+home makes a false dependency: an adapter inside `ingestion/` would make
+`search/` import from `ingestion/` to wire itself, and an adapter inside
+`src/api/` would make the HTTP edge the owner of the models, which the future
+agent has no edge to ask. `core/shared/use-cases/` does not exist. A use case
+that appears there is a sign that something is misplaced, because a use case is
+a capability and the capabilities are two.
+
 ## Consequences
 
 - **`Locator` stays in `ingestion/`.** The read model of a search carries the
