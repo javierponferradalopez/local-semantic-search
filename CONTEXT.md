@@ -15,7 +15,7 @@ _Avoid_: File, Asset, Document, Item
 
 **Content type**:
 The kind of content that a Resource holds. It is one of a closed set of values
-that the system names. It decides the shape of the Locator, and it decides how
+that the system names. It decides whether a Chunk has a page, and it decides how
 the Resource is ingested. An extension is not a Content type: an extension is
 one way to find out which Content type a File holds.
 _Avoid_: MIME type, Format, Extension, Kind
@@ -25,20 +25,15 @@ The bytes that the user selected on their disk, and the copy that a Resource
 owns. A File is never a record. The record is the Resource.
 
 **Chunk**:
-A passage of text that comes from a Resource, with its Vector and its Locator.
-A Chunk is always text.
+A passage of text that comes from a Resource, with its Vector. Its text is never
+empty. It carries the page it came from when its Content type has pages, and no
+page when the Content type has none. A Chunk is always text.
 _Avoid_: Fragment, Passage, Segment, Piece
 
 **Picture**:
 An image that comes from a Resource. The vision model embeds it whole. It has a
-Vector and a Locator, and it has no text.
+Vector, and it has no text.
 _Avoid_: Image (that word is a content type of a Resource), Visual, Depiction
-
-**Locator**:
-The place, inside its Resource, where a Chunk or a Picture was. Its shape
-changes with the content type: a page and a box in a PDF, an offset in a text
-file.
-_Avoid_: Position, Coordinates, Offset, Anchor
 
 **Vector**:
 The list of numbers that a model calculates for a Chunk, a Picture or a Query.
@@ -99,8 +94,8 @@ The act that takes a Query and gives back Results. It is one operation, and it
 looks for Chunks and for Pictures.
 
 **Match**:
-One Chunk or one Picture that a Query found, with its score and its Locator. It
-exists only for that Query.
+One Chunk or one Picture that a Query found, with its score. It exists only for
+that Query.
 _Avoid_: Hit, Candidate, Neighbour
 
 **Result**:
@@ -109,7 +104,8 @@ from its best Match.
 _Avoid_: Row, Item, Answer
 
 **Citation**:
-The pointer that a Result shows. It is made from a Resource and a Locator. The
+The pointer that a Result shows. It is made from a Resource and, when the
+Resource has pages, the page of the Chunk that matched. The
 system composes it to show it, and does not store it.
 _Avoid_: Reference, Source
 
