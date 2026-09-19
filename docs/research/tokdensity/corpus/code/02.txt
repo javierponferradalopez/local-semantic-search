@@ -1,0 +1,74 @@
+-- Schema for the local search index. SQLite 3.45+.
+PRAGMA journal_mode = WAL;
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS documents (
+  id            TEXT PRIMARY KEY,
+  source_path   TEXT NOT NULL UNIQUE,
+  mime_type     TEXT NOT NULL,
+  size_bytes    INTEGER NOT NULL CHECK (size_bytes >= 0),
+  sha256        TEXT NOT NULL,
+  language      TEXT,
+  created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+  indexed_at    TEXT
+);
+
+CREATE TABLE IF NOT EXISTS chunks (
+  id            TEXT PRIMARY KEY,
+  document_id   TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  ordinal       INTEGER NOT NULL,
+  start         INTEGER NOT NULL,
+  end           INTEGER NOT NULL,
+  text          TEXT NOT NULL,
+  token_count   INTEGER,
+  UNIQUE (document_id, ordinal),
+  CHECK (end > start)
+);
+
+CREATE TABLE IF NOT EXISTS embeddings (
+  chunk_id      TEXT PRIMARY KEY REFERENCES chunks(id) ON DELETE CASCADE,
+  model_id      TEXT NOT NULL,
+  dims          INTEGER NOT NULL,
+  vector        BLOB NOT NULL,
+  created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_document ON chunks(document_id, ordinal);
+CREATE INDEX IF NOT EXISTS idx_embeddings_model ON embeddings(model_id);
+CREATE INDEX IF NOT EXISTS idx_documents_language ON documents(language) WHERE language IS NOT NULL;
+
+-- Documents that still need embedding, oldest first.
+CREATE VIEW IF NOT EXISTS pending_chunks AS
+SELECT c.id, c.document_id, c.ordinal, c.text
+FROM chunks c
+LEFT JOIN embeddings e ON e.chunk_id = c.id
+WHERE e.chunk_id IS NULL
+ORDER BY c.document_id, c.ordinal;
+
+-- Per-document statistics used by /health and by the admin page.
+CREATE VIEW IF NOT EXISTS document_stats AS
+SELECT
+  d.id,
+  d.source_path,
+  d.language,
+  COUNT(c.id)                          AS chunk_count,
+  COALESCE(SUM(LENGTH(c.text)), 0)     AS chars,
+  COALESCE(SUM(c.token_count), 0)      AS tokens,
+  COUNT(e.chunk_id)                    AS embedded,
+  MAX(e.created_at)                    AS last_embedded_at
+FROM documents d
+LEFT JOIN chunks c ON c.document_id = d.id
+LEFT JOIN embeddings e ON e.chunk_id = c.id
+GROUP BY d.id;
+
+-- Remove everything that belongs to a re-uploaded file before re-indexing.
+DELETE FROM documents WHERE source_path = :source_path AND sha256 <> :sha256;
+
+-- Nearest neighbours are computed in the application; this only fetches candidates.
+SELECT c.id, c.document_id, c.start, c.end, e.vector
+FROM embeddings e
+JOIN chunks c ON c.id = e.chunk_id
+JOIN documents d ON d.id = c.document_id
+WHERE e.model_id = :model_id
+  AND (:language IS NULL OR d.language = :language)
+  AND (:document_id IS NULL OR d.id = :document_id);

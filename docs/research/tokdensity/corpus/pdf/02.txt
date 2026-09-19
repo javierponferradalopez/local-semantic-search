@@ -1,0 +1,34 @@
+3. Method
+3.1 Data collection
+The measurements were taken between March and September of 2024 at
+twelve sites along the northern coast, chosen to cover the full range of
+exposure from sheltered estuary to open shore. At each site a transect
+was laid perpendicular to the waterline and sampled at five-metre inter-
+vals from the high-water mark to the lowest point reachable at spring low
+tide. Sediment cores of 30 cm were extracted with a stainless-steel cor-
+er, sealed on site and transported to the laboratory within six hours.
+3.2 Laboratory analysis
+Each core was divided into three horizons (0–10, 10–20 and 20–30 cm) and
+dried at 60 °C for 48 hours before grain-size analysis by laser diffrac-
+tion. Organic content was estimated by loss on ignition at 550 °C. Sub-
+samples of 5 g were digested in nitric acid for trace-metal determina-
+tion by inductively coupled plasma mass spectrometry, following the pro-
+cedure described by Martínez et al. (2019) with the modifications not-
+ed in Appendix B.
+3.3 Statistical treatment
+Differences between sites and horizons were tested with a two-way analy-
+sis of variance after confirming normality with the Shapiro–Wilk test and
+homogeneity of variance with Levene's test. Where the assumptions were
+not met, the Kruskal–Wallis test was applied instead. Post-hoc compari-
+sons used Tukey's honest significant difference at a family-wise error
+rate of 0.05. All analyses were performed in R version 4.3.2.
+3.4 Limitations
+The sampling design does not capture seasonal variation within a single
+year, since each site was visited only once. Two of the twelve sites (S7
+and S11) could not be sampled at the lowest interval because of unsafe
+conditions on the day of the visit, and the corresponding cells are re-
+ported as missing rather than interpolated. The laser-diffraction meth-
+od tends to underestimate the clay fraction relative to sieve-and-pipette
+methods, so absolute values should be compared with earlier studies with
+caution, although relative comparisons within this dataset are unaffect-
+ed.

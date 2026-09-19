@@ -1,0 +1,35 @@
+# Release notes — version 2.14.0
+
+## Highlights
+
+- **Search** now accepts a `lang` filter. See the [query reference](https://docs.example.com/reference/search/query-parameters#lang-filter-and-locale-fallback).
+- The ingestion worker retries failed downloads with exponential backoff (base 500 ms, max 6 attempts).
+- Dropped support for Node 18. The minimum is now Node 20.11.
+
+## Breaking changes
+
+| Area | Before | After | Migration |
+|------|--------|-------|-----------|
+| `POST /documents` | Returned `201` with the body | Returns `202` with a `Location` header | Poll `GET /documents/{id}` |
+| `chunk.size` | Default 1200 | Default 1000 | Set it explicitly if you depend on the old default |
+| `embedder.model` | Free string | Enum of known ids | See the [model list](https://docs.example.com/guides/embedders/supported-models-and-quantisation-levels) |
+
+## Bug fixes
+
+- Fixed a race in the SQLite writer that could drop the last chunk of a document when two uploads finished in the same tick. Issue [#412](https://github.com/example-org/local-search/issues/412).
+- Hyphenated words at PDF line ends are no longer split into two tokens by the normaliser.
+- The `/health` endpoint reports `degraded` instead of `ok` while the model is still loading.
+
+## Known issues
+
+1. Very long URLs in Markdown headings are truncated in the preview pane. Tracked in [#437](https://github.com/example-org/local-search/issues/437?utm_source=release-notes&utm_medium=markdown&utm_campaign=2.14.0).
+2. On macOS 14 the first query after a cold start takes up to 3 s.
+
+## Upgrade
+
+```sh
+npm install @example/local-search@2.14.0
+npx local-search migrate --to 2.14
+```
+
+Read the full changelog at https://github.com/example-org/local-search/compare/v2.13.2...v2.14.0 and the upgrade guide at https://docs.example.com/guides/upgrading/from-2.13-to-2.14#step-3-rebuild-the-index-with-the-new-chunk-size.

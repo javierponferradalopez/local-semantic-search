@@ -1,0 +1,68 @@
+import { AutoTokenizer, AutoModel, type PreTrainedTokenizer, type PreTrainedModel } from '@huggingface/transformers';
+
+export type Pooling = 'mean' | 'cls';
+
+export interface EmbedderOptions {
+  modelId: string;
+  pooling: Pooling;
+  passagePrefix?: string;
+  queryPrefix?: string;
+  maxTokens?: number;
+}
+
+export interface Embedder {
+  embedPassages(texts: readonly string[]): Promise<Float32Array[]>;
+  embedQuery(text: string): Promise<Float32Array>;
+  readonly dims: number;
+}
+
+export async function createEmbedder(opts: EmbedderOptions): Promise<Embedder> {
+  const tokenizer: PreTrainedTokenizer = await AutoTokenizer.from_pretrained(opts.modelId);
+  const model: PreTrainedModel = await AutoModel.from_pretrained(opts.modelId, { dtype: 'q8' });
+  const maxTokens = opts.maxTokens ?? 512;
+
+  async function run(texts: readonly string[], prefix = ''): Promise<Float32Array[]> {
+    const inputs = tokenizer(texts.map((t) => prefix + t), {
+      padding: true,
+      truncation: true,
+      max_length: maxTokens,
+    });
+    const { last_hidden_state } = await model(inputs);
+    const [batch, seq, dims] = last_hidden_state.dims as [number, number, number];
+    const data = last_hidden_state.data as Float32Array;
+    const mask = inputs.attention_mask.data as BigInt64Array;
+    const out: Float32Array[] = [];
+    for (let b = 0; b < batch; b++) {
+      const v = new Float32Array(dims);
+      if (opts.pooling === 'cls') {
+        v.set(data.subarray(b * seq * dims, b * seq * dims + dims));
+      } else {
+        let n = 0;
+        for (let s = 0; s < seq; s++) {
+          if (mask[b * seq + s] === 0n) continue;
+          n++;
+          const off = (b * seq + s) * dims;
+          for (let d = 0; d < dims; d++) v[d] += data[off + d];
+        }
+        for (let d = 0; d < dims; d++) v[d] /= n;
+      }
+      out.push(normalise(v));
+    }
+    return out;
+  }
+
+  const probe = await run(['probe']);
+  return {
+    dims: probe[0].length,
+    embedPassages: (texts) => run(texts, opts.passagePrefix ?? ''),
+    embedQuery: async (text) => (await run([text], opts.queryPrefix ?? ''))[0],
+  };
+}
+
+function normalise(v: Float32Array): Float32Array {
+  let s = 0;
+  for (const x of v) s += x * x;
+  const inv = 1 / Math.sqrt(s || 1);
+  for (let i = 0; i < v.length; i++) v[i] *= inv;
+  return v;
+}

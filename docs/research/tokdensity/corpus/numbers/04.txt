@@ -1,0 +1,36 @@
+Quarterly sales report — Q4 2025
+All figures in EUR unless noted. Prepared 2026-01-15.
+
+Region      Oct 2025      Nov 2025      Dec 2025      Q4 total      Q3 total      QoQ %    YoY %
+North       412,380.55    398,120.10    521,904.70    1,332,405.35  1,210,887.90   +10.0    +14.2
+South       288,905.00    301,442.85    366,018.20      956,366.05    901,230.15    +6.1     +8.7
+East        175,210.40    169,880.95    212,335.60      557,426.95    588,102.30    -5.2     -1.9
+West        356,700.25    372,015.80    448,912.05    1,177,628.10  1,095,443.60    +7.5    +11.3
+Online      602,118.90    655,340.25    891,207.45    2,148,666.60  1,702,911.05   +26.2    +38.9
+Total     1,835,315.10  1,896,799.95  2,440,378.00    6,172,493.05  5,498,575.00   +12.3    +17.6
+
+Units sold
+Region      Oct      Nov      Dec      Q4       Avg price
+North       8,412    8,105    10,633   27,150   49.08
+South       6,021    6,290    7,588    19,899   48.06
+East        3,655    3,540    4,412    11,607   48.02
+West        7,290    7,611    9,155    24,056   48.95
+Online      12,911   14,080   19,240   46,231   46.48
+Total       38,289   39,626   51,028   128,943  47.87
+
+Returns and refunds
+Month       Returns   Return rate   Refunded amount   Avg refund
+Oct 2025    1,102     2.88 %        52,411.60         47.56
+Nov 2025    1,188     3.00 %        56,905.20         47.90
+Dec 2025    1,940     3.80 %        91,102.35         46.96
+Q4 2025     4,230     3.28 %        200,419.15        47.38
+
+Top 5 SKUs by revenue
+SKU            Description                 Units    Revenue       Margin %
+PX-2412-S      DC/DC 12 V 2.5 A            9,812    259,036.80    31.4
+CB-USB-C-2M    Cable USB-C 2 m             41,205   205,613.00    58.2
+PS-65W-GAN     Charger 65 W GaN            6,140    202,620.00    27.9
+HD-2TB-EXT     External drive 2 TB         2,905    188,825.00    18.6
+KB-MEC-ES      Keyboard mechanical ES      2,388    166,925.20    35.0
+
+Exchange rates applied: USD 1.0000 = EUR 0.9218 (avg Q4); GBP 1.0000 = EUR 1.1704 (avg Q4).

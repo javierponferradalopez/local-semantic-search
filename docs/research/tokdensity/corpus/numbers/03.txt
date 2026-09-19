@@ -1,0 +1,31 @@
+Extracto de cuenta — Cuenta corriente ES76 0049 1500 0412 3456 7890
+Periodo: 01/02/2026 – 28/02/2026
+Saldo inicial: 4.312,77 €
+
+Fecha       F. valor    Concepto                                   Importe      Saldo
+01/02/2026  01/02/2026  Nómina ACME CONSULTING SL                  +2.845,00 €  7.157,77 €
+02/02/2026  02/02/2026  Recibo alquiler 02/2026                    -1.150,00 €  6.007,77 €
+03/02/2026  03/02/2026  Compra tarjeta 4512 **** 7781 SUPERMERCADO    -87,43 €  5.920,34 €
+05/02/2026  05/02/2026  Recibo luz ENERGÍA NORTE ref 2026020500781    -84,30 €  5.836,04 €
+05/02/2026  05/02/2026  Recibo agua ref 2026-T1-0093                 -31,15 €  5.804,89 €
+07/02/2026  07/02/2026  Bizum enviado a +34 6** *** 412              -25,00 €  5.779,89 €
+09/02/2026  09/02/2026  Compra tarjeta FARMACIA CENTRAL              -14,95 €  5.764,94 €
+10/02/2026  10/02/2026  Transferencia a ES21 0081 0234 5600 1122 3344 -500,00 €  5.264,94 €
+12/02/2026  12/02/2026  Compra tarjeta GASOLINERA A-6 KM 112,5       -62,18 €  5.202,76 €
+14/02/2026  14/02/2026  Recibo seguro coche póliza 88-2201-4471     -318,60 €  4.884,16 €
+15/02/2026  15/02/2026  Compra tarjeta RESTAURANTE EL PUERTO         -73,50 €  4.810,66 €
+17/02/2026  17/02/2026  Devolución compra online pedido 1188-2231    +49,99 €  4.860,65 €
+19/02/2026  19/02/2026  Recibo telefonía 612 345 678 02/2026         -39,90 €  4.820,75 €
+20/02/2026  20/02/2026  Comisión mantenimiento cuenta                -12,00 €  4.808,75 €
+21/02/2026  21/02/2026  Compra tarjeta LIBRERÍA ATENEO               -28,40 €  4.780,35 €
+24/02/2026  24/02/2026  Reintegro cajero 0049-1500 12:41             -100,00 €  4.680,35 €
+26/02/2026  26/02/2026  Recibo gimnasio cuota 02/2026                -44,90 €  4.635,45 €
+27/02/2026  27/02/2026  Intereses a favor 0,10 % TAE                  +0,36 €  4.635,81 €
+28/02/2026  28/02/2026  Compra tarjeta PANADERÍA LA ESPIGA            -6,80 €  4.629,01 €
+
+Saldo final: 4.629,01 €
+Total abonos: +2.895,35 €
+Total cargos: -2.579,11 €
+Número de movimientos: 19
+Saldo medio del periodo: 5.184,62 €
+Límite descubierto autorizado: 600,00 €

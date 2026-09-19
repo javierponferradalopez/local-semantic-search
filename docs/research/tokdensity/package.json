@@ -1,0 +1,14 @@
+{
+  "name": "tokdensity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway experiment for research #26. Counts characters per token for three tokenizers.",
+  "license": "ISC",
+  "scripts": {
+    "measure": "node measure.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "4.3.0"
+  }
+}

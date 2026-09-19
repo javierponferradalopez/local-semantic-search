@@ -1,0 +1,43 @@
+# Meeting notes — 2026-03-12
+
+Attendees: Ana, Bruno, Carla, Diego. Apologies: Elena.
+
+## Agenda
+
+1. Status of the ingestion pipeline
+2. Decision on the chunk size
+3. Open questions from the last review
+4. Next steps
+
+## 1. Ingestion pipeline
+
+- PDF extraction works for text-based files. Scanned PDFs return an empty string and are skipped with a warning.
+- Markdown files keep their headings; the chunker uses them as boundaries where it can.
+- Bruno raised the hyphenation issue again: `unpdf` returns `docu-\nmento` for words split across lines. Nobody has measured what this costs.
+
+## 2. Chunk size
+
+Carla presented three candidates. The table below records the discussion; nothing was decided.
+
+| Cap (chars) | Fits e5 for prose? | Fits code? | Notes |
+|-------------|--------------------|------------|-------|
+| 800 | yes | yes | Too small for a paragraph in many documents |
+| 1200 | yes | unknown | Current default in the ADR draft |
+| 2000 | unknown | no | Numbers-heavy pages likely overflow |
+
+Action: Diego to measure characters per token per kind of content before the next meeting. Ticket: https://github.com/javierponferradalopez/local-semantic-search/issues/26.
+
+## 3. Open questions
+
+- Should the API return the chunk text or only the document id and offsets? See the ADR discussion at https://github.com/javierponferradalopez/local-semantic-search/blob/master/docs/adr/0009-api-returns-a-url-not-the-bytes.md.
+- Do we normalise whitespace before embedding? Ana: not until measured.
+- Is the `passage: ` prefix counted in the 512 limit? Yes — it costs tokens like any other text.
+
+## 4. Next steps
+
+- [ ] Diego: token density measurement (due 2026-03-19)
+- [ ] Ana: draft ADR for the chunk cap once the numbers are in
+- [x] Carla: publish the release notes for 2.14.0
+- [ ] Bruno: open a ticket for scanned-PDF OCR (low priority)
+
+Next meeting: 2026-03-19, 10:00, same room. Dial-in: https://meet.example.com/j/8827731094?pwd=Q2h1bmtzQXJlSGFyZA.

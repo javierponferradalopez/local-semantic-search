@@ -1,0 +1,52 @@
+# API reference — `/search`
+
+## `GET /search`
+
+Returns the chunks that are closest to the query, ordered by cosine similarity.
+
+### Query parameters
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `q` | string | yes | — | The query text. Maximum 500 characters. |
+| `k` | integer | no | `10` | Number of results. Between 1 and 50. |
+| `lang` | string | no | — | ISO 639-1 code. Filters by detected language. |
+| `doc` | string | no | — | Restrict to one document id. |
+| `min_score` | number | no | `0` | Drop results below this similarity. |
+
+### Response
+
+```json
+{
+  "results": [
+    {
+      "chunk_id": "c_01HZX4M9Q7",
+      "document_id": "d_01HZX4KQ2P",
+      "score": 0.8123,
+      "url": "http://localhost:3000/documents/d_01HZX4KQ2P#chunk=c_01HZX4M9Q7",
+      "offset": [1200, 2180]
+    }
+  ],
+  "took_ms": 14
+}
+```
+
+### Errors
+
+- `400` — `q` is missing or longer than 500 characters.
+- `422` — `k` is out of range.
+- `503` — the model is still loading. Retry after the number of seconds in `Retry-After`.
+
+Error bodies follow the shape described in https://github.com/javierponferradalopez/local-semantic-search/blob/master/docs/adr/0010-error-body-is-not-rfc-9457.md — a flat object with `code` and `message`, not RFC 9457.
+
+### Examples
+
+```sh
+curl -s 'http://localhost:3000/search?q=factura%20de%20la%20luz&k=3&lang=es' | jq '.results[].score'
+```
+
+```sh
+curl -s 'http://localhost:3000/search?q=hexagonal+architecture&doc=d_01HZX4KQ2P&min_score=0.7'
+```
+
+See also: [`/documents`](https://docs.example.com/reference/documents#post-documents-upload-a-file-and-get-a-location-header), [`/health`](https://docs.example.com/reference/health#degraded-vs-ok).

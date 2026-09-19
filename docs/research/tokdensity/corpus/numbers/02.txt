@@ -1,0 +1,37 @@
+DATA SHEET — DC/DC converter module PX-2412-S
+Revision 3.2, 2025-11-08
+
+Electrical characteristics (Ta = 25 °C, Vin = 24.0 V, full load unless noted)
+
+Parameter                     Symbol   Min      Typ      Max      Unit
+Input voltage range           Vin      18.0     24.0     36.0     V
+Input current, no load        Iin,nl   —        12.5     18.0     mA
+Input current, full load      Iin,fl   —        1.312    1.380    A
+Output voltage                Vout     11.88    12.00    12.12    V
+Output current                Iout     0.00     —        2.50     A
+Output power                  Pout     —        —        30.0     W
+Efficiency                    η        88.5     91.2     —        %
+Line regulation               —        —        ±0.2     ±0.5     %
+Load regulation (10–100 %)    —        —        ±0.3     ±0.8     %
+Ripple and noise (20 MHz BW)  Vr       —        60       120      mVp-p
+Switching frequency           fsw      280      300      320      kHz
+Start-up time                 tst      —        18       30       ms
+Isolation voltage (60 s)      Viso     1500     —        —        Vdc
+Operating temperature         Top      -40      —        +85      °C
+Storage temperature           Tstg     -55      —        +125     °C
+MTBF (MIL-HDBK-217F)          —        1 200 000 —       —        h
+
+Derating: 2.5 %/°C above 71 °C. Full power to 71 °C; 65 % at 85 °C.
+
+Mechanical
+Dimensions: 50.8 × 25.4 × 10.2 mm (2.00 × 1.00 × 0.40 in)
+Weight: 28 g ± 1 g
+Pin pitch: 2.54 mm; pin diameter: 1.0 mm ± 0.05 mm
+
+Ordering codes
+Part number     Vout   Iout   Price (1–99)   Price (100–999)   Price (1000+)   Lead time
+PX-2405-S       5.0 V  5.00 A  €24.90         €21.15            €18.70          4 weeks
+PX-2412-S       12.0 V 2.50 A  €26.40         €22.45            €19.80          2 weeks
+PX-2415-S       15.0 V 2.00 A  €26.40         €22.45            €19.80          6 weeks
+PX-2424-S       24.0 V 1.25 A  €27.90         €23.70            €20.95          stock
+PX-4812-S       12.0 V 2.50 A  €28.50         €24.25            €21.40          stock

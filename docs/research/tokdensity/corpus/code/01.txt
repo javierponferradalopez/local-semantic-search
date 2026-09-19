@@ -1,0 +1,66 @@
+import { randomUUID } from 'node:crypto';
+import type { Database } from 'better-sqlite3';
+
+export interface Chunk {
+  id: string;
+  documentId: string;
+  ordinal: number;
+  start: number;
+  end: number;
+  text: string;
+}
+
+export interface ChunkRepository {
+  saveMany(chunks: readonly Chunk[]): void;
+  findByDocument(documentId: string): Chunk[];
+  deleteByDocument(documentId: string): number;
+}
+
+export class SqliteChunkRepository implements ChunkRepository {
+  private readonly insert;
+  private readonly selectByDoc;
+  private readonly deleteByDoc;
+
+  constructor(private readonly db: Database) {
+    this.insert = db.prepare(
+      `INSERT INTO chunks (id, document_id, ordinal, start, end, text)
+       VALUES (@id, @documentId, @ordinal, @start, @end, @text)`,
+    );
+    this.selectByDoc = db.prepare(
+      `SELECT id, document_id AS documentId, ordinal, start, end, text
+       FROM chunks WHERE document_id = ? ORDER BY ordinal`,
+    );
+    this.deleteByDoc = db.prepare(`DELETE FROM chunks WHERE document_id = ?`);
+  }
+
+  saveMany(chunks: readonly Chunk[]): void {
+    const tx = this.db.transaction((rows: readonly Chunk[]) => {
+      for (const row of rows) this.insert.run(row);
+    });
+    tx(chunks);
+  }
+
+  findByDocument(documentId: string): Chunk[] {
+    return this.selectByDoc.all(documentId) as Chunk[];
+  }
+
+  deleteByDocument(documentId: string): number {
+    return this.deleteByDoc.run(documentId).changes;
+  }
+}
+
+export function splitIntoChunks(documentId: string, text: string, maxChars = 1000): Chunk[] {
+  const out: Chunk[] = [];
+  let start = 0;
+  let ordinal = 0;
+  while (start < text.length) {
+    let end = Math.min(start + maxChars, text.length);
+    if (end < text.length) {
+      const cut = text.lastIndexOf('\n\n', end);
+      if (cut > start + maxChars / 2) end = cut;
+    }
+    out.push({ id: randomUUID(), documentId, ordinal: ordinal++, start, end, text: text.slice(start, end) });
+    start = end;
+  }
+  return out;
+}

@@ -1,0 +1,31 @@
+# Comparativa de modelos de embeddings
+
+Resumen de la prueba del 2026-02-20. Todos los modelos se cargaron con `@huggingface/transformers` 4.3.0 en un MacBook Air M2 con 16 GB.
+
+## Candidatos
+
+- `Xenova/multilingual-e5-small` — 118 M parámetros, 384 dimensiones, multilingüe. [Ficha](https://huggingface.co/intfloat/multilingual-e5-small).
+- `ibm-granite/granite-embedding-97m-multilingual-r2` — 97 M, 384 dimensiones, matryoshka. [Ficha](https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2).
+- `Xenova/all-MiniLM-L6-v2` — 22 M, 384 dimensiones, solo inglés. [Ficha](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
+
+## Resultados
+
+| Modelo | Carga (s) | Embedding de 900 chars (ms) | Aciertos ES→EN | Aciertos EN→ES | Tamaño q8 (MB) |
+|--------|-----------|-----------------------------|----------------|----------------|----------------|
+| multilingual-e5-small | 1,8 | 41 | 9/10 | 10/10 | 118 |
+| granite-97m-r2 | 2,1 | 52 | 10/10 | 9/10 | 97 |
+| all-MiniLM-L6-v2 | 0,6 | 12 | 3/10 | 2/10 | 23 |
+
+## Observaciones
+
+1. El modelo inglés no sirve para el cruce de idiomas; era lo esperado.
+2. Granite y e5 empatan en calidad; e5 gana en velocidad y en madurez del ecosistema ONNX.
+3. Ninguno de los tres supera los 512 tokens de entrada. El texto se corta en silencio.
+
+## Enlaces
+
+- Metodología completa: https://github.com/javierponferradalopez/local-semantic-search/blob/research/text-embedder/docs/research/embedlab/REPORT.md#method-and-caveats
+- Datos en bruto: https://github.com/javierponferradalopez/local-semantic-search/blob/research/text-embedder/docs/research/embedlab/out/lang-probe.jsonl
+- Decisión: [ADR-0006](https://github.com/javierponferradalopez/local-semantic-search/blob/master/docs/adr/0006-text-embedder-is-multilingual-e5-small.md)
+
+> Nota: los tiempos son medianas de cinco ejecuciones tras dos de calentamiento. La primera ejecución en frío tarda entre 2 y 3 segundos más por la descarga.

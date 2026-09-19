@@ -1,0 +1,64 @@
+-- Reporting queries for the admin dashboard. Parameters are named (:name).
+
+-- 1. Documents indexed per day over the last 30 days, with a zero row for empty days.
+WITH RECURSIVE days(d) AS (
+  SELECT date('now', '-29 days')
+  UNION ALL
+  SELECT date(d, '+1 day') FROM days WHERE d < date('now')
+)
+SELECT
+  days.d                                   AS day,
+  COUNT(doc.id)                            AS documents,
+  COALESCE(SUM(st.chunk_count), 0)         AS chunks,
+  COALESCE(SUM(st.chars), 0)               AS chars
+FROM days
+LEFT JOIN documents doc ON date(doc.indexed_at) = days.d
+LEFT JOIN document_stats st ON st.id = doc.id
+GROUP BY days.d
+ORDER BY days.d;
+
+-- 2. Chunk size distribution in buckets of 200 characters.
+SELECT
+  (LENGTH(text) / 200) * 200               AS bucket_start,
+  (LENGTH(text) / 200) * 200 + 199         AS bucket_end,
+  COUNT(*)                                 AS chunks,
+  ROUND(AVG(token_count), 1)               AS avg_tokens,
+  MAX(token_count)                         AS max_tokens,
+  ROUND(AVG(LENGTH(text) * 1.0 / NULLIF(token_count, 0)), 2) AS chars_per_token
+FROM chunks
+WHERE token_count IS NOT NULL
+GROUP BY bucket_start
+ORDER BY bucket_start;
+
+-- 3. Chunks that would be truncated by a model with the given token limit.
+SELECT c.id, c.document_id, d.source_path, LENGTH(c.text) AS chars, c.token_count
+FROM chunks c
+JOIN documents d ON d.id = c.document_id
+WHERE c.token_count > :token_limit
+ORDER BY c.token_count DESC
+LIMIT :limit;
+
+-- 4. Languages, with the share of chunks that carry an embedding for the active model.
+SELECT
+  COALESCE(d.language, 'unknown')          AS language,
+  COUNT(DISTINCT d.id)                     AS documents,
+  COUNT(c.id)                              AS chunks,
+  COUNT(e.chunk_id)                        AS embedded,
+  ROUND(100.0 * COUNT(e.chunk_id) / NULLIF(COUNT(c.id), 0), 1) AS embedded_pct
+FROM documents d
+LEFT JOIN chunks c ON c.document_id = d.id
+LEFT JOIN embeddings e ON e.chunk_id = c.id AND e.model_id = :model_id
+GROUP BY COALESCE(d.language, 'unknown')
+ORDER BY chunks DESC;
+
+-- 5. Duplicate content: identical chunk text stored under more than one document.
+SELECT text, COUNT(*) AS copies, GROUP_CONCAT(DISTINCT document_id) AS document_ids
+FROM chunks
+GROUP BY text
+HAVING COUNT(*) > 1
+ORDER BY copies DESC, LENGTH(text) DESC
+LIMIT 50;
+
+-- 6. Re-embed everything after a model change: drop the old vectors in one statement.
+DELETE FROM embeddings WHERE model_id <> :model_id;
+UPDATE documents SET indexed_at = NULL WHERE id IN (SELECT DISTINCT document_id FROM pending_chunks);

@@ -1,0 +1,33 @@
+FACTURA Nº 2026-000418
+Fecha de emisión: 14/03/2026
+Fecha de vencimiento: 13/04/2026
+CIF emisor: B-84112233
+NIF cliente: 12345678Z
+
+Concepto                                  Cantidad   Precio ud.   Dto.    Base
+Licencia anual plataforma                    1        1.200,00 €   0 %   1.200,00 €
+Soporte técnico premium (12 meses)           12         85,00 €   10 %     918,00 €
+Horas de consultoría (marzo)                 18,5       95,00 €   0 %   1.757,50 €
+Almacenamiento adicional 500 GB              3          24,90 €   0 %      74,70 €
+Migración de datos inicial                   1          650,00 €  15 %     552,50 €
+Formación presencial (2 jornadas)            2          480,00 €   0 %     960,00 €
+Certificado SSL wildcard                     1          129,00 €   0 %     129,00 €
+Dominio .es renovación                       2           9,95 €   0 %      19,90 €
+
+Base imponible:                                                          5.611,60 €
+IVA 21 %:                                                                1.178,44 €
+Retención IRPF 15 % (sobre 1.757,50 €):                                   -263,63 €
+TOTAL A PAGAR:                                                           6.526,41 €
+
+Forma de pago: transferencia bancaria
+IBAN: ES91 2100 0418 4502 0005 1332
+Referencia: 2026-000418-B84112233
+Vencimientos parciales: 50 % el 13/04/2026 (3.263,21 €), 50 % el 13/05/2026 (3.263,20 €)
+
+Histórico de facturación del cliente
+Nº factura        Fecha        Base         IVA        Total       Estado
+2025-000912       12/12/2025   4.980,00 €   1.045,80 €  6.025,80 €  Pagada
+2025-000701       15/09/2025   5.120,50 €   1.075,31 €  6.195,81 €  Pagada
+2025-000488       16/06/2025   4.875,25 €   1.023,80 €  5.899,05 €  Pagada
+2025-000203       14/03/2025   5.340,00 €   1.121,40 €  6.461,40 €  Pagada
+2024-000997       13/12/2024   4.760,80 €     999,77 €  5.760,57 €  Pagada

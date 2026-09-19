@@ -1,0 +1,36 @@
+MANUAL DE USUARIO
+2. Instalación del equipo
+2.1 Desembalaje
+Extraiga el equipo de la caja con cuidado y compruebe que no presenta da-
+ños visibles. Conserve el embalaje original durante el periodo de garan-
+tía, ya que será necesario para cualquier devolución o reparación. Com-
+pruebe que el contenido coincide con la lista del apartado 1.3: unidad
+principal, cable de alimentación, cable de red, soporte de pared, cuatro
+tornillos y esta guía.
+2.2 Ubicación
+Coloque el equipo sobre una superficie plana y estable, alejado de fuen-
+tes de calor, de la luz solar directa y de la humedad. Deje un espacio li-
+bre de al menos diez centímetros alrededor de las rejillas de ventila-
+ción. No apile otros aparatos encima ni cubra la unidad con paños o pape-
+les. Si va a fijarlo a la pared, utilice el soporte suministrado y los tor-
+nillos adecuados al material de la pared.
+2.3 Conexión eléctrica
+Conecte el cable de alimentación a la toma situada en la parte posterior
+del equipo y, a continuación, a un enchufe con toma de tierra. La ten-
+sión de la red debe estar comprendida entre 100 y 240 voltios de corrien-
+te alterna a 50 o 60 hercios. No utilice alargadores ni regletas que no
+dispongan de protección contra sobretensiones. El indicador luminoso del
+frontal se iluminará en color ámbar durante el arranque y pasará a verde
+cuando el equipo esté listo, lo que puede tardar hasta noventa segundos.
+2.4 Conexión a la red
+Conecte el cable de red al puerto marcado como LAN y al router o conmuta-
+dor de su red local. El equipo obtendrá una dirección IP automáticamente
+mediante DHCP. Si su red no dispone de servidor DHCP, consulte el aparta-
+do 5.2 para configurar una dirección estática desde el panel de adminis-
+tración. La dirección asignada aparecerá en la pantalla frontal durante
+los primeros treinta segundos tras el arranque.
+2.5 Primer acceso
+Abra un navegador en cualquier ordenador de la misma red y escriba la di-
+rección IP mostrada en la pantalla. El usuario inicial es admin y la con-
+traseña es el número de serie impreso en la etiqueta inferior. Se le pe-
+dirá que la cambie en el primer acceso.

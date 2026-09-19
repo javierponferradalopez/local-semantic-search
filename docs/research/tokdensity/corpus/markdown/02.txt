@@ -1,0 +1,44 @@
+# Guía de instalación
+
+Esta guía explica cómo instalar el servicio de búsqueda en una máquina local. Requiere unos diez minutos.
+
+## Requisitos
+
+- Node.js 20.11 o superior
+- 4 GB de memoria libre
+- 2 GB de disco para los modelos
+- Acceso a https://huggingface.co/Xenova/multilingual-e5-small/resolve/main/onnx/model_quantized.onnx durante la primera ejecución
+
+## Pasos
+
+1. Clona el repositorio:
+   `git clone https://github.com/javierponferradalopez/local-semantic-search.git`
+2. Instala las dependencias con `npm ci`.
+3. Copia `.env.example` a `.env` y ajusta las variables de la tabla siguiente.
+4. Arranca con `npm start`.
+
+## Variables de entorno
+
+| Variable | Valor por defecto | Descripción |
+|----------|-------------------|-------------|
+| `PORT` | `3000` | Puerto HTTP del servidor |
+| `DB_PATH` | `./data/index.sqlite` | Ruta de la base de datos |
+| `MODEL_ID` | `Xenova/multilingual-e5-small` | Identificador del modelo |
+| `CHUNK_CHARS` | `1000` | Tamaño máximo de un fragmento, en caracteres |
+| `LOG_LEVEL` | `info` | `debug`, `info`, `warn` o `error` |
+
+## Comprobación
+
+Ejecuta `curl -s http://localhost:3000/health | jq` y espera una respuesta como esta:
+
+```json
+{ "status": "ok", "model": "Xenova/multilingual-e5-small", "documents": 0 }
+```
+
+## Problemas frecuentes
+
+- **El modelo no descarga.** Comprueba el proxy y la variable `HF_ENDPOINT`. Más detalles en https://huggingface.co/docs/transformers.js/en/custom_usage#settings.
+- **`EADDRINUSE`.** Otro proceso ocupa el puerto. Cambia `PORT` o detén el proceso.
+- **Lento en la primera consulta.** Es normal: el modelo se carga en memoria una sola vez.
+
+Consulta también la [guía de operación](https://github.com/javierponferradalopez/local-semantic-search/blob/master/docs/operations/running-in-production.md#memory-and-cpu-budget).
