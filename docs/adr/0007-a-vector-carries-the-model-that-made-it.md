@@ -1,5 +1,14 @@
 # A Vector carries the model that made it
 
+> **Amended by [ADR-0014](0014-the-cut-belongs-to-no-model.md) and
+> [ADR-0015](0015-a-change-of-model-has-no-process-yet.md).** The section *What a
+> change of model makes stale* no longer holds: a change of model makes the
+> `Vector` stale and never the `Chunk`. The sweep at start-up that made a
+> `Resource` with a stale `Vector` `Failed` is removed. The `Vector` no longer
+> lives on the `Chunk` row: it is a row per content and model. The identity of
+> the model on every `Vector`, the filter by the model in use, the declared width
+> and *one width, one table* all stand.
+
 A `Vector` means nothing on its own. It means something only against the model
 that calculated it. **Every stored `Vector` carries the identity of that model —
 its repository, its dtype and its width — and the search only reads the `Vector`

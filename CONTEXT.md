@@ -25,14 +25,15 @@ The bytes that the user selected on their disk, and the copy that a Resource
 owns. A File is never a record. The record is the Resource.
 
 **Chunk**:
-A passage of text that comes from a Resource, with its Vector. Its text is never
-empty. It carries the page it came from when its Content type has pages, and no
-page when the Content type has none. A Chunk is always text.
+A passage of text that comes from a Resource. Its text is never empty, and it is
+the same text under every model. It has one Vector for each Text model that
+embedded it. It carries the page it came from when its Content type has pages,
+and no page when the Content type has none. A Chunk is always text.
 _Avoid_: Fragment, Passage, Segment, Piece
 
 **Picture**:
-An image that comes from a Resource. The vision model embeds it whole. It has a
-Vector, and it has no text.
+An image that comes from a Resource. The Vision model embeds it whole. It has
+one Vector for each Vision model that embedded it, and it has no text.
 _Avoid_: Image (that word is a content type of a Resource), Visual, Depiction
 
 **Vector**:
@@ -70,7 +71,7 @@ _Avoid_: Pending, Processing, Running
 
 **Ready**:
 The Ingest state of a Resource whose Chunks or Picture are stored with their
-Vectors.
+Vectors of the model in use.
 _Avoid_: Done, Complete, Indexed, Searchable
 
 **Failed**:

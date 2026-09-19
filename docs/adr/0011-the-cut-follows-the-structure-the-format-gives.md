@@ -1,5 +1,13 @@
 # The cut follows the structure the format gives
 
+> **Amended by [ADR-0014](0014-the-cut-belongs-to-no-model.md).** The unit is no
+> longer the token of the text model, and the target of 300 tokens, the minimum
+> of 50 tokens and the wall the adapter owns are replaced by 1200, 200 and 1500
+> Unicode code points. The adapter now embeds any `Chunk` instead of holding a
+> wall the cutter asks for. In Markdown a heading is a boundary and a fenced code
+> block is one passage. Everything else in this record stands: no overlap, the
+> page rule, the three repairs declined, and *one text, not two*.
+
 A `Chunk` is cut by accumulating whole passages up to a target of **300 tokens**,
 measured with the tokenizer of the text model, against a wall of **512 minus the
 special tokens minus the prefix**. The passage is a paragraph in a text file or a

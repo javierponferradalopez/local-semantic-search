@@ -1,5 +1,12 @@
 # A Chunk carries the rule that cut it, and an old cut keeps serving
 
+> **Amended by [ADR-0015](0015-a-change-of-model-has-no-process-yet.md).** The
+> version stamp on the `Chunk` stands, and so does *a stale cut keeps serving*.
+> The mark on every `Resource` at start-up and the re-cut script are no longer
+> decided in advance: they are written the day the rule changes. The uniqueness
+> of a `Chunk` inside its `Resource` is now the cut version and the position,
+> with no model in it ([ADR-0014](0014-the-cut-belongs-to-no-model.md)).
+
 [ADR-0007](0007-a-vector-carries-the-model-that-made-it.md) made a `Vector` carry
 its model, and made a `Resource` whose `Vector` are from another model become
 `Failed` at start-up. **A change of the cut rule alone does not touch the model,
