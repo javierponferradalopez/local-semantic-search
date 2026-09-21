@@ -10,8 +10,18 @@ text.
 
 **Resource**:
 One item of content that the user added, with its name, its type and its stored
-copy. It is what the user sees in a list and deletes.
+copy. It is what the user sees in a list and deletes. Every Resource is either a
+Text Resource or an Image Resource.
 _Avoid_: File, Asset, Document, Item
+
+**Text Resource**:
+A Resource that yields Chunks when it is ingested: a PDF, a plain text file or a
+Markdown file.
+_Avoid_: Document, Text file
+
+**Image Resource**:
+A Resource that yields one Picture when it is ingested.
+_Avoid_: Image alone, Photo
 
 **Content type**:
 The kind of content that a Resource holds. It is one of a closed set of values
@@ -48,8 +58,8 @@ Vectors.
 _Avoid_: Index as a verb. The word "index" is only the index of the database.
 
 **Checksum**:
-The fingerprint of the bytes of a File. It is the identity of the content, as
-against the name, which is only a label.
+The fingerprint of the bytes of a File. It is the identity of the content within
+its Content type, as against the name, which is only a label.
 _Avoid_: Hash, Fingerprint, Digest
 
 ### Ingestion
@@ -66,7 +76,8 @@ the only thing about the Ingest that the user sees.
 _Avoid_: Status, Phase, Stage
 
 **Ingesting**:
-The Ingest state of a Resource whose File is stored and whose work is running.
+The Ingest state of a Resource whose File is stored and whose Ingest has not
+ended.
 _Avoid_: Pending, Processing, Running
 
 **Ready**:

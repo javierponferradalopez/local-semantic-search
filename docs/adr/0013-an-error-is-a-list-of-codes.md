@@ -1,5 +1,11 @@
 # An error is a list of codes, not a problem document
 
+> **Amended by [ADR-0018](0018-the-ingest-runs-after-the-response.md).** The row
+> "Stage 2 of the Ingest fails → 422" no longer exists. The request returns `201`
+> before the `Ingest` runs, so its failure never reaches it. The `Reason` travels
+> only in the row of the list, as a bare code. The section *What this costs* about
+> 422 covering the catch-all no longer applies.
+
 **Every error body has one shape: `{ errors: [ { code, params } ] }`. It is
 always a list, and it is always `application/json`.** RFC 9457 (Problem Details
 for HTTP APIs) was examined and refused.

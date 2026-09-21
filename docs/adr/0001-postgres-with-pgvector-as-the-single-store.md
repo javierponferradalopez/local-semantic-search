@@ -1,5 +1,11 @@
 # Postgres with pgvector as the single store
 
+> **Amended by [ADR-0020](0020-no-foreign-key-crosses-a-module.md).** No foreign
+> key crosses a module. The lifecycle of a `Chunk` and a `Picture` is kept by the
+> `…Deleted` event, not by the database. The `JOIN` for the citation stands. And
+> the file-level record is two tables, a Text Resource and an Image Resource
+> ([ADR-0019](0019-two-aggregates-with-the-same-fields.md)).
+
 A local semantic search product needs a registry of the files it has ingested, the
 chunks cut from them, the vectors, and the citation metadata. The owner's original
 notes named Qdrant. We chose **Postgres with pgvector** instead, as the **only**

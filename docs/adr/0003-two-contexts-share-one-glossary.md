@@ -1,5 +1,13 @@
 # Two contexts share one glossary, and Search never loads a Resource
 
+> **Amended by [ADR-0017](0017-three-contexts-speak-by-domain-events.md) and
+> [ADR-0020](0020-no-foreign-key-crosses-a-module.md).** The contexts are three:
+> `resources/`, `ingestion/` and `search/`. `resources` and `ingestion` speak by
+> domain events and import only each other's `domain/events/`. The foreign key
+> that crossed the boundary is gone. The rule that `search/` never imports
+> `Resource` stands, and now `ingestion/` never imports it either. `Locator` no
+> longer exists ([ADR-0009](0009-a-chunk-knows-its-page-and-nothing-else.md)).
+
 `backend/src/core` is split into `ingestion/` and `search/`, the two demoable
 capabilities of the product. The two contexts **share one glossary**, which
 `CONTEXT.md` holds, and they share one database. The usual test for a bounded
