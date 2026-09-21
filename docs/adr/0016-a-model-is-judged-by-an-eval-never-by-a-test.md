@@ -1,5 +1,10 @@
 # A model is judged by an eval, never by a test
 
+> **Amended by [ADR-0021](0021-a-floor-rejects-only-what-is-far-from-everything.md).**
+> Each eval has two scorers, not one: the reciprocal rank, and the verdict of
+> the `Floor`. The golden set also holds queries whose answer is not in the
+> corpus. Everything else stands.
+
 **No automated test loads a model. What a model does — the prefix its adapter
 writes, the width of its `Vector`, and above all whether the right `Resource`
 comes first — is measured by an eval, and an eval gives a score, not a pass or

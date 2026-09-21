@@ -35,10 +35,11 @@ The bytes that the user selected on their disk, and the copy that a Resource
 owns. A File is never a record. The record is the Resource.
 
 **Chunk**:
-A passage of text that comes from a Resource. Its text is never empty, and it is
-the same text under every model. It has one Vector for each Text model that
-embedded it. It carries the page it came from when its Content type has pages,
-and no page when the Content type has none. A Chunk is always text.
+A passage of text that comes from a Resource. Its text holds at least one
+letter or one digit, and it is the same text under every model. It has one
+Vector for each Text model that embedded it. It carries the page it came from
+when its Content type has pages, and no page when the Content type has none. A
+Chunk is always text.
 _Avoid_: Fragment, Passage, Segment, Piece
 
 **Picture**:

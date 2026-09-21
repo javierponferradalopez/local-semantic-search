@@ -1,5 +1,10 @@
 # The cut belongs to no model
 
+> **Amended by [ADR-0021](0021-a-floor-rejects-only-what-is-far-from-everything.md).**
+> The rule *nothing is dropped* now reads: nothing that holds a letter or a
+> digit is dropped. A passage with no letter and no digit, such as `---`, is
+> not a `Chunk`. Everything else stands.
+
 **A `Chunk` is cut by the structure of its format and by a size in Unicode code
 points. No tokenizer takes part in the cut. The text model embeds any `Chunk`
 the cutter gives it, whatever its density, and never makes the `Ingest` fail.**
