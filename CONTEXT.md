@@ -1,17 +1,17 @@
 # Local semantic search
 
-A local product that finds a user's own content by meaning. The user adds files,
-the system stores their vectors, and the user finds the content when they type
-text.
+A local product that finds a user's own content by meaning. The user creates
+Resources from their files, the system stores their vectors, and the user finds
+the content when they type text.
 
 ## Language
 
 ### Content
 
 **Resource**:
-One item of content that the user added, with its name, its type and its stored
-copy. It is what the user sees in a list and deletes. Every Resource is either a
-Text Resource or an Image Resource.
+One item of content that the user created, with its name, its type and its
+stored copy. It is what the user sees in a list and deletes. Every Resource is
+either a Text Resource or an Image Resource.
 _Avoid_: File, Asset, Document, Item
 
 **Text Resource**:

@@ -32,5 +32,5 @@ with an intermediate state, which #10 §8 refused as a soft delete.
 - Each module owns its keys in the `FileStore`. The `File` lives under a prefix
   of `resources`, the thumbnail under a prefix of `ingestion`.
 - The `Citation` is still a `JOIN`. A `JOIN` needs no declared key.
-- `ingestion` deletes its own output before it writes, on `…Added` as on
+- `ingestion` deletes its own output before it writes, on `…Created` as on
   `…Retried`, so a Retry needs no cleanup of its own.

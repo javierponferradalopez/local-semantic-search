@@ -1,7 +1,8 @@
 # Local semantic search
 
-A local product that finds your own content by meaning. You add files, the system
-stores their vectors, and you find the content when you type text.
+A local product that finds your own content by meaning. You create Resources
+from your files, the system stores their vectors, and you find the content when
+you type text.
 
 The words this product uses are in [`CONTEXT.md`](CONTEXT.md). The decisions are in
 [`docs/adr/`](docs/adr/).

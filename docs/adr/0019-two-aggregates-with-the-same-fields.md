@@ -2,8 +2,8 @@
 
 `resources/` holds two aggregates, `TextResource` and `ImageResource`, in two
 tables, with the same seven fields: name, `Content type`, key of the `File`,
-`Checksum`, `addedAt`, `Ingest state` and `Reason`. Every mutation route carries
-the type. Every read is transversal.
+`Checksum`, `createdAt`, `Ingest state` and `Reason`. Every mutation route
+carries the type. Every read is transversal.
 
 Decided in
 [What the ingest stage looks like in code](https://github.com/javierponferradalopez/local-semantic-search/issues/22),
@@ -26,8 +26,8 @@ and no use case branches on `Content type`.
 - `Checksum` uniqueness is per table. The same bytes under two `Content type`, a
   PNG uploaded as `.png` and as `.txt`, are two Resources. The glossary now says
   the `Checksum` is the identity of the content within its `Content type`.
-- The list of #10 is a `UNION ALL` over two tables, ordered by `addedAt`. It was
-  a read model already.
+- The list of #10 is a `UNION ALL` over two tables, ordered by `createdAt`. It
+  was a read model already.
 - A new `Content type` that yields a new kind of content costs an aggregate, a
   table, a pair of routes and a handler. One that yields `Chunk` or `Picture`
   costs a row in the table of #17, as before.

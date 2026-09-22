@@ -14,8 +14,8 @@ with a business name".
 
 ## Why a third context
 
-`resources` is not a data layer. It has use cases of its own: add, list, delete,
-retry. What it does not know is how a file becomes searchable. It never imports
+`resources` is not a data layer. It has use cases of its own: create, list,
+delete, retry. What it does not know is how a file becomes searchable. It never imports
 `Chunk`, `Picture` or `Vector`. `ingestion` in turn never imports the aggregate.
 An event gives it the `id`, the `Content type` and the key of the `File`, and it
 answers with an event. The boundary is the one ADR-0003 drew for `search/`: a
@@ -24,7 +24,7 @@ context asks for what it needs and loads no aggregate of another.
 ## The events, and where they live
 
 Each event lives in the module that raises it, and its name says what happened.
-`resources` raises `TextResourceAdded`, `ImageResourceAdded`,
+`resources` raises `TextResourceCreated`, `ImageResourceCreated`,
 `TextResourceRetried`, `ImageResourceRetried`, `TextResourceDeleted` and
 `ImageResourceDeleted`. `ingestion` raises `TextResourceIngested`,
 `ImageResourceIngested`, `TextResourceIngestFailed` and
@@ -53,7 +53,7 @@ flight ([ADR-0018](0018-the-ingest-runs-after-the-response.md)).
 - The handlers of `resources` for `…Ingested` and `…IngestFailed` ignore an `id`
   that no longer exists, because Delete is allowed in every state (ADR-0018).
 - Retry is a use case of `resources`. It admits only `Failed`, sets `Ingesting`
-  and raises `…Retried`, which `ingestion` handles as it handles `…Added`.
+  and raises `…Retried`, which `ingestion` handles as it handles `…Created`.
 - The handlers of `ingestion` are thin subscribers in `infrastructure/` that call
   a use case: `IngestTextResource` or `IngestImageResource`. The use cases are
   tested in unit with their ports mocked and no bus.

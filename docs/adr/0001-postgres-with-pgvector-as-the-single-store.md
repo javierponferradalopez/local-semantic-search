@@ -12,8 +12,8 @@ notes named Qdrant. We chose **Postgres with pgvector** instead, as the **only**
 store: one container, one adapter, no second database beside it.
 
 Qdrant was rejected on **shape**, not on weight or licence. The ingest screen lists
-the files the user has added, so a file-level record is a first-class concept. In
-Qdrant that record has no natural home — it becomes a collection without vectors,
+the Resources the user has created, so a file-level record is a first-class
+concept. In Qdrant that record has no natural home — it becomes a collection without vectors,
 or a walk over the payload. A vector store is a derived index; the source of truth
 must not live inside it. MongoDB Atlas Local models the record well but costs ~612 MB
 against ~155 MB, is SSPL rather than a permissive licence, runs a second `mongot`

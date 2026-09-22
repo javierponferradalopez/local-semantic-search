@@ -20,7 +20,7 @@ A browser treats the same SVG in two ways:
   viewer. Here the SVG is a document, and its script runs **with the origin of
   the application**. From there it can call the application's own API.
 
-So a hostile SVG that the user downloads and adds can delete every Resource
+So a Resource that the user creates from a hostile SVG can delete every Resource
 while it paints a diagram.
 
 ## Why it is accepted

@@ -50,9 +50,10 @@ where the network is allowed is the `models:fetch` script.
 ## Consequences
 
 - **Start-up costs about two seconds**, `tsx watch` included, and about 3 GB
-  stay resident even for a user who only adds PDFs. `multilingual-e5-small` at
-  `fp32` was measured at **1601 MB**, five times its 470 MB file, and SigLIP2
-  at `fp32` is 1129.5 MB of text tower plus 371.8 MB of vision tower.
+  stay resident even for a user who only creates PDF Resources.
+  `multilingual-e5-small` at `fp32` was measured at **1601 MB**, five times its
+  470 MB file, and SigLIP2 at `fp32` is 1129.5 MB of text tower plus 371.8 MB of
+  vision tower.
 - **The reference is diverged from, deliberately.** Its four registrars are
   synchronous and its container defaults to transient lifetime. The report on
   [The api-scaffolding structure](https://github.com/javierponferradalopez/local-semantic-search/issues/5)
