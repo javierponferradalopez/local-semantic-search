@@ -4,7 +4,7 @@
     "lib": ["es2023"],
     "module": "esnext",
     "moduleResolution": "bundler",
-    "types": ["node"],
+    "types": ["node", "vitest/globals"],
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "strict": true,
@@ -14,5 +14,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src", "drizzle.config.ts"]
+  "include": ["src", "test", "drizzle.config.ts", "vitest.config.ts"]
 }
