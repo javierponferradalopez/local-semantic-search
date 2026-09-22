@@ -1,0 +1,19 @@
+{
+  "name": "local-semantic-search",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.27.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "bootstrap": "pnpm --filter backend run bootstrap",
+    "dev": "pnpm -r --parallel run dev",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "pnpm -r run typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14"
+  }
+}

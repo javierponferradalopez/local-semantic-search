@@ -1,0 +1,11 @@
+packages:
+  - contract
+  - backend
+  - frontend
+
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - drizzle-kit@0.31.11
+  - drizzle-orm@0.45.3
