@@ -105,3 +105,6 @@ Four rules of the reference stay a convention, because Biome cannot see them:
 - A field that is never written is `readonly`, a promise is never left floating, and a
   type assertion that changes nothing is removed. All three need the types, which Biome
   does not read.
+- A use case, a controller and an event take the verb the glossary uses. A Resource is
+  created, so the name is `Create`, never `Add`. A read model gives what it holds, so
+  the name is `Get`, never `List`.

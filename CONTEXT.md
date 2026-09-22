@@ -11,8 +11,10 @@ the content when they type text.
 **Resource**:
 One item of content that the user created, with its name, its type and its
 stored copy. It is what the user sees in a list and deletes. Every Resource is
-either a Text Resource or an Image Resource.
-_Avoid_: File, Asset, Document, Item
+either a Text Resource or an Image Resource. The user creates a Resource and
+deletes it.
+_Avoid_: File, Asset, Document, Item. Avoid "add" as the verb: the user creates
+a Resource, and the code says `Create`, never `Add`.
 
 **Text Resource**:
 A Resource that yields Chunks when it is ingested: a PDF, a plain text file or a
