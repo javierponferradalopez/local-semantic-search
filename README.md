@@ -60,8 +60,32 @@ backend/    Express, Drizzle and Postgres. Relative imports.
 | `pnpm run bootstrap` | Starts the store and applies the migrations |
 | `pnpm dev` | Starts the backend and the frontend together |
 | `pnpm run lint` | Runs Biome over the whole tree |
+| `pnpm run lint:ci` | Runs Biome the way CI runs it, and writes nothing |
 | `pnpm run format` | Runs Biome and writes the fixes |
 | `pnpm run typecheck` | Runs `tsc --noEmit` in each package |
+| `pnpm run test:unit` | Runs the unit tests |
+| `pnpm run test:integration` | Runs the integration tests. Needs Docker |
+| `pnpm run test:e2e` | Runs the end-to-end tests. Needs Docker |
+
+## The tests
+
+Vitest runs in three modes, and each mode has one script. `unit` covers the domain
+and the use cases, with the ports mocked. `integration` covers the adapters, which
+are the parts that talk to the store and to the disk. `e2e` covers the endpoints,
+over the application booted in process.
+
+`test:integration` and `test:e2e` share one test infrastructure: one container with
+the Postgres image of `backend/docker-compose.yml`, the migrations, and a temp
+directory for the Files. The two never run together, because they share one
+database, and each suite wipes the data before it starts. No test touches
+`backend/data/`.
+
+A port is mocked with the helper in `backend/test/utils/mock.ts`, and never with
+`vi.mock`. Everything else is real.
+
+CI runs Biome, the type check and the unit tests, and nothing else. A test never
+loads a model: what a model does is measured by an eval, which
+[ADR-0016](docs/adr/0016-a-model-is-judged-by-an-eval-never-by-a-test.md) describes.
 
 ## The house style
 
