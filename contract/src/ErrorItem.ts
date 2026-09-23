@@ -25,6 +25,11 @@ type ResourceNotFound = {
   params: {resourceId: string};
 };
 
+type ResourceNotFailed = {
+  code: 'resource_not_failed';
+  params: {resourceId: string; ingestState: IngestState};
+};
+
 type InvalidInput = {
   code: 'invalid_input';
   params: {path: string};
@@ -36,4 +41,5 @@ export type ErrorItem =
   | DuplicateResource
   | MultipleFiles
   | ResourceNotFound
+  | ResourceNotFailed
   | InvalidInput;

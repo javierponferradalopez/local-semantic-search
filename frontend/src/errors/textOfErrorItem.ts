@@ -26,6 +26,8 @@ const TEXT_BY_CODE: TextOfEachCode = {
     `${count} files arrived. Drop one file at a time.`,
   resource_not_found: (): string =>
     'The library no longer holds this Resource. Reload the page.',
+  resource_not_failed: ({ingestState}: ParamsOf<'resource_not_failed'>): string =>
+    `This Resource is ${textOfIngestState(ingestState)}. Only a Failed Resource can be ingested again. Reload the page.`,
   invalid_input: ({path}: ParamsOf<'invalid_input'>): string =>
     `The server refused the value of "${path}".`
 };
