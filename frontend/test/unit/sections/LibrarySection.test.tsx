@@ -28,6 +28,19 @@ describe('LibrarySection', () => {
     expect(screen.getByText('manual.pdf')).toBeDefined();
   });
 
+  it('should make the name a link that opens the fileUrl, as it is, in a new tab', async () => {
+    const resources = mock<ResourceGateway>();
+    const fileUrl = 'https://store.example/resources/an%20id/notes.md?signature=a';
+    resources.list.mockResolvedValue([{...rowNamed('notes.md'), fileUrl}]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    const link = await screen.findByRole('link', {name: 'notes.md'});
+
+    expect(link.getAttribute('href')).toBe(fileUrl);
+    expect(link.getAttribute('target')).toBe('_blank');
+  });
+
   it('should show the text of a Refusal, and never the failure itself', async () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([]);
