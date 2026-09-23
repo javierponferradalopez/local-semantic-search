@@ -1,3 +1,5 @@
+import {readdir, rm} from 'node:fs/promises';
+import {join} from 'node:path';
 import {Pool} from 'pg';
 import {inject} from 'vitest';
 
@@ -23,6 +25,16 @@ export const wipeTheData = async (): Promise<void> => {
   const tables = rows.map(row => row.table).join(', ');
 
   await testDatabase().query(`TRUNCATE TABLE ${tables} RESTART IDENTITY CASCADE`);
+};
+
+export const wipeTheFiles = async (): Promise<void> => {
+  const entries = await readdir(testFilesDirectory());
+
+  await Promise.all(
+    entries.map(entry =>
+      rm(join(testFilesDirectory(), entry), {recursive: true, force: true})
+    )
+  );
 };
 
 export const closeTheTestDatabase = async (): Promise<void> => {
