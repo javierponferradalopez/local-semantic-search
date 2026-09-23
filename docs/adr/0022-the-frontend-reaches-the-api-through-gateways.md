@@ -36,8 +36,8 @@ A mapping would throw that argument away and would give two shapes of
 For the same reason the failure keeps one channel. The port throws `Refusal`,
 which holds `ErrorItem[]` and nothing of HTTP. A port that returns a result
 would put back the branch that ADR-0013 paid to remove, because the network
-failure must still be caught. `fetchJson` in the adapter is the only place where
-a response that is not ok becomes a `Refusal`.
+failure must still be caught. `fetchOrRefuse` in the adapter is the only place
+where a response that is not ok becomes a `Refusal`.
 
 ## Why a typed context and not a container
 
@@ -54,7 +54,8 @@ context keeps: that point is `main.tsx`.
 src/gateways/ResourceGateway.ts          the port
 src/gateways/Refusal.ts                  its vocabulary of failure
 src/gateways/http/HttpResourceGateway.ts the adapter
-src/gateways/http/fetchJson.ts           its collaborator
+src/gateways/http/fetchOrRefuse.ts       its collaborator, which makes the Refusal
+src/gateways/http/fetchJson.ts           the same, for a response with a body
 src/config/GatewaysContext.tsx           the context, the provider and the hook
 ```
 
@@ -63,7 +64,7 @@ what `infrastructure/` is, and `config/` what `api/config/di/` is. The rule is
 visible: nothing under `src/gateways/*.ts` imports `react`, and nothing outside
 `src/gateways/http/` calls `fetch`.
 
-The two adapters to come share a collaborator, `fetchJson`, and not a parent
+The two adapters to come share a collaborator, `fetchOrRefuse`, and not a parent
 class. `DrizzleResourceReader` and `DrizzleResourceRepository` share
 `DrizzleConnection` in the same way.
 
