@@ -1,5 +1,5 @@
 import {mkdir, readFile, rm, writeFile} from 'node:fs/promises';
-import {dirname, resolve, sep} from 'node:path';
+import {dirname, relative, resolve, sep} from 'node:path';
 import {FileStoreError} from '../domain/errors/FileStoreError';
 import type {FileStore} from '../domain/services/FileStore';
 import type {FileKey} from '../domain/value-objects/FileKey';
@@ -31,7 +31,10 @@ export class FilesystemFileStore implements FileStore {
   }
 
   public urlOf(fileKey: FileKey): string {
-    const path = fileKey.value.split('/').map(encodeURIComponent).join('/');
+    const path = relative(this.folder, this.pathOf(fileKey))
+      .split(sep)
+      .map(encodeURIComponent)
+      .join('/');
 
     return `${this.urlPrefix}/${path}`;
   }

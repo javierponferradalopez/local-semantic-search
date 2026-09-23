@@ -7,9 +7,8 @@ import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/Dri
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
 import {InProcessEventBus} from '../../../core/shared/infrastructure/InProcessEventBus';
 import {env} from '../../env/env';
+import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
 import {container} from './Container';
-
-const FILES_URL_PREFIX = '/files';
 
 export const registerInfrastructureDependencies = (): void => {
   const pool = new Pool({connectionString: env.database.url});
