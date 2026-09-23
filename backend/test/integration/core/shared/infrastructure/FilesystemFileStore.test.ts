@@ -1,5 +1,9 @@
 import {mkdtemp, readFile} from 'node:fs/promises';
+import type {Server} from 'node:http';
+import type {AddressInfo} from 'node:net';
 import {basename, join} from 'node:path';
+import express from 'express';
+import {serveTheFiles} from '../../../../../src/api/middlewares/serveTheFiles';
 import {FileStoreError} from '../../../../../src/core/shared/domain/errors/FileStoreError';
 import {FileKey} from '../../../../../src/core/shared/domain/value-objects/FileKey';
 import {FilesystemFileStore} from '../../../../../src/core/shared/infrastructure/FilesystemFileStore';
@@ -86,6 +90,35 @@ describe('FilesystemFileStore', () => {
       expect(fileStore.urlOf(fileKey)).toBe(
         `${URL_PREFIX}/resources/an%20id/a%23b%3Fc.md`
       );
+    });
+
+    it('should refuse a key that resolves outside the folder the application owns', () => {
+      const fileKey = FileKey.fromPrimitive({value: '../escaped.md'});
+
+      expect(() => fileStore.urlOf(fileKey)).toThrow(FileStoreError);
+    });
+
+    describe('when the static middleware serves the folder', () => {
+      let server: Server;
+
+      beforeEach(() => {
+        server = express().use(URL_PREFIX, serveTheFiles(folder)).listen(0);
+      });
+
+      afterEach(() => {
+        server.close();
+      });
+
+      it('should resolve to the bytes that #store wrote', async () => {
+        const fileKey = FileKey.of({value: 'resources/an id/a#b?c.md'});
+        const bytes = Buffer.from('the notes', 'utf8');
+        const origin = `http://localhost:${(server.address() as AddressInfo).port}`;
+
+        await fileStore.store(fileKey, bytes);
+        const response = await fetch(`${origin}${fileStore.urlOf(fileKey)}`);
+
+        expect(Buffer.from(await response.arrayBuffer())).toStrictEqual(bytes);
+      });
     });
   });
 });

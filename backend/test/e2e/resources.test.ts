@@ -1,7 +1,8 @@
 import {randomUUID} from 'node:crypto';
-import {readdir} from 'node:fs/promises';
+import {readdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {request, type Server} from 'node:http';
 import type {AddressInfo} from 'node:net';
+import {basename, dirname, join} from 'node:path';
 import type {ApiError} from 'contract/ApiError';
 import {CONTENT_TYPES} from 'contract/ContentType';
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
@@ -21,6 +22,8 @@ const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
 const CONFLICT = 409;
 const CONTENT_TOO_LARGE = 413;
+
+const FIXTURES = new URL('../fixtures/', import.meta.url);
 
 describe('the routes of a Resource', () => {
   let server: Server;
@@ -219,6 +222,52 @@ describe('the routes of a Resource', () => {
     });
   });
 
+  describe('GET the fileUrl of a row', () => {
+    it.each([
+      ['two-pages-with-text.pdf', 'application/pdf'],
+      ['markdown-with-headings.md', 'text/plain; charset=utf-8'],
+      ['long-text.txt', 'text/plain; charset=utf-8']
+    ])('should serve %s inline, as %s, and immutable', async (name, contentType) => {
+      const bytes = await readFile(new URL(name, FIXTURES));
+      const row = (await (await createTextResource(name, bytes)).json()) as ResourceRow;
+
+      const response = await fetch(`${origin}${row.fileUrl}`);
+
+      expect(response.status).toBe(OK);
+      expect(response.headers.get('content-type')).toBe(contentType);
+      expect(response.headers.get('content-disposition')).toBe('inline');
+      expect(response.headers.get('cache-control')).toContain('immutable');
+      expect(Buffer.from(await response.arrayBuffer())).toStrictEqual(bytes);
+    });
+
+    describe('a path that tries to leave the folder the application owns', () => {
+      const secret = join(
+        dirname(testFilesDirectory()),
+        `${basename(testFilesDirectory())}-secret.txt`
+      );
+
+      beforeAll(async () => {
+        await writeFile(secret, 'the secret');
+      });
+
+      afterAll(async () => {
+        await rm(secret, {force: true});
+      });
+
+      it.each(['..%2F', '%2e%2e/', '..%5C'])(
+        'should be refused when it climbs with %s',
+        async climb => {
+          const {status, body} = await getTheRawPath(
+            `/files/${climb}${basename(secret)}`
+          );
+
+          expect(status).toBe(NOT_FOUND);
+          expect(body).not.toContain('the secret');
+        }
+      );
+    });
+  });
+
   describe('the shape of every response', () => {
     it('should obey the types that contract/ declares', async () => {
       const response = await createTextResource('the notes.md', 'the notes');
@@ -242,12 +291,12 @@ describe('the routes of a Resource', () => {
 
   const createTextResource = (
     name: string,
-    text: string,
+    content: string | Buffer,
     type?: string
   ): Promise<Response> => {
     const body = new FormData();
 
-    body.append(CreateTextResourceRequest.filePart, new File([text], name, {type}));
+    body.append(CreateTextResourceRequest.filePart, new File([content], name, {type}));
 
     return fetch(`${origin}/resources/texts`, {method: 'POST', body});
   };
@@ -284,6 +333,25 @@ describe('the routes of a Resource', () => {
         });
       });
       outgoing.flushHeaders();
+    });
+
+  const getTheRawPath = (
+    path: string
+  ): Promise<{status: number | undefined; body: string}> =>
+    new Promise((resolve, reject) => {
+      const outgoing = request(`${origin}`, {path});
+
+      outgoing.on('error', reject);
+      outgoing.on('response', incoming => {
+        let body = '';
+
+        incoming.setEncoding('utf8');
+        incoming.on('data', chunk => {
+          body += chunk;
+        });
+        incoming.on('end', () => resolve({status: incoming.statusCode, body}));
+      });
+      outgoing.end();
     });
 
   const expectNothingStored = async (): Promise<void> => {
