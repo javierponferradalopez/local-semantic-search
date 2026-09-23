@@ -6,7 +6,12 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/backend/drizzle", "!**/pnpm-lock.yaml"]
+    "includes": [
+      "**",
+      "!**/backend/drizzle",
+      "!**/backend/evals/reports",
+      "!**/pnpm-lock.yaml"
+    ]
   },
   "formatter": {
     "enabled": true,

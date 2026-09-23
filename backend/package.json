@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run --mode unit",
     "test:integration": "vitest run --mode integration",
-    "test:e2e": "vitest run --mode e2e"
+    "test:e2e": "vitest run --mode e2e",
+    "test:eval": "vitest run --mode eval"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.0",

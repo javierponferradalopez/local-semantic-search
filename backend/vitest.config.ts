@@ -9,12 +9,17 @@ const SHARED_INFRASTRUCTURE: TestUserConfig = {
   testTimeout: 30_000
 };
 
-type Mode = 'unit' | 'integration' | 'e2e';
+type Mode = 'unit' | 'integration' | 'e2e' | 'eval';
 
 const MODES: Record<Mode, TestUserConfig> = {
   unit: {include: ['test/unit/**/*.test.ts']},
   integration: {...SHARED_INFRASTRUCTURE, include: ['test/integration/**/*.test.ts']},
-  e2e: {...SHARED_INFRASTRUCTURE, include: ['test/e2e/**/*.test.ts']}
+  e2e: {...SHARED_INFRASTRUCTURE, include: ['test/e2e/**/*.test.ts']},
+  eval: {
+    include: ['test/eval/**/*.eval.ts'],
+    reporters: ['verbose'],
+    testTimeout: 600_000
+  }
 };
 
 const isMode = (name: string): name is Mode => name in MODES;
