@@ -81,13 +81,14 @@ backend/    Express, Drizzle and Postgres. Relative imports.
 | `pnpm run test:unit` | Runs the unit tests |
 | `pnpm run test:integration` | Runs the integration tests. Needs Docker |
 | `pnpm run test:e2e` | Runs the end-to-end tests. Needs Docker |
+| `pnpm run test:eval` | Runs the evals. Needs the models in the model store |
 
 ## The tests
 
-Vitest runs in three modes, and each mode has one script. `unit` covers the domain
+Vitest runs in four modes, and each mode has one script. `unit` covers the domain
 and the use cases, with the ports mocked. `integration` covers the adapters, which
 are the parts that talk to the store and to the disk. `e2e` covers the endpoints,
-over the application booted in process.
+over the application booted in process. `eval` measures what a model does.
 
 `test:integration` and `test:e2e` share one test infrastructure: one container with
 the Postgres image of `backend/docker-compose.yml`, the migrations, and a temp
@@ -101,6 +102,14 @@ A port is mocked with the helper in `backend/test/utils/mock.ts`, and never with
 CI runs Biome, the type check and the unit tests, and nothing else. A test never
 loads a model: what a model does is measured by an eval, which
 [ADR-0016](docs/adr/0016-a-model-is-judged-by-an-eval-never-by-a-test.md) describes.
+
+An eval is a `*.eval.ts` file in `backend/test/eval/`, in the mirror of
+`infrastructure/`. It calls `runEval` of `backend/test/lib/runEval.ts` with `data`,
+`task` and `scorers`, the shape of Evalite. An eval gives a score, not a pass or a
+fail: the runner prints the score of each case beside the score of the previous run,
+and writes the report into `backend/evals/reports/`. Git versions the reports, so a
+change of model or of cutter carries its evidence in the same commit. CI never runs
+the evals, because CI never downloads a model.
 
 ## The house style
 
