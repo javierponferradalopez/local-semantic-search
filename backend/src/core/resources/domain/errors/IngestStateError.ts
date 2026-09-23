@@ -17,12 +17,4 @@ export class IngestStateError extends DomainError {
   ): IngestStateError {
     return new IngestStateError(`A Resource that is ${ingestState.value} does not fail`);
   }
-
-  public static causeOnlyAFailedResourceIsRetried(
-    ingestState: IngestState
-  ): IngestStateError {
-    return new IngestStateError(
-      `A Resource that is ${ingestState.value} is not ingested again`
-    );
-  }
 }

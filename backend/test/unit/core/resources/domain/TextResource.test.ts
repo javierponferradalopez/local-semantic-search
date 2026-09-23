@@ -1,5 +1,6 @@
 import {INGEST_STATES} from 'contract/IngestState';
 import {IngestStateError} from '../../../../../src/core/resources/domain/errors/IngestStateError';
+import {ResourceNotFailedError} from '../../../../../src/core/resources/domain/errors/ResourceNotFailedError';
 import {TextResourceCreated} from '../../../../../src/core/resources/domain/events/TextResourceCreated';
 import {TextResourceDeleted} from '../../../../../src/core/resources/domain/events/TextResourceDeleted';
 import {TextResourceRetried} from '../../../../../src/core/resources/domain/events/TextResourceRetried';
@@ -195,7 +196,7 @@ describe('TextResource', () => {
         .withIngestState('ingesting')
         .build();
 
-      expect(() => textResource.retry()).toThrow(IngestStateError);
+      expect(() => textResource.retry()).toThrow(ResourceNotFailedError);
     });
 
     it('should refuse a Resource that is Ready', () => {
@@ -203,7 +204,7 @@ describe('TextResource', () => {
         .withIngestState('ready')
         .build();
 
-      expect(() => textResource.retry()).toThrow(IngestStateError);
+      expect(() => textResource.retry()).toThrow(ResourceNotFailedError);
     });
   });
 

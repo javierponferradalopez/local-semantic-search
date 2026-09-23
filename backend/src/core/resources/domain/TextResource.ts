@@ -4,6 +4,7 @@ import type {ReasonCode} from 'contract/ReasonCode';
 import {AggregateRoot} from '../../shared/domain/AggregateRoot';
 import {FileKey} from '../../shared/domain/value-objects/FileKey';
 import {IngestStateError} from './errors/IngestStateError';
+import {ResourceNotFailedError} from './errors/ResourceNotFailedError';
 import {TextResourceCreated} from './events/TextResourceCreated';
 import {TextResourceDeleted} from './events/TextResourceDeleted';
 import {TextResourceRetried} from './events/TextResourceRetried';
@@ -126,7 +127,10 @@ export class TextResource extends AggregateRoot<TextResourcePrimitives> {
 
   public retry(): void {
     if (!this._ingestState.isFailed()) {
-      throw IngestStateError.causeOnlyAFailedResourceIsRetried(this._ingestState);
+      throw ResourceNotFailedError.causeOnlyAFailedResourceIsRetried(
+        this._id,
+        this._ingestState
+      );
     }
 
     this._ingestState = IngestState.ingesting();
