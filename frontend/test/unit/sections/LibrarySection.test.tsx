@@ -1,10 +1,11 @@
-import {screen} from '@testing-library/react';
+import {fireEvent, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {Refusal} from '@/gateways/Refusal';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
 import {LibrarySection} from '@/sections/LibrarySection';
-import {mock} from '../../utils/mock';
+import {type MockProxy, mock} from '../../utils/mock';
 import {renderWithGateways} from '../../utils/renderWithGateways';
 
 const rowNamed = (name: string): ResourceRow => ({
@@ -41,10 +42,7 @@ describe('LibrarySection', () => {
 
     renderWithGateways(<LibrarySection />, {resources});
 
-    await userEvent.upload(
-      screen.getByLabelText('Drop a file here, or pick one.'),
-      new File(['a text'], 'notes.md', {type: 'text/markdown'})
-    );
+    await userEvent.upload(theDropZone(), aFile('notes.md'));
 
     expect(
       await screen.findByText(
@@ -52,4 +50,93 @@ describe('LibrarySection', () => {
       )
     ).toBeDefined();
   });
+
+  describe('the Gate', () => {
+    let resources: MockProxy<ResourceGateway>;
+
+    beforeEach(() => {
+      resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([]);
+      resources.createTextResource.mockResolvedValue(rowNamed('notes.md'));
+    });
+
+    it('should say what the drop zone takes, from the table of contract/', () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      expect(screen.getByText('It takes .pdf, .txt or .md, up to 50 MB.')).toBeDefined();
+      expect(theDropZone().getAttribute('accept')).toBe('.pdf,.txt,.md');
+      expect(theDropZone().hasAttribute('multiple')).toBe(false);
+    });
+
+    it('should refuse a drop that names no Content type, before the bytes travel', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      dropOnTheDropZone(aFile('the notes.docx', {type: 'text/plain'}));
+
+      expect(
+        await screen.findByText(
+          'The library cannot read "the notes.docx". Its extension names no Content type.'
+        )
+      ).toBeDefined();
+      expect(resources.createTextResource).not.toHaveBeenCalled();
+    });
+
+    it('should refuse a file above the limit, and give the size seen and the limit', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.upload(
+        theDropZone(),
+        aFile('manual.pdf', {sizeInBytes: MAXIMUM_FILE_SIZE_IN_BYTES + 1})
+      );
+
+      expect(
+        await screen.findByText('The file is 50.1 MB, and the limit is 50 MB.')
+      ).toBeDefined();
+      expect(resources.createTextResource).not.toHaveBeenCalled();
+    });
+
+    it('should refuse several files, and say how many arrived', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      dropOnTheDropZone(aFile('a.md'), aFile('b.md'), aFile('c.md'));
+
+      expect(
+        await screen.findByText('3 files arrived. Drop one file at a time.')
+      ).toBeDefined();
+      expect(resources.createTextResource).not.toHaveBeenCalled();
+    });
+
+    it('should keep the refusal until the next action of the owner', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      dropOnTheDropZone(aFile('a.md'), aFile('b.md'));
+
+      expect(await screen.findByRole('alert')).toBeDefined();
+
+      dropOnTheDropZone(aFile('notes.md'));
+
+      expect(await screen.findByText('notes.md')).toBeDefined();
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+  });
 });
+
+const theDropZone = (): HTMLInputElement =>
+  screen.getByLabelText<HTMLInputElement>('Drop a file here, or pick one.');
+
+const dropOnTheDropZone = (...files: File[]): void => {
+  fireEvent.drop(theDropZone(), {dataTransfer: {files}});
+};
+
+const aFile = (
+  name: string,
+  {type, sizeInBytes}: {type?: string; sizeInBytes?: number} = {}
+): File => {
+  const file = new File(['a text'], name, {type});
+
+  if (sizeInBytes !== undefined) {
+    Object.defineProperty(file, 'size', {value: sizeInBytes});
+  }
+
+  return file;
+};
