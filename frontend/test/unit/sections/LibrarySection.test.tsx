@@ -1,4 +1,4 @@
-import {fireEvent, screen} from '@testing-library/react';
+import {fireEvent, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import type {ResourceRow} from 'contract/ResourceRow';
@@ -49,6 +49,44 @@ describe('LibrarySection', () => {
         'These bytes are already in the library as "notes.md", which is Ready.'
       )
     ).toBeDefined();
+  });
+
+  describe('Delete', () => {
+    let resources: MockProxy<ResourceGateway>;
+
+    beforeEach(() => {
+      resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([rowNamed('notes.md'), rowNamed('manual.pdf')]);
+    });
+
+    it('should take the row out of the list when the owner deletes it', async () => {
+      resources.deleteTextResource.mockResolvedValue();
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
+
+      expect(resources.deleteTextResource).toHaveBeenCalledWith('notes.md');
+      await waitFor(() => expect(screen.queryByText('notes.md')).toBeNull());
+      expect(screen.getByText('manual.pdf')).toBeDefined();
+    });
+
+    it('should keep the row and show the text of a Refusal', async () => {
+      resources.deleteTextResource.mockRejectedValue(
+        new Refusal([{code: 'resource_not_found', params: {resourceId: 'notes.md'}}])
+      );
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
+
+      expect(
+        await screen.findByText(
+          'The library no longer holds this Resource. Reload the page.'
+        )
+      ).toBeDefined();
+      expect(screen.getByText('notes.md')).toBeDefined();
+    });
   });
 
   describe('the Gate', () => {
