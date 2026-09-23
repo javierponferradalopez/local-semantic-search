@@ -1,0 +1,39 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0 auto;
+  max-width: 60rem;
+  padding: 1rem;
+}
+
+.drop-zone {
+  align-items: center;
+  border: 2px dashed currentcolor;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 2rem;
+}
+
+.drop-zone--under-a-drag {
+  border-style: solid;
+}
+
+.refusal {
+  border-left: 4px solid currentcolor;
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+}
+
+.resource-list {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.resource-list th,
+.resource-list td {
+  border-bottom: 1px solid currentcolor;
+  padding: 0.5rem;
+  text-align: left;
+}

@@ -1,0 +1,41 @@
+import type {ResourceRow} from 'contract/ResourceRow';
+import type {JSX} from 'react';
+import {textOfIngestState} from '@/library/textOfIngestState';
+
+type Props = {rows: ResourceRow[]};
+
+export const ResourceList = ({rows}: Props): JSX.Element => {
+  if (rows.length === 0) {
+    return <p>The library holds nothing yet.</p>;
+  }
+
+  return (
+    <table className="resource-list">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Content type</th>
+          <th scope="col">Ingest state</th>
+          <th scope="col">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(row => (
+          <tr key={row.id}>
+            <td>{row.name}</td>
+            <td>{row.contentType}</td>
+            <td>
+              {textOfIngestState(row.ingestState)}
+              {row.ingestState === 'ingesting' && <progress aria-label="Ingesting" />}
+            </td>
+            <td>
+              <time dateTime={row.createdAt}>
+                {new Date(row.createdAt).toLocaleString('en-GB')}
+              </time>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};

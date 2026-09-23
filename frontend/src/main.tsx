@@ -1,6 +1,9 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import {App} from '@/App';
+import {GatewaysProvider} from '@/config/GatewaysContext';
+import {HttpResourceGateway} from '@/gateways/http/HttpResourceGateway';
+import '@/index.css';
 
 const root = document.getElementById('root');
 
@@ -10,6 +13,8 @@ if (root === null) {
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <GatewaysProvider gateways={{resources: new HttpResourceGateway()}}>
+      <App />
+    </GatewaysProvider>
   </StrictMode>
 );
