@@ -1,6 +1,8 @@
+import type {ErrorItem} from 'contract/ErrorItem';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {type JSX, useEffect, useState} from 'react';
 import {useResourceGateway} from '@/config/GatewaysContext';
+import {textsOfErrorItems} from '@/errors/textsOfErrorItems';
 import {textsOfFailure} from '@/errors/textsOfFailure';
 import {DropZone} from '@/library/DropZone';
 import {ResourceList} from '@/library/ResourceList';
@@ -29,7 +31,10 @@ export const LibrarySection = (): JSX.Element => {
   return (
     <section aria-labelledby="library-heading">
       <h2 id="library-heading">Library</h2>
-      <DropZone onFile={create} />
+      <DropZone
+        onFile={create}
+        onRefusal={(item: ErrorItem): void => setRefusal(textsOfErrorItems([item]))}
+      />
       {refusal.length > 0 && (
         <ul className="refusal" role="alert">
           {refusal.map(text => (
