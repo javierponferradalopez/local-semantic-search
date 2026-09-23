@@ -1,3 +1,3 @@
-import {mock, mockReset} from 'vitest-mock-extended';
+import {type MockProxy, mock, mockReset} from 'vitest-mock-extended';
 
-export {mock, mockReset};
+export {type MockProxy, mock, mockReset};
