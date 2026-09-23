@@ -23,7 +23,11 @@ export const ResourceList = ({rows, onDelete}: Props): JSX.Element => {
       <tbody>
         {rows.map(row => (
           <tr key={row.id}>
-            <td>{row.name}</td>
+            <td>
+              <a href={row.fileUrl} target="_blank" rel="noopener noreferrer">
+                {row.name}
+              </a>
+            </td>
             <td>{row.contentType}</td>
             <td>
               {textOfIngestState(row.ingestState)}
