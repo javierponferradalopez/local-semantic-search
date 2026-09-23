@@ -2,9 +2,9 @@ import type {ResourceRow} from 'contract/ResourceRow';
 import type {JSX} from 'react';
 import {textOfIngestState} from '@/library/textOfIngestState';
 
-type Props = {rows: ResourceRow[]};
+type Props = {rows: ResourceRow[]; onDelete: (row: ResourceRow) => void};
 
-export const ResourceList = ({rows}: Props): JSX.Element => {
+export const ResourceList = ({rows, onDelete}: Props): JSX.Element => {
   if (rows.length === 0) {
     return <p>The library holds nothing yet.</p>;
   }
@@ -17,6 +17,7 @@ export const ResourceList = ({rows}: Props): JSX.Element => {
           <th scope="col">Content type</th>
           <th scope="col">Ingest state</th>
           <th scope="col">Created</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -32,6 +33,15 @@ export const ResourceList = ({rows}: Props): JSX.Element => {
               <time dateTime={row.createdAt}>
                 {new Date(row.createdAt).toLocaleString('en-GB')}
               </time>
+            </td>
+            <td>
+              <button
+                type="button"
+                aria-label={`Delete ${row.name}`}
+                onClick={(): void => onDelete(row)}
+              >
+                Delete
+              </button>
             </td>
           </tr>
         ))}

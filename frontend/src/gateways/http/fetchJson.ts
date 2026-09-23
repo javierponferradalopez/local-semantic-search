@@ -1,24 +1,4 @@
-import type {ErrorItem} from 'contract/ErrorItem';
-import {Refusal} from '@/gateways/Refusal';
+import {fetchOrRefuse} from '@/gateways/http/fetchOrRefuse';
 
-export const fetchJson = async <Body>(
-  path: string,
-  init?: RequestInit
-): Promise<Body> => {
-  const response = await fetch(path, init);
-
-  if (!response.ok) {
-    throw new Refusal(await itemsOf(response));
-  }
-
-  return (await response.json()) as Body;
-};
-
-const itemsOf = async (response: Response): Promise<ErrorItem[]> => {
-  const body = (await response.json().catch(() => undefined)) as
-    | {errors?: unknown}
-    | undefined;
-  const errors = body?.errors;
-
-  return Array.isArray(errors) ? (errors as ErrorItem[]) : [];
-};
+export const fetchJson = async <Body>(path: string, init?: RequestInit): Promise<Body> =>
+  (await (await fetchOrRefuse(path, init)).json()) as Body;

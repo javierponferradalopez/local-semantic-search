@@ -28,6 +28,15 @@ export const LibrarySection = (): JSX.Element => {
       .catch((failure: unknown) => setRefusal(textsOfFailure(failure)));
   };
 
+  const remove = ({id}: ResourceRow): void => {
+    setRefusal([]);
+
+    resources
+      .deleteTextResource(id)
+      .then(() => setRows(listed => listed.filter(row => row.id !== id)))
+      .catch((failure: unknown) => setRefusal(textsOfFailure(failure)));
+  };
+
   return (
     <section aria-labelledby="library-heading">
       <h2 id="library-heading">Library</h2>
@@ -42,7 +51,7 @@ export const LibrarySection = (): JSX.Element => {
           ))}
         </ul>
       )}
-      <ResourceList rows={rows} />
+      <ResourceList rows={rows} onDelete={remove} />
     </section>
   );
 };

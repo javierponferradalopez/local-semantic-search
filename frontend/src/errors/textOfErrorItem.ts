@@ -23,7 +23,11 @@ const TEXT_BY_CODE: TextOfEachCode = {
   duplicate_resource: ({name, ingestState}: ParamsOf<'duplicate_resource'>): string =>
     `These bytes are already in the library as "${name}", which is ${textOfIngestState(ingestState)}.`,
   multiple_files: ({count}: ParamsOf<'multiple_files'>): string =>
-    `${count} files arrived. Drop one file at a time.`
+    `${count} files arrived. Drop one file at a time.`,
+  resource_not_found: (): string =>
+    'The library no longer holds this Resource. Reload the page.',
+  invalid_input: ({path}: ParamsOf<'invalid_input'>): string =>
+    `The server refused the value of "${path}".`
 };
 
 export const textOfErrorItem = <Code extends ErrorItem['code']>(

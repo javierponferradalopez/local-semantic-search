@@ -4,4 +4,5 @@ import type {GetResourcesResponse} from 'contract/GetResourcesResponse';
 export interface ResourceGateway {
   list(): Promise<GetResourcesResponse>;
   createTextResource(file: File): Promise<CreateTextResourceResponse>;
+  deleteTextResource(id: string): Promise<void>;
 }

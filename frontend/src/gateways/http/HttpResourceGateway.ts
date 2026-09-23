@@ -2,6 +2,7 @@ import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {CreateTextResourceResponse} from 'contract/CreateTextResourceResponse';
 import type {GetResourcesResponse} from 'contract/GetResourcesResponse';
 import {fetchJson} from '@/gateways/http/fetchJson';
+import {fetchOrRefuse} from '@/gateways/http/fetchOrRefuse';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
 
 export class HttpResourceGateway implements ResourceGateway {
@@ -18,5 +19,9 @@ export class HttpResourceGateway implements ResourceGateway {
       method: 'POST',
       body
     });
+  }
+
+  public async deleteTextResource(id: string): Promise<void> {
+    await fetchOrRefuse(`/resources/texts/${encodeURIComponent(id)}`, {method: 'DELETE'});
   }
 }
