@@ -59,6 +59,7 @@ the transport and the tools of the browser. The code is the contract.
 | A file above the limit | 413 | `file_too_large` |
 | The same bytes are already stored | 409 | `duplicate_resource` |
 | An identifier that is not known | 404 | `resource_not_found` |
+| A Retry on a Resource that is not `Failed` | 409 | `resource_not_failed`, with `resourceId` and the `Ingest state` in its params |
 | Stage 2 of the Ingest fails | 422 | the `Reason`, with `resourceId` in its params |
 
 **415 is refused for an unsupported content type.** That status speaks about the
