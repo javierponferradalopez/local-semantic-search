@@ -1,3 +1,4 @@
+import {randomUUID} from 'node:crypto';
 import {readdir} from 'node:fs/promises';
 import {request, type Server} from 'node:http';
 import type {AddressInfo} from 'node:net';
@@ -15,7 +16,9 @@ import {testFilesDirectory, wipeTheData, wipeTheFiles} from '../lib/testInfrastr
 
 const CREATED = 201;
 const OK = 200;
+const NO_CONTENT = 204;
 const BAD_REQUEST = 400;
+const NOT_FOUND = 404;
 const CONFLICT = 409;
 const CONTENT_TOO_LARGE = 413;
 
@@ -169,6 +172,53 @@ describe('the routes of a Resource', () => {
     });
   });
 
+  describe('DELETE /resources/texts/:id', () => {
+    it('should give 204, and leave no row and no File', async () => {
+      const created = (await (
+        await createTextResource('the notes.md', 'the notes')
+      ).json()) as ResourceRow;
+
+      const response = await deleteTextResource(created.id);
+
+      expect(response.status).toBe(NO_CONTENT);
+      await expectNothingStored();
+    });
+
+    it('should leave the other Resources alone', async () => {
+      const deleted = (await (
+        await createTextResource('the first.md', 'the first')
+      ).json()) as ResourceRow;
+      await createTextResource('the second.md', 'the second');
+
+      await deleteTextResource(deleted.id);
+
+      expect((await getResources()).map(row => row.name)).toStrictEqual([
+        'the second.md'
+      ]);
+    });
+
+    it('should give 404 and resource_not_found for an identifier that no Resource holds', async () => {
+      const resourceId = randomUUID();
+
+      const response = await deleteTextResource(resourceId);
+
+      expect(response.status).toBe(NOT_FOUND);
+      expect(response.headers.get('content-type')).toContain('application/json');
+      expect(await response.json()).toStrictEqual({
+        errors: [{code: 'resource_not_found', params: {resourceId}}]
+      } satisfies ApiError);
+    });
+
+    it('should give 400 and invalid_input for an identifier that is not a UUID', async () => {
+      const response = await deleteTextResource('not-a-uuid');
+
+      expect(response.status).toBe(BAD_REQUEST);
+      expect(await response.json()).toStrictEqual({
+        errors: [{code: 'invalid_input', params: {path: 'id'}}]
+      } satisfies ApiError);
+    });
+  });
+
   describe('the shape of every response', () => {
     it('should obey the types that contract/ declares', async () => {
       const response = await createTextResource('the notes.md', 'the notes');
@@ -201,6 +251,9 @@ describe('the routes of a Resource', () => {
 
     return fetch(`${origin}/resources/texts`, {method: 'POST', body});
   };
+
+  const deleteTextResource = (id: string): Promise<Response> =>
+    fetch(`${origin}/resources/texts/${id}`, {method: 'DELETE'});
 
   const getResources = async (): Promise<ResourceRow[]> =>
     (await (await fetch(`${origin}/resources`)).json()) as ResourceRow[];
