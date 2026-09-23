@@ -3,8 +3,8 @@ import {registerControllersDependencies} from '../config/di/RegisterControllersD
 import {registerDomainDependencies} from '../config/di/RegisterDomainDependencies';
 import {registerInfrastructureDependencies} from '../config/di/RegisterInfrastructureDependencies';
 
-export const configureContainer = (): void => {
-  registerInfrastructureDependencies();
+export const configureContainer = async (): Promise<void> => {
+  await registerInfrastructureDependencies();
   registerDomainDependencies();
   registerApplicationDependencies();
   registerControllersDependencies();

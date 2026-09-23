@@ -32,8 +32,8 @@ describe('the routes of a Resource', () => {
   let server: Server;
   let origin: string;
 
-  beforeAll(() => {
-    server = createApp().listen(0);
+  beforeAll(async () => {
+    server = (await createApp()).listen(0);
     origin = `http://localhost:${(server.address() as AddressInfo).port}`;
   });
 

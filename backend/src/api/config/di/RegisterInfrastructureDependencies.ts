@@ -6,11 +6,13 @@ import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructu
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
 import {InProcessEventBus} from '../../../core/shared/infrastructure/InProcessEventBus';
+import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
 import {container} from './Container';
 
-export const registerInfrastructureDependencies = (): void => {
+export const registerInfrastructureDependencies = async (): Promise<void> => {
+  const textEmbedder = await TransformersTextEmbedder.load();
   const pool = new Pool({connectionString: env.database.url});
   const connection = new DrizzleConnection({database: drizzle(pool)});
 
@@ -33,4 +35,5 @@ export const registerInfrastructureDependencies = (): void => {
     ExtensionContentTypeResolver,
     new ExtensionContentTypeResolver()
   );
+  container.registerImplementation(TransformersTextEmbedder, textEmbedder);
 };

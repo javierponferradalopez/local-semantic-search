@@ -3,8 +3,17 @@ import {createApp} from './app';
 import {createResourcesFolder} from './config/createResourcesFolder';
 import {env} from './env/env';
 
-await createResourcesFolder();
+const start = async (): Promise<void> => {
+  await createResourcesFolder();
 
-createApp().listen(env.server.port, () => {
-  console.log(`${APP_NAME} listens on http://localhost:${env.server.port}`);
+  const app = await createApp();
+
+  app.listen(env.server.port, () => {
+    console.log(`${APP_NAME} listens on http://localhost:${env.server.port}`);
+  });
+};
+
+start().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
 });

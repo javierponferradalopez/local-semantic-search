@@ -1,4 +1,5 @@
-export type Port<T> = abstract new (...args: never[]) => T;
+// A shape, not a constructor type, so that a class with a private constructor is a Port too.
+export type Port<T> = {readonly name: string; readonly prototype: T};
 
 export type DependencyIdentifier<T> = string | Port<T>;
 
