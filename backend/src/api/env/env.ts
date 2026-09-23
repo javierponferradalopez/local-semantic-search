@@ -24,5 +24,6 @@ const getWholeNumberEnv = (name: string): number => {
 
 export const env = {
   server: {port: getWholeNumberEnv('PORT')},
-  database: {url: getEnv('DATABASE_URL')}
+  database: {url: getEnv('DATABASE_URL')},
+  files: {directory: getEnv('FILES_DIRECTORY')}
 } as const;
