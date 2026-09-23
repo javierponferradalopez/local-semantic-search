@@ -2,6 +2,7 @@ import {DrizzleResourceReader} from '../../../core/resources/infrastructure/driz
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
 import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextResource';
+import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
@@ -9,15 +10,18 @@ import {InProcessEventBus} from '../../../core/shared/infrastructure/InProcessEv
 import {container} from './Container';
 
 export const registerApplicationDependencies = (): void => {
+  const resourceRepository = container.getDependency(DrizzleResourceRepository);
   const fileStore = container.getDependency(FilesystemFileStore);
+  const eventBus = container.getDependency(InProcessEventBus);
+  const transactionRunner = container.getDependency(DrizzleConnection);
 
   container.registerImplementation(
     CreateTextResource,
     new CreateTextResource({
-      resourceRepository: container.getDependency(DrizzleResourceRepository),
+      resourceRepository,
       fileStore,
-      eventBus: container.getDependency(InProcessEventBus),
-      transactionRunner: container.getDependency(DrizzleConnection),
+      eventBus,
+      transactionRunner,
       contentTypeResolver: container.getDependency(ExtensionContentTypeResolver)
     })
   );
@@ -28,5 +32,10 @@ export const registerApplicationDependencies = (): void => {
       resourceReader: container.getDependency(DrizzleResourceReader),
       fileStore
     })
+  );
+
+  container.registerImplementation(
+    DeleteResource,
+    new DeleteResource({resourceRepository, fileStore, eventBus, transactionRunner})
   );
 };

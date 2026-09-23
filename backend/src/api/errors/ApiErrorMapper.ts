@@ -1,5 +1,7 @@
 import type {ApiError} from 'contract/ApiError';
+import {ZodError} from 'zod';
 import {DuplicateResourceError} from '../../core/resources/domain/errors/DuplicateResourceError';
+import {ResourceNotFoundError} from '../../core/resources/domain/errors/ResourceNotFoundError';
 import {UnsupportedContentTypeError} from '../../core/resources/domain/errors/UnsupportedContentTypeError';
 import {FileTooLargeError} from './FileTooLargeError';
 import {MultipleFilesError} from './MultipleFilesError';
@@ -7,6 +9,7 @@ import {MultipleFilesError} from './MultipleFilesError';
 export type ApiErrorResponse = {status: number; body: ApiError};
 
 const BAD_REQUEST = 400;
+const NOT_FOUND = 404;
 const CONFLICT = 409;
 const CONTENT_TOO_LARGE = 413;
 
@@ -41,6 +44,27 @@ export const ApiErrorMapper = {
       return {
         status: BAD_REQUEST,
         body: {errors: [{code: 'multiple_files', params: {count: error.count}}]}
+      };
+    }
+
+    if (error instanceof ResourceNotFoundError) {
+      return {
+        status: NOT_FOUND,
+        body: {
+          errors: [{code: 'resource_not_found', params: {resourceId: error.resourceId}}]
+        }
+      };
+    }
+
+    if (error instanceof ZodError) {
+      return {
+        status: BAD_REQUEST,
+        body: {
+          errors: error.issues.map(issue => ({
+            code: 'invalid_input',
+            params: {path: issue.path.join('.')}
+          }))
+        }
       };
     }
 
