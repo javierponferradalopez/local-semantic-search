@@ -1,13 +1,20 @@
 import {DomainError} from '../../../shared/domain/errors/DomainError';
 
 export class UnsupportedContentTypeError extends DomainError {
-  private constructor(message: string) {
-    super(message);
+  private readonly _fileName: string;
+
+  private constructor(fileName: string) {
+    super(`The name ${fileName} names no Content type`);
+    this._fileName = fileName;
   }
 
   public static causeTheNameHoldsNoKnownExtension(
-    name: string
+    fileName: string
   ): UnsupportedContentTypeError {
-    return new UnsupportedContentTypeError(`The name ${name} names no Content type`);
+    return new UnsupportedContentTypeError(fileName);
+  }
+
+  public get fileName(): string {
+    return this._fileName;
   }
 }
