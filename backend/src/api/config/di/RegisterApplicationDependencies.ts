@@ -4,6 +4,7 @@ import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructu
 import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextResource';
 import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
+import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
 import {InProcessEventBus} from '../../../core/shared/infrastructure/InProcessEventBus';
@@ -37,5 +38,10 @@ export const registerApplicationDependencies = (): void => {
   container.registerImplementation(
     DeleteResource,
     new DeleteResource({resourceRepository, fileStore, eventBus, transactionRunner})
+  );
+
+  container.registerImplementation(
+    RetryTextResource,
+    new RetryTextResource({resourceRepository, fileStore, eventBus, transactionRunner})
   );
 };

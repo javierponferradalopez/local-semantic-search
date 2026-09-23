@@ -1,6 +1,7 @@
 import type {ApiError} from 'contract/ApiError';
 import {ZodError} from 'zod';
 import {DuplicateResourceError} from '../../core/resources/domain/errors/DuplicateResourceError';
+import {ResourceNotFailedError} from '../../core/resources/domain/errors/ResourceNotFailedError';
 import {ResourceNotFoundError} from '../../core/resources/domain/errors/ResourceNotFoundError';
 import {UnsupportedContentTypeError} from '../../core/resources/domain/errors/UnsupportedContentTypeError';
 import {FileTooLargeError} from './FileTooLargeError';
@@ -53,6 +54,15 @@ export const ApiErrorMapper = {
         body: {
           errors: [{code: 'resource_not_found', params: {resourceId: error.resourceId}}]
         }
+      };
+    }
+
+    if (error instanceof ResourceNotFailedError) {
+      const {resourceId, ingestState} = error;
+
+      return {
+        status: CONFLICT,
+        body: {errors: [{code: 'resource_not_failed', params: {resourceId, ingestState}}]}
       };
     }
 
