@@ -1,9 +1,6 @@
+import {INGEST_STATES, type IngestState as IngestStateValue} from 'contract/IngestState';
 import {ValueObjectError} from '../../../shared/domain/errors/ValueObjectError';
 import {ValueObject} from '../../../shared/domain/value-objects/ValueObject';
-
-export const INGEST_STATES = ['ingesting', 'ready', 'failed'] as const;
-
-export type IngestStateValue = (typeof INGEST_STATES)[number];
 
 type ConstructorParams = {value: IngestStateValue};
 

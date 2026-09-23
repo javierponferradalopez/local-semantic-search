@@ -1,4 +1,6 @@
 import type {ContentType as ContentTypeValue} from 'contract/ContentType';
+import type {IngestState as IngestStateValue} from 'contract/IngestState';
+import type {ReasonCode} from 'contract/ReasonCode';
 import {AggregateRoot} from '../../shared/domain/AggregateRoot';
 import {FileKey} from '../../shared/domain/value-objects/FileKey';
 import {IngestStateError} from './errors/IngestStateError';
@@ -8,8 +10,8 @@ import {TextResourceRetried} from './events/TextResourceRetried';
 import {Checksum} from './value-objects/Checksum';
 import {ContentType} from './value-objects/ContentType';
 import {CreatedAt} from './value-objects/CreatedAt';
-import {IngestState, type IngestStateValue} from './value-objects/IngestState';
-import {Reason, type ReasonValue} from './value-objects/Reason';
+import {IngestState} from './value-objects/IngestState';
+import {Reason} from './value-objects/Reason';
 import {ResourceId} from './value-objects/ResourceId';
 import {ResourceName} from './value-objects/ResourceName';
 
@@ -34,7 +36,7 @@ export type TextResourcePrimitives = {
   checksum: string;
   createdAt: string;
   ingestState: IngestStateValue;
-  reason?: ReasonValue;
+  reason?: ReasonCode;
 };
 
 export class TextResource extends AggregateRoot<TextResourcePrimitives> {

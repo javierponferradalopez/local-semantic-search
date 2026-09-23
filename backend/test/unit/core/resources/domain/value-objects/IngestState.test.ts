@@ -1,7 +1,5 @@
-import {
-  INGEST_STATES,
-  IngestState
-} from '../../../../../../src/core/resources/domain/value-objects/IngestState';
+import {INGEST_STATES} from 'contract/IngestState';
+import {IngestState} from '../../../../../../src/core/resources/domain/value-objects/IngestState';
 import {ValueObjectError} from '../../../../../../src/core/shared/domain/errors/ValueObjectError';
 
 describe('IngestState', () => {

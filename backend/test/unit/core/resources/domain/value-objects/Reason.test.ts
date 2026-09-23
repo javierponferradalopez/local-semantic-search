@@ -1,12 +1,10 @@
-import {
-  REASONS,
-  Reason
-} from '../../../../../../src/core/resources/domain/value-objects/Reason';
+import {REASON_CODES} from 'contract/ReasonCode';
+import {Reason} from '../../../../../../src/core/resources/domain/value-objects/Reason';
 import {ValueObjectError} from '../../../../../../src/core/shared/domain/errors/ValueObjectError';
 
 describe('Reason', () => {
   describe('.of', () => {
-    it.each([...REASONS])('should take %s', value => {
+    it.each([...REASON_CODES])('should take %s', value => {
       expect(Reason.of({value}).value).toBe(value);
     });
 

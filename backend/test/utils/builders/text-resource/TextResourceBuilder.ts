@@ -1,9 +1,9 @@
+import type {IngestState} from 'contract/IngestState';
+import type {ReasonCode} from 'contract/ReasonCode';
 import {
   TextResource,
   type TextResourcePrimitives
 } from '../../../../src/core/resources/domain/TextResource';
-import type {IngestStateValue} from '../../../../src/core/resources/domain/value-objects/IngestState';
-import type {ReasonValue} from '../../../../src/core/resources/domain/value-objects/Reason';
 import {StringMother} from '../../object-mother/StringMother';
 
 export class TextResourceBuilder {
@@ -24,11 +24,15 @@ export class TextResourceBuilder {
     });
   }
 
-  public withIngestState(ingestState: IngestStateValue): TextResourceBuilder {
+  public withIngestState(ingestState: IngestState): TextResourceBuilder {
     return new TextResourceBuilder({...this.primitives, ingestState});
   }
 
-  public withReason(reason: ReasonValue): TextResourceBuilder {
+  public withCreatedAt(createdAt: string): TextResourceBuilder {
+    return new TextResourceBuilder({...this.primitives, createdAt});
+  }
+
+  public withReason(reason: ReasonCode): TextResourceBuilder {
     return new TextResourceBuilder({...this.primitives, reason});
   }
 

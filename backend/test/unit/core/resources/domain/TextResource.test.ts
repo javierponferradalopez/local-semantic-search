@@ -1,3 +1,4 @@
+import {INGEST_STATES} from 'contract/IngestState';
 import {IngestStateError} from '../../../../../src/core/resources/domain/errors/IngestStateError';
 import {TextResourceCreated} from '../../../../../src/core/resources/domain/events/TextResourceCreated';
 import {TextResourceDeleted} from '../../../../../src/core/resources/domain/events/TextResourceDeleted';
@@ -6,7 +7,6 @@ import {TextResource} from '../../../../../src/core/resources/domain/TextResourc
 import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
 import {ContentType} from '../../../../../src/core/resources/domain/value-objects/ContentType';
 import {CreatedAt} from '../../../../../src/core/resources/domain/value-objects/CreatedAt';
-import {INGEST_STATES} from '../../../../../src/core/resources/domain/value-objects/IngestState';
 import {Reason} from '../../../../../src/core/resources/domain/value-objects/Reason';
 import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {ResourceName} from '../../../../../src/core/resources/domain/value-objects/ResourceName';
