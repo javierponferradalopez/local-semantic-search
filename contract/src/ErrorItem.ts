@@ -20,8 +20,20 @@ type MultipleFiles = {
   params: {count: number};
 };
 
+type ResourceNotFound = {
+  code: 'resource_not_found';
+  params: {resourceId: string};
+};
+
+type InvalidInput = {
+  code: 'invalid_input';
+  params: {path: string};
+};
+
 export type ErrorItem =
   | UnsupportedContentType
   | FileTooLarge
   | DuplicateResource
-  | MultipleFiles;
+  | MultipleFiles
+  | ResourceNotFound
+  | InvalidInput;
