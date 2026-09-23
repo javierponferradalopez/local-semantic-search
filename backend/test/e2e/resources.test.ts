@@ -13,7 +13,10 @@ import type {ResourceRow} from 'contract/ResourceRow';
 import {Pool} from 'pg';
 import {createApp} from '../../src/api/app';
 import {container} from '../../src/api/config/di/Container';
+import type {TextResource} from '../../src/core/resources/domain/TextResource';
+import {DrizzleResourceRepository} from '../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {testFilesDirectory, wipeTheData, wipeTheFiles} from '../lib/testInfrastructure';
+import {TextResourceBuilder} from '../utils/builders/text-resource/TextResourceBuilder';
 
 const CREATED = 201;
 const OK = 200;
@@ -222,6 +225,73 @@ describe('the routes of a Resource', () => {
     });
   });
 
+  describe('POST /resources/texts/:id/retry', () => {
+    it('should give 200 and the row of the Resource back in Ingesting, with no Reason', async () => {
+      const failed = await storeAFailedTextResource();
+
+      const response = await retryTextResource(failed.id.value);
+
+      expect(response.status).toBe(OK);
+
+      const row = await response.json();
+
+      expectAResourceRow(row);
+      expect((row as ResourceRow).ingestState).toBe('ingesting');
+      expect(row).not.toHaveProperty('reason');
+    });
+
+    it('should leave the Resource in Ingesting in the list', async () => {
+      const failed = await storeAFailedTextResource();
+
+      await retryTextResource(failed.id.value);
+
+      const [row] = await getResources();
+
+      expect(row?.id).toBe(failed.id.value);
+      expect(row?.ingestState).toBe('ingesting');
+      expect(row).not.toHaveProperty('reason');
+    });
+
+    it('should give 409 and resource_not_failed for a Resource that is not Failed', async () => {
+      const created = (await (
+        await createTextResource('the notes.md', 'the notes')
+      ).json()) as ResourceRow;
+
+      const response = await retryTextResource(created.id);
+
+      expect(response.status).toBe(CONFLICT);
+      expect(response.headers.get('content-type')).toContain('application/json');
+      expect(await response.json()).toStrictEqual({
+        errors: [
+          {
+            code: 'resource_not_failed',
+            params: {resourceId: created.id, ingestState: 'ingesting'}
+          }
+        ]
+      } satisfies ApiError);
+    });
+
+    it('should give 404 and resource_not_found for an identifier that no Resource holds', async () => {
+      const resourceId = randomUUID();
+
+      const response = await retryTextResource(resourceId);
+
+      expect(response.status).toBe(NOT_FOUND);
+      expect(await response.json()).toStrictEqual({
+        errors: [{code: 'resource_not_found', params: {resourceId}}]
+      } satisfies ApiError);
+    });
+
+    it('should give 400 and invalid_input for an identifier that is not a UUID', async () => {
+      const response = await retryTextResource('not-a-uuid');
+
+      expect(response.status).toBe(BAD_REQUEST);
+      expect(await response.json()).toStrictEqual({
+        errors: [{code: 'invalid_input', params: {path: 'id'}}]
+      } satisfies ApiError);
+    });
+  });
+
   describe('GET the fileUrl of a row', () => {
     it.each([
       ['two-pages-with-text.pdf', 'application/pdf'],
@@ -303,6 +373,21 @@ describe('the routes of a Resource', () => {
 
   const deleteTextResource = (id: string): Promise<Response> =>
     fetch(`${origin}/resources/texts/${id}`, {method: 'DELETE'});
+
+  const retryTextResource = (id: string): Promise<Response> =>
+    fetch(`${origin}/resources/texts/${id}/retry`, {method: 'POST'});
+
+  // No Resource reaches Failed over HTTP yet, so the row is written straight to the store.
+  const storeAFailedTextResource = async (): Promise<TextResource> => {
+    const textResource = TextResourceBuilder.aTextResource()
+      .withIngestState('failed')
+      .withReason('ingest_error')
+      .build();
+
+    await container.getDependency(DrizzleResourceRepository).save(textResource);
+
+    return textResource;
+  };
 
   const getResources = async (): Promise<ResourceRow[]> =>
     (await (await fetch(`${origin}/resources`)).json()) as ResourceRow[];
