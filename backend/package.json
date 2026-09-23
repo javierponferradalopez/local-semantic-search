@@ -15,10 +15,12 @@
     "test:e2e": "vitest run --mode e2e"
   },
   "dependencies": {
+    "@types/multer": "^2.2.0",
     "contract": "workspace:*",
     "dotenv": "17.2.4",
     "drizzle-orm": "0.45.3",
     "express": "5.2.1",
+    "multer": "^2.4.0",
     "pg": "8.17.0"
   },
   "devDependencies": {
