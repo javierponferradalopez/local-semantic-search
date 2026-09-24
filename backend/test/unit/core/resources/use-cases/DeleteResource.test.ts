@@ -1,6 +1,6 @@
 import {INGEST_STATES, type IngestState} from 'contract/IngestState';
 import {ResourceNotFoundError} from '../../../../../src/core/resources/domain/errors/ResourceNotFoundError';
-import {TextResourceDeleted} from '../../../../../src/core/resources/domain/events/TextResourceDeleted';
+import {TextResourceDeletedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceDeletedDomainEvent';
 import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import type {TextResource} from '../../../../../src/core/resources/domain/TextResource';
 import {DeleteResource} from '../../../../../src/core/resources/use-cases/DeleteResource';
@@ -60,14 +60,14 @@ describe('DeleteResource', () => {
       expect(fileStore.delete.mock.calls[0]?.[0].value).toBe(textResource.fileKey.value);
     });
 
-    it('should raise TextResourceDeleted after the transaction commits', async () => {
+    it('should raise TextResourceDeletedDomainEvent after the transaction commits', async () => {
       const textResource = aStoredTextResource();
 
       await deleteResource.run({id: textResource.id.value});
 
       const [events] = eventBus.publish.mock.calls[0] ?? [];
 
-      expect(events?.[0]).toBeInstanceOf(TextResourceDeleted);
+      expect(events?.[0]).toBeInstanceOf(TextResourceDeletedDomainEvent);
       expect(events?.[0]?.aggregateId).toBe(textResource.id.value);
       expect(steps).toStrictEqual([
         'delete the row',

@@ -1,9 +1,9 @@
 import {INGEST_STATES} from 'contract/IngestState';
 import {IngestStateError} from '../../../../../src/core/resources/domain/errors/IngestStateError';
 import {ResourceNotFailedError} from '../../../../../src/core/resources/domain/errors/ResourceNotFailedError';
-import {TextResourceCreated} from '../../../../../src/core/resources/domain/events/TextResourceCreated';
-import {TextResourceDeleted} from '../../../../../src/core/resources/domain/events/TextResourceDeleted';
-import {TextResourceRetried} from '../../../../../src/core/resources/domain/events/TextResourceRetried';
+import {TextResourceCreatedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceCreatedDomainEvent';
+import {TextResourceDeletedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceDeletedDomainEvent';
+import {TextResourceRetriedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceRetriedDomainEvent';
 import {TextResource} from '../../../../../src/core/resources/domain/TextResource';
 import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
 import {ContentType} from '../../../../../src/core/resources/domain/value-objects/ContentType';
@@ -38,27 +38,27 @@ describe('TextResource', () => {
       expect(textResource.toPrimitives().reason).toBeUndefined();
     });
 
-    it('should register TextResourceCreated', () => {
+    it('should register TextResourceCreatedDomainEvent', () => {
       const textResource = aCreatedTextResource();
 
       const [event] = textResource.pullEvents();
 
-      expect(event).toBeInstanceOf(TextResourceCreated);
+      expect(event).toBeInstanceOf(TextResourceCreatedDomainEvent);
       expect(event?.aggregateId).toBe(textResource.id.value);
     });
 
-    it('should carry the Content type and the key of the File in TextResourceCreated', () => {
+    it('should carry the Content type and the key of the File in TextResourceCreatedDomainEvent', () => {
       const textResource = aCreatedTextResource();
 
       const [event] = textResource
         .pullEvents()
-        .filter(pulled => pulled instanceof TextResourceCreated);
+        .filter(pulled => pulled instanceof TextResourceCreatedDomainEvent);
 
       expect(event?.contentType).toBe('markdown');
       expect(event?.fileKey).toBe(textResource.fileKey.value);
     });
 
-    it('should register TextResourceCreated once and nothing else', () => {
+    it('should register TextResourceCreatedDomainEvent once and nothing else', () => {
       const textResource = aCreatedTextResource();
 
       expect(textResource.pullEvents()).toHaveLength(1);
@@ -161,7 +161,7 @@ describe('TextResource', () => {
       expect(textResource.toPrimitives().reason).toBeUndefined();
     });
 
-    it('should register TextResourceRetried', () => {
+    it('should register TextResourceRetriedDomainEvent', () => {
       const textResource = TextResourceBuilder.aTextResource()
         .withIngestState('failed')
         .withReason('ingest_error')
@@ -171,11 +171,11 @@ describe('TextResource', () => {
 
       const [event] = textResource.pullEvents();
 
-      expect(event).toBeInstanceOf(TextResourceRetried);
+      expect(event).toBeInstanceOf(TextResourceRetriedDomainEvent);
       expect(event?.aggregateId).toBe(textResource.id.value);
     });
 
-    it('should carry the Content type and the key of the File in TextResourceRetried', () => {
+    it('should carry the Content type and the key of the File in TextResourceRetriedDomainEvent', () => {
       const textResource = TextResourceBuilder.aTextResource()
         .withIngestState('failed')
         .withReason('ingest_error')
@@ -185,7 +185,7 @@ describe('TextResource', () => {
 
       const [event] = textResource
         .pullEvents()
-        .filter(pulled => pulled instanceof TextResourceRetried);
+        .filter(pulled => pulled instanceof TextResourceRetriedDomainEvent);
 
       expect(event?.contentType).toBe('markdown');
       expect(event?.fileKey).toBe(textResource.fileKey.value);
@@ -209,18 +209,21 @@ describe('TextResource', () => {
   });
 
   describe('#delete', () => {
-    it.each([...INGEST_STATES])('should register TextResourceDeleted from %s', state => {
-      const textResource = TextResourceBuilder.aTextResource()
-        .withIngestState(state)
-        .build();
+    it.each([...INGEST_STATES])(
+      'should register TextResourceDeletedDomainEvent from %s',
+      state => {
+        const textResource = TextResourceBuilder.aTextResource()
+          .withIngestState(state)
+          .build();
 
-      textResource.delete();
+        textResource.delete();
 
-      const [event] = textResource.pullEvents();
+        const [event] = textResource.pullEvents();
 
-      expect(event).toBeInstanceOf(TextResourceDeleted);
-      expect(event?.aggregateId).toBe(textResource.id.value);
-    });
+        expect(event).toBeInstanceOf(TextResourceDeletedDomainEvent);
+        expect(event?.aggregateId).toBe(textResource.id.value);
+      }
+    );
   });
 
   describe('#pullEvents', () => {

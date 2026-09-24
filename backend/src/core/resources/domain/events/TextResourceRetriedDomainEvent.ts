@@ -7,7 +7,7 @@ type ConstructorParams = {
   fileKey: string;
 };
 
-export class TextResourceCreated extends DomainEvent {
+export class TextResourceRetriedDomainEvent extends DomainEvent {
   private readonly _contentType: ContentType;
   private readonly _fileKey: string;
 

@@ -1,5 +1,5 @@
 import {DuplicateResourceError} from '../../../../../src/core/resources/domain/errors/DuplicateResourceError';
-import {TextResourceCreated} from '../../../../../src/core/resources/domain/events/TextResourceCreated';
+import {TextResourceCreatedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceCreatedDomainEvent';
 import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import type {ContentTypeResolver} from '../../../../../src/core/resources/domain/services/ContentTypeResolver';
 import {ContentType} from '../../../../../src/core/resources/domain/value-objects/ContentType';
@@ -90,12 +90,12 @@ describe('CreateTextResource', () => {
       expect(steps.indexOf('save')).toBeLessThan(steps.indexOf('store'));
     });
 
-    it('should raise TextResourceCreated after the transaction commits', async () => {
+    it('should raise TextResourceCreatedDomainEvent after the transaction commits', async () => {
       await createTextResource.run({name: 'the notes.md', bytes: someBytes()});
 
       const [events] = eventBus.publish.mock.calls[0] ?? [];
 
-      expect(events?.[0]).toBeInstanceOf(TextResourceCreated);
+      expect(events?.[0]).toBeInstanceOf(TextResourceCreatedDomainEvent);
       expect(steps).toStrictEqual(['save', 'store', 'commit', 'publish']);
     });
 

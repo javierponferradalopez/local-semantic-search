@@ -1,12 +1,12 @@
-import {TextResourceCreated} from '../../../../../src/core/resources/domain/events/TextResourceCreated';
-import {TextResourceDeleted} from '../../../../../src/core/resources/domain/events/TextResourceDeleted';
+import {TextResourceCreatedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceCreatedDomainEvent';
+import {TextResourceDeletedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceDeletedDomainEvent';
 import {InProcessEventBus} from '../../../../../src/core/shared/infrastructure/InProcessEventBus';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
 
-const anEventOfACreatedResource = (): TextResourceCreated => {
+const anEventOfACreatedResource = (): TextResourceCreatedDomainEvent => {
   const aggregateId = StringMother.randomUuid();
 
-  return new TextResourceCreated({
+  return new TextResourceCreatedDomainEvent({
     aggregateId,
     contentType: 'markdown',
     fileKey: `resources/${aggregateId}/the notes.md`
@@ -24,10 +24,10 @@ describe('InProcessEventBus', () => {
     it('should give the event to the subscribers of its kind alone', async () => {
       const ofAdded: string[] = [];
       const ofDeleted: string[] = [];
-      eventBus.subscribe(TextResourceCreated, async event => {
+      eventBus.subscribe(TextResourceCreatedDomainEvent, async event => {
         ofAdded.push(event.aggregateId);
       });
-      eventBus.subscribe(TextResourceDeleted, async event => {
+      eventBus.subscribe(TextResourceDeletedDomainEvent, async event => {
         ofDeleted.push(event.aggregateId);
       });
       const event = anEventOfACreatedResource();
@@ -41,7 +41,7 @@ describe('InProcessEventBus', () => {
 
     it('should not wait for a subscriber that is still working', async () => {
       let hasEnded = false;
-      eventBus.subscribe(TextResourceCreated, async () => {
+      eventBus.subscribe(TextResourceCreatedDomainEvent, async () => {
         await new Promise(resolve => setTimeout(resolve, 50));
         hasEnded = true;
       });
@@ -53,10 +53,10 @@ describe('InProcessEventBus', () => {
 
     it('should keep the other subscribers when one of them throws', async () => {
       const reached: string[] = [];
-      eventBus.subscribe(TextResourceCreated, () =>
+      eventBus.subscribe(TextResourceCreatedDomainEvent, () =>
         Promise.reject(new Error('the subscriber broke'))
       );
-      eventBus.subscribe(TextResourceCreated, async event => {
+      eventBus.subscribe(TextResourceCreatedDomainEvent, async event => {
         reached.push(event.aggregateId);
       });
       const event = anEventOfACreatedResource();

@@ -5,9 +5,9 @@ import {AggregateRoot} from '../../shared/domain/AggregateRoot';
 import {FileKey} from '../../shared/domain/value-objects/FileKey';
 import {IngestStateError} from './errors/IngestStateError';
 import {ResourceNotFailedError} from './errors/ResourceNotFailedError';
-import {TextResourceCreated} from './events/TextResourceCreated';
-import {TextResourceDeleted} from './events/TextResourceDeleted';
-import {TextResourceRetried} from './events/TextResourceRetried';
+import {TextResourceCreatedDomainEvent} from './events/TextResourceCreatedDomainEvent';
+import {TextResourceDeletedDomainEvent} from './events/TextResourceDeletedDomainEvent';
+import {TextResourceRetriedDomainEvent} from './events/TextResourceRetriedDomainEvent';
 import {Checksum} from './value-objects/Checksum';
 import {ContentType} from './value-objects/ContentType';
 import {CreatedAt} from './value-objects/CreatedAt';
@@ -70,7 +70,7 @@ export class TextResource extends AggregateRoot<TextResourcePrimitives> {
     });
 
     textResource.registerEvent(
-      new TextResourceCreated({
+      new TextResourceCreatedDomainEvent({
         aggregateId: params.id.value,
         contentType: params.contentType.value,
         fileKey: params.fileKey.value
@@ -137,7 +137,7 @@ export class TextResource extends AggregateRoot<TextResourcePrimitives> {
     this._reason = undefined;
 
     this.registerEvent(
-      new TextResourceRetried({
+      new TextResourceRetriedDomainEvent({
         aggregateId: this._id.value,
         contentType: this._contentType.value,
         fileKey: this._fileKey.value
@@ -146,7 +146,7 @@ export class TextResource extends AggregateRoot<TextResourcePrimitives> {
   }
 
   public delete(): void {
-    this.registerEvent(new TextResourceDeleted({aggregateId: this._id.value}));
+    this.registerEvent(new TextResourceDeletedDomainEvent({aggregateId: this._id.value}));
   }
 
   public toPrimitives(): TextResourcePrimitives {

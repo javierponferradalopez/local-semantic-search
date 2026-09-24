@@ -1,7 +1,7 @@
 import type {IngestState} from 'contract/IngestState';
 import {ResourceNotFailedError} from '../../../../../src/core/resources/domain/errors/ResourceNotFailedError';
 import {ResourceNotFoundError} from '../../../../../src/core/resources/domain/errors/ResourceNotFoundError';
-import {TextResourceRetried} from '../../../../../src/core/resources/domain/events/TextResourceRetried';
+import {TextResourceRetriedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceRetriedDomainEvent';
 import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import type {TextResource} from '../../../../../src/core/resources/domain/TextResource';
 import {RetryTextResource} from '../../../../../src/core/resources/use-cases/RetryTextResource';
@@ -88,14 +88,14 @@ describe('RetryTextResource', () => {
       });
     });
 
-    it('should raise TextResourceRetried after the transaction commits', async () => {
+    it('should raise TextResourceRetriedDomainEvent after the transaction commits', async () => {
       const textResource = aStoredTextResource('failed');
 
       await retryTextResource.run({id: textResource.id.value});
 
       const [events] = eventBus.publish.mock.calls[0] ?? [];
 
-      expect(events?.[0]).toBeInstanceOf(TextResourceRetried);
+      expect(events?.[0]).toBeInstanceOf(TextResourceRetriedDomainEvent);
       expect(events?.[0]?.aggregateId).toBe(textResource.id.value);
       expect(steps).toStrictEqual(['save', 'commit', 'publish']);
     });
