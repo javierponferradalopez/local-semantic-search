@@ -34,6 +34,26 @@ export class ValueObjectError extends DomainError {
     );
   }
 
+  public static causeItHoldsNoLetterAndNoDigit(valueObject: string): ValueObjectError {
+    return new ValueObjectError(`A ${valueObject} holds no letter and no digit`);
+  }
+
+  public static causeItHoldsANumberThatIsNotFinite(
+    valueObject: string
+  ): ValueObjectError {
+    return new ValueObjectError(`A ${valueObject} holds a number that is not finite`);
+  }
+
+  public static causeItDoesNotHoldItsWidth(
+    valueObject: string,
+    length: number,
+    width: number
+  ): ValueObjectError {
+    return new ValueObjectError(
+      `A ${valueObject} of ${length} numbers does not hold the width ${width}`
+    );
+  }
+
   public static causeItEscapesItsFolder(
     valueObject: string,
     value: string
