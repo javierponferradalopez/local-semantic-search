@@ -4,8 +4,8 @@ import {DrizzleResourceReader} from '../../../core/resources/infrastructure/driz
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
+import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
-import {InProcessEventBus} from '../../../core/shared/infrastructure/InProcessEventBus';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
@@ -30,7 +30,7 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     FilesystemFileStore,
     new FilesystemFileStore({folder: env.files.directory, urlPrefix: FILES_URL_PREFIX})
   );
-  container.registerImplementation(InProcessEventBus, new InProcessEventBus());
+  container.registerImplementation(EmitteryEventBus, new EmitteryEventBus());
   container.registerImplementation(
     ExtensionContentTypeResolver,
     new ExtensionContentTypeResolver()

@@ -7,6 +7,8 @@ export abstract class DomainEvent {
     this._aggregateId = aggregateId;
   }
 
+  public abstract get eventName(): string;
+
   public get aggregateId(): string {
     return this._aggregateId;
   }

@@ -8,6 +8,8 @@ type ConstructorParams = {
 };
 
 export class TextResourceRetriedDomainEvent extends DomainEvent {
+  public static readonly EVENT_NAME = 'resources.text_resource.retried';
+
   private readonly _contentType: ContentType;
   private readonly _fileKey: string;
 
@@ -23,5 +25,9 @@ export class TextResourceRetriedDomainEvent extends DomainEvent {
 
   public get fileKey(): string {
     return this._fileKey;
+  }
+
+  public get eventName(): typeof TextResourceRetriedDomainEvent.EVENT_NAME {
+    return TextResourceRetriedDomainEvent.EVENT_NAME;
   }
 }
