@@ -33,7 +33,7 @@ export class DeleteResource {
       this.remove(ResourceId.of({value: id}))
     );
 
-    await this.eventBus.publish(resource.pullEvents());
+    void this.eventBus.publish(resource.pullEvents());
   }
 
   private async remove(id: ResourceId): Promise<TextResource> {

@@ -35,7 +35,7 @@ export class RetryTextResource {
       this.retry(ResourceId.of({value: id}))
     );
 
-    await this.eventBus.publish(textResource.pullEvents());
+    void this.eventBus.publish(textResource.pullEvents());
 
     return resourceRowOf({
       resource: textResource.toPrimitives(),

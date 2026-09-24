@@ -43,7 +43,7 @@ export class CreateTextResource {
   public async run(params: RunParams): Promise<CreateTextResourceResponse> {
     const textResource = await this.transactionRunner.run(() => this.land(params));
 
-    await this.eventBus.publish(textResource.pullEvents());
+    void this.eventBus.publish(textResource.pullEvents());
 
     return resourceRowOf({
       resource: textResource.toPrimitives(),

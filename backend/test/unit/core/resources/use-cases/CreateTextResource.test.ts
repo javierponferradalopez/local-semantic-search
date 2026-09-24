@@ -99,6 +99,14 @@ describe('CreateTextResource', () => {
       expect(steps).toStrictEqual(['save', 'store', 'commit', 'publish']);
     });
 
+    it('should not wait for the handlers of its events', async () => {
+      eventBus.publish.mockImplementation(() => new Promise(() => {}));
+
+      await expect(
+        createTextResource.run({name: 'the notes.md', bytes: someBytes()})
+      ).resolves.toBeDefined();
+    });
+
     it('should refuse the same bytes, and write nothing and copy nothing', async () => {
       resourceRepository.findByChecksum.mockResolvedValue(
         TextResourceBuilder.aTextResource().build()

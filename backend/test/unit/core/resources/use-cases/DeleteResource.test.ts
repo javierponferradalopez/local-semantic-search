@@ -77,6 +77,15 @@ describe('DeleteResource', () => {
       ]);
     });
 
+    it('should not wait for the handlers of its events', async () => {
+      const textResource = aStoredTextResource();
+      eventBus.publish.mockImplementation(() => new Promise(() => {}));
+
+      await expect(
+        deleteResource.run({id: textResource.id.value})
+      ).resolves.toBeUndefined();
+    });
+
     it.each(INGEST_STATES)(
       'should admit a Resource that is %s',
       async (ingestState: IngestState) => {

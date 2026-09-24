@@ -100,6 +100,15 @@ describe('RetryTextResource', () => {
       expect(steps).toStrictEqual(['save', 'commit', 'publish']);
     });
 
+    it('should not wait for the handlers of its events', async () => {
+      const textResource = aStoredTextResource('failed');
+      eventBus.publish.mockImplementation(() => new Promise(() => {}));
+
+      await expect(
+        retryTextResource.run({id: textResource.id.value})
+      ).resolves.toBeDefined();
+    });
+
     it.each(['ingesting', 'ready'] satisfies IngestState[])(
       'should refuse a Resource that is %s, and change nothing',
       async ingestState => {
