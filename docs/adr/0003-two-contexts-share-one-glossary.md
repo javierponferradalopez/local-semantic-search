@@ -7,6 +7,12 @@
 > that crossed the boundary is gone. The rule that `search/` never imports
 > `Resource` stands, and now `ingestion/` never imports it either. `Locator` no
 > longer exists ([ADR-0009](0009-a-chunk-knows-its-page-and-nothing-else.md)).
+>
+> **Amended by [ADR-0023](0023-modules-depend-inward-and-write-only-their-own.md).**
+> The three folders are modules of the one context that this ADR found. A module
+> can import the domain of another, `Resource` included, and it references an
+> aggregate of another module by its typed identity only. The shared kernel
+> stands.
 
 `backend/src/core` is split into `ingestion/` and `search/`, the two demoable
 capabilities of the product. The two contexts **share one glossary**, which

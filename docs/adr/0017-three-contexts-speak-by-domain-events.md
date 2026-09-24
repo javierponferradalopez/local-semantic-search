@@ -1,5 +1,13 @@
 # Three contexts, and Resources and Ingestion speak by domain events
 
+> **Amended by [ADR-0023](0023-modules-depend-inward-and-write-only-their-own.md).**
+> `resources/`, `ingestion/` and `search/` are modules of one bounded context,
+> not contexts. The one import allowed between `resources` and `ingestion` is no
+> longer `domain/events/` alone: a module can import the domain of another, and
+> every dependency points inward. A module still writes only its own aggregates,
+> and it asks another module for a change by an event. The events, the bus and
+> the cycle stand.
+
 `backend/src/core` holds three contexts. `resources/` owns the aggregates, the
 landing, the list, the deletion and Retry. `ingestion/` owns the pipeline and the
 tables of `Chunk`, `Picture` and `Vector`. `search/` is unchanged. `resources`
