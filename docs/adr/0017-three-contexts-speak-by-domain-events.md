@@ -7,6 +7,11 @@
 > every dependency points inward. A module still writes only its own aggregates,
 > and it asks another module for a change by an event. The events, the bus and
 > the cycle stand.
+>
+> **Amended by [ADR-0024](0024-the-bus-is-emittery.md).** The bus is emittery,
+> not written by hand. By default the publisher does not wait for the handlers,
+> but it can wait when it needs to. A handler is application code and does the
+> work itself.
 
 `backend/src/core` holds three contexts. `resources/` owns the aggregates, the
 landing, the list, the deletion and Retry. `ingestion/` owns the pipeline and the

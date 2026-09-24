@@ -34,6 +34,7 @@ The shape of the code in `backend/`.
 - The glossary, the ADRs and the specs write the name with no suffix: `TextResourceCreated`.
 - It lives in `domain/events/` of the module that raises it. It extends `DomainEvent`.
 - It carries `aggregateId` and plain values: strings, numbers and the types of `contract/`.
+- A static `EVENT_NAME` names it on the bus, `<module>.<aggregate>.<past_participle>`: `resources.text_resource.created`. Its getter `eventName` gives the same value, typed `typeof <Event>.EVENT_NAME`, so that two events with the same fields stay two types.
 
 ## Error
 
@@ -53,7 +54,9 @@ The shape of the code in `backend/`.
 
 ## Handler
 
-- A thin subscriber in `infrastructure/` of the module that reacts to the event. It calls one use case.
+- `<DoY>On<X>`, in `use-cases/` of the module that reacts: `IngestTextResourceOnTextResourceCreatedOrRetried`. When two events cause the same work, one handler subscribes to the two, and its name joins them with `Or`.
+- It implements `DomainEventHandler`. `subscribeTo()` gives the class of each event, and the type of the handler must accept it, and `handle()` does the work, as the `run()` of a use case does.
+- `RegisterDomainEventHandlers` in `api/config/di/` makes it and subscribes it to the bus.
 
 ## Controller
 
