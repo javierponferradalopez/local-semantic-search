@@ -77,6 +77,20 @@ describe('POST /resources/texts', () => {
       expect(row.ingestState).toBe('ready');
       expectAResourceRow(row);
     });
+
+    it('should make a PDF with text Ready', async () => {
+      const created = await api.createATextResourceRow(
+        'two-pages-with-text.pdf',
+        await readFile(
+          join(import.meta.dirname, '../../../../fixtures/two-pages-with-text.pdf')
+        )
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row.ingestState).toBe('ready');
+      expectAResourceRow(row);
+    });
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {

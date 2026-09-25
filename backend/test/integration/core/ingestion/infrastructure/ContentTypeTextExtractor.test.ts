@@ -38,5 +38,20 @@ describe('ContentTypeTextExtractor', () => {
 
       expect(await extractor.extract(bytes, 'plain_text')).toStrictEqual(['The notes.']);
     });
+
+    it('should read a PDF as one text for each page, in the order of the pages', async () => {
+      const bytes = await readFile(join(FIXTURES, 'two-pages-with-text.pdf'));
+
+      expect(await extractor.extract(bytes, 'pdf')).toStrictEqual([
+        'Page one of the fixture.\nAn extractor reads this text.',
+        'Page two of the fixture.\nIts text differs from page one.'
+      ]);
+    });
+
+    it('should read a scanned PDF as one empty text for each page, and throw nothing', async () => {
+      const bytes = await readFile(join(FIXTURES, 'scanned-with-no-text.pdf'));
+
+      expect(await extractor.extract(bytes, 'pdf')).toStrictEqual(['', '']);
+    });
   });
 });

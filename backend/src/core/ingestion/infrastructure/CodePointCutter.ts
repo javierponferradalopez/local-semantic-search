@@ -215,34 +215,34 @@ const markdownPiecesOf = (text: string): string[] => {
     : [...pieces, headings];
 };
 
-const PIECES_OF: Partial<Record<ContentType, (text: string) => string[]>> = {
-  plain_text: (text: string) => piecesOf(text, PLAIN_TEXT_LADDER),
-  markdown: markdownPiecesOf
-};
+type CutOfAContentType = {piecesOf: (text: string) => string[]; hasPages: boolean};
 
-const piecesOfTheContentType = (
-  contentType: ContentType
-): ((text: string) => string[]) => {
-  const pieces = PIECES_OF[contentType];
-
-  if (pieces === undefined) {
-    throw new Error(`The cut of the Content type ${contentType} is not built`);
-  }
-
-  return pieces;
+// A PDF has no paragraph to trust, so its ladder starts at the sentence (ADR-0014).
+const CUT_OF: Record<ContentType, CutOfAContentType> = {
+  pdf: {piecesOf: (text: string) => piecesOf(text, LOWER_RUNGS), hasPages: true},
+  plain_text: {
+    piecesOf: (text: string) => piecesOf(text, PLAIN_TEXT_LADDER),
+    hasPages: false
+  },
+  markdown: {piecesOf: markdownPiecesOf, hasPages: false}
 };
 
 export class CodePointCutter implements Cutter {
   public cut({resourceId, contentType, texts}: CutParams): Chunk[] {
-    const piecesOfAText = piecesOfTheContentType(contentType);
+    const {piecesOf: piecesOfAText, hasPages} = CUT_OF[contentType];
 
     return texts
-      .flatMap(text => piecesOfAText(text))
-      .map((piece, position) =>
+      .flatMap((text, index) =>
+        piecesOfAText(text).map(piece => ({
+          piece,
+          page: hasPages ? index + 1 : undefined
+        }))
+      )
+      .map(({piece, page}, position) =>
         Chunk.create({
           resourceId,
           text: ChunkText.of({value: piece}),
-          page: undefined,
+          page,
           position
         })
       );

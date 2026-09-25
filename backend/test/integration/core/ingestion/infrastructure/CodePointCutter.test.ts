@@ -1,5 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import type {ChunkPrimitives} from '../../../../../src/core/ingestion/domain/Chunk';
 import {CUT} from '../../../../../src/core/ingestion/domain/Cut';
 import {CodePointCutter} from '../../../../../src/core/ingestion/infrastructure/CodePointCutter';
 import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
@@ -226,6 +227,14 @@ describe('CodePointCutter', () => {
       it('should keep every character, in order, with no overlap', () => {
         expect(withoutWhitespace(chunks.join(''))).toBe(withoutWhitespace(markdown));
       });
+
+      it('should give no page', () => {
+        const cut = cutter.cut({resourceId, contentType: 'markdown', texts: [markdown]});
+
+        for (const chunk of cut) {
+          expect(chunk.toPrimitives()).not.toHaveProperty('page');
+        }
+      });
     });
 
     describe('a heading', () => {
@@ -311,6 +320,79 @@ describe('CodePointCutter', () => {
           `${first}\n\n${second}`,
           third
         ]);
+      });
+    });
+
+    describe('a PDF', () => {
+      const cutThePages = (pages: string[]): ChunkPrimitives[] =>
+        cutter
+          .cut({resourceId, contentType: 'pdf', texts: pages})
+          .map(chunk => chunk.toPrimitives());
+
+      it('should give each Chunk the number of its page, and join no two pages', () => {
+        const pages = [
+          'Page one of the fixture.\nAn extractor reads this text.',
+          'Page two of the fixture.\nIts text differs from page one.'
+        ];
+
+        expect(cutThePages(pages)).toMatchObject([
+          {text: pages[0], page: 1},
+          {text: pages[1], page: 2}
+        ]);
+      });
+
+      it('should keep the page of a Chunk after a page with no text', () => {
+        expect(cutThePages(['', 'The second page.'])).toMatchObject([
+          {text: 'The second page.', page: 2, position: 0}
+        ]);
+      });
+
+      it('should give the positions in order across the pages', () => {
+        expect(
+          cutThePages(['The first page.', 'The second page.']).map(
+            ({position}) => position
+          )
+        ).toStrictEqual([0, 1]);
+      });
+
+      it('should cut a page by sentence at the target, and not by paragraph', () => {
+        const sentences = Array.from(
+          {length: 30},
+          (_, index) => `The sentence number ${index} holds a few more words.`
+        );
+        const page = sentences.join(' ');
+
+        const chunks = cutThePages([page]).map(({text}) => text);
+
+        expect(codePointsOf(page)).toBeGreaterThan(CUT.target);
+        expect(codePointsOf(page)).toBeLessThanOrEqual(CUT.cap);
+        expect(chunks).toHaveLength(2);
+
+        for (const chunk of chunks) {
+          expect(codePointsOf(chunk)).toBeLessThanOrEqual(CUT.target);
+          expect(chunk.endsWith('words.')).toBe(true);
+        }
+      });
+
+      it('should cut a sentence over the cap at the cap, and keep each piece on its page', () => {
+        const digits = '7'.repeat(CUT.cap + 300);
+
+        expect(
+          cutThePages(['The first page.', digits]).map(({text, page}) => ({
+            size: codePointsOf(text),
+            page
+          }))
+        ).toStrictEqual([
+          {size: codePointsOf('The first page.'), page: 1},
+          {size: CUT.cap, page: 2},
+          {size: 300, page: 2}
+        ]);
+      });
+
+      it('should keep the newlines and the hyphens of a page', () => {
+        const page = 'A line that the PDF\nbreaks in two, with a hyphen-\nat the end.';
+
+        expect(cutThePages([page])).toMatchObject([{text: page}]);
       });
     });
 
