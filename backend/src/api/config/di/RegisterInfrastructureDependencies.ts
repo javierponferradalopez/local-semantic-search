@@ -1,5 +1,8 @@
 import {drizzle} from 'drizzle-orm/node-postgres';
 import {Pool} from 'pg';
+import {CodePointCutter} from '../../../core/ingestion/infrastructure/CodePointCutter';
+import {ContentTypeTextExtractor} from '../../../core/ingestion/infrastructure/ContentTypeTextExtractor';
+import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzleChunkRepository';
 import {DrizzleResourceReader} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceReader';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
@@ -36,4 +39,13 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     new ExtensionContentTypeResolver()
   );
   container.registerImplementation(TransformersTextEmbedder, textEmbedder);
+  container.registerImplementation(
+    DrizzleChunkRepository,
+    new DrizzleChunkRepository({connection})
+  );
+  container.registerImplementation(
+    ContentTypeTextExtractor,
+    new ContentTypeTextExtractor()
+  );
+  container.registerImplementation(CodePointCutter, new CodePointCutter());
 };
