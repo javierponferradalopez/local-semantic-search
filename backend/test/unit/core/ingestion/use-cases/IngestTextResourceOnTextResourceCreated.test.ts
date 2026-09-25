@@ -52,11 +52,11 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
 
       return vectors[index] as Vector;
     });
-    chunkRepository.deleteAllOf.mockImplementation(async () => {
+    chunkRepository.deleteManyByResourceId.mockImplementation(async () => {
       steps.push('delete');
     });
-    chunkRepository.saveAll.mockImplementation(async () => {
-      steps.push('save');
+    chunkRepository.createMany.mockImplementation(async () => {
+      steps.push('create');
     });
     eventBus.publish.mockImplementation(async () => {
       steps.push('publish');
@@ -84,10 +84,10 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
 
       await handler.handle(event);
 
-      expect(chunkRepository.deleteAllOf.mock.calls[0]?.[0].value).toBe(
+      expect(chunkRepository.deleteManyByResourceId.mock.calls[0]?.[0].value).toBe(
         event.aggregateId
       );
-      expect(steps.indexOf('delete')).toBeLessThan(steps.indexOf('save'));
+      expect(steps.indexOf('delete')).toBeLessThan(steps.indexOf('create'));
     });
 
     it('should read the File under its key, and extract its texts by its Content type', async () => {
@@ -114,8 +114,8 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
     it('should write each Chunk with its Vector, in one write', async () => {
       await handler.handle(anEventOfACreatedResource());
 
-      expect(chunkRepository.saveAll).toHaveBeenCalledTimes(1);
-      expect(chunkRepository.saveAll).toHaveBeenCalledWith([
+      expect(chunkRepository.createMany).toHaveBeenCalledTimes(1);
+      expect(chunkRepository.createMany).toHaveBeenCalledWith([
         {chunk: chunks[0], vector: vectors[0]},
         {chunk: chunks[1], vector: vectors[1]}
       ]);
@@ -132,7 +132,7 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
       );
 
       expect(ingested?.aggregateId).toBe(event.aggregateId);
-      expect(steps).toStrictEqual(['delete', 'save', 'publish']);
+      expect(steps).toStrictEqual(['delete', 'create', 'publish']);
     });
 
     it('should not wait for the handlers of its events', async () => {

@@ -46,14 +46,14 @@ export class IngestTextResourceOnTextResourceCreated
   public async handle(event: TextResourceCreatedDomainEvent): Promise<void> {
     const resourceId = ResourceId.of({value: event.aggregateId});
 
-    await this.chunkRepository.deleteAllOf(resourceId);
+    await this.chunkRepository.deleteManyByResourceId(resourceId);
 
     const bytes = await this.fileStore.read(FileKey.of({value: event.fileKey}));
     const texts = await this.textExtractor.extract(bytes, event.contentType);
     const chunks = this.cutter.cut({resourceId, contentType: event.contentType, texts});
     const embeddedChunks = await this.embed(chunks);
 
-    await this.chunkRepository.saveAll(embeddedChunks);
+    await this.chunkRepository.createMany(embeddedChunks);
 
     void this.eventBus.publish([
       ...chunks.flatMap(chunk => chunk.pullEvents()),

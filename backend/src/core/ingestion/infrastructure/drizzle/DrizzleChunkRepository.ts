@@ -25,7 +25,7 @@ export class DrizzleChunkRepository implements ChunkRepository {
   }
 
   // A transaction of its own, or a savepoint inside the one that is open.
-  public async saveAll(embeddedChunks: readonly EmbeddedChunk[]): Promise<void> {
+  public async createMany(embeddedChunks: readonly EmbeddedChunk[]): Promise<void> {
     if (embeddedChunks.length === 0) {
       return;
     }
@@ -42,7 +42,7 @@ export class DrizzleChunkRepository implements ChunkRepository {
     });
   }
 
-  public async deleteAllOf(resourceId: ResourceId): Promise<void> {
+  public async deleteManyByResourceId(resourceId: ResourceId): Promise<void> {
     await this.connection.database().transaction(async transaction => {
       const chunksOfTheResource = transaction
         .select({id: chunks.id})

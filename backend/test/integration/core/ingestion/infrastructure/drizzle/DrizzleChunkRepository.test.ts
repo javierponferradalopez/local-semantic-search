@@ -68,7 +68,7 @@ describe('DrizzleChunkRepository', () => {
     });
   });
 
-  describe('#saveAll', () => {
+  describe('#createMany', () => {
     it('should write a row for each Chunk, with what the Chunk holds', async () => {
       const resourceId = ResourceId.random();
       const first = anEmbeddedChunk(resourceId, 0);
@@ -81,7 +81,7 @@ describe('DrizzleChunkRepository', () => {
           .build()
       };
 
-      await repository.saveAll([first, second]);
+      await repository.createMany([first, second]);
 
       const rows = await chunkRowsOf(resourceId);
 
@@ -107,7 +107,7 @@ describe('DrizzleChunkRepository', () => {
       const resourceId = ResourceId.random();
       const embedded = anEmbeddedChunk(resourceId, 0);
 
-      await repository.saveAll([embedded]);
+      await repository.createMany([embedded]);
 
       const [row] = await vectorRowsOf(resourceId);
       const values = JSON.parse(row?.vector ?? '[]') as number[];
@@ -127,7 +127,7 @@ describe('DrizzleChunkRepository', () => {
       const resourceId = ResourceId.random();
 
       await expect(
-        repository.saveAll([
+        repository.createMany([
           anEmbeddedChunk(resourceId, 0),
           anEmbeddedChunk(resourceId, 1),
           anEmbeddedChunk(resourceId, 1)
@@ -145,7 +145,7 @@ describe('DrizzleChunkRepository', () => {
       );
 
       await expect(
-        repository.saveAll([...many, anEmbeddedChunk(resourceId, 0)])
+        repository.createMany([...many, anEmbeddedChunk(resourceId, 0)])
       ).rejects.toThrow();
 
       expect(await chunkRowsOf(resourceId)).toStrictEqual([]);
@@ -154,7 +154,7 @@ describe('DrizzleChunkRepository', () => {
     it('should take the same position under another cut version', async () => {
       const resourceId = ResourceId.random();
 
-      await repository.saveAll([
+      await repository.createMany([
         anEmbeddedChunk(resourceId, 0, CUT.version),
         anEmbeddedChunk(resourceId, 0, CUT.version + 1)
       ]);
@@ -163,29 +163,29 @@ describe('DrizzleChunkRepository', () => {
     });
 
     it('should take the same position in another Resource', async () => {
-      await repository.saveAll([anEmbeddedChunk(ResourceId.random(), 0)]);
+      await repository.createMany([anEmbeddedChunk(ResourceId.random(), 0)]);
 
       await expect(
-        repository.saveAll([anEmbeddedChunk(ResourceId.random(), 0)])
+        repository.createMany([anEmbeddedChunk(ResourceId.random(), 0)])
       ).resolves.toBeUndefined();
     });
 
     it('should take no Chunk at all', async () => {
-      await expect(repository.saveAll([])).resolves.toBeUndefined();
+      await expect(repository.createMany([])).resolves.toBeUndefined();
     });
   });
 
-  describe('#deleteAllOf', () => {
+  describe('#deleteManyByResourceId', () => {
     it('should remove the Chunks and the Vectors of the Resource alone', async () => {
       const deleted = ResourceId.random();
       const kept = ResourceId.random();
-      await repository.saveAll([
+      await repository.createMany([
         anEmbeddedChunk(deleted, 0),
         anEmbeddedChunk(deleted, 1)
       ]);
-      await repository.saveAll([anEmbeddedChunk(kept, 0)]);
+      await repository.createMany([anEmbeddedChunk(kept, 0)]);
 
-      await repository.deleteAllOf(deleted);
+      await repository.deleteManyByResourceId(deleted);
 
       expect(await chunkRowsOf(deleted)).toStrictEqual([]);
       expect(await vectorRowsOf(deleted)).toStrictEqual([]);
