@@ -22,8 +22,12 @@ export type TestApi = {
   getResources: () => Promise<ResourceRow[]>;
   deleteTextResource: (id: string) => Promise<Response>;
   retryTextResource: (id: string) => Promise<Response>;
+  rowOnceIngested: (id: string) => Promise<ResourceRow>;
   expectNothingStored: () => Promise<void>;
 };
+
+const INGEST_TIME_LIMIT_IN_MS = 20_000;
+const READ_INTERVAL_IN_MS = 100;
 
 // Starts the application for the suite that calls it, and wipes the store before each test.
 export const useTheTestApi = (): TestApi => {
@@ -82,6 +86,23 @@ export const useTheTestApi = (): TestApi => {
   const retryTextResource = (id: string): Promise<Response> =>
     fetch(`${origin}/resources/texts/${id}/retry`, {method: 'POST'});
 
+  // Reads the row through the API, and never waits on the bus (ADR-0024).
+  const rowOnceIngested = async (id: string): Promise<ResourceRow> => {
+    const deadline = Date.now() + INGEST_TIME_LIMIT_IN_MS;
+
+    while (Date.now() < deadline) {
+      const row = (await getResources()).find(resource => resource.id === id);
+
+      if (row !== undefined && row.ingestState !== 'ingesting') {
+        return row;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, READ_INTERVAL_IN_MS));
+    }
+
+    throw new Error(`The Resource ${id} is still Ingesting after the time limit`);
+  };
+
   return {
     origin: () => origin,
     createTextResource,
@@ -89,6 +110,7 @@ export const useTheTestApi = (): TestApi => {
     getResources,
     deleteTextResource,
     retryTextResource,
+    rowOnceIngested,
     expectNothingStored
   };
 };

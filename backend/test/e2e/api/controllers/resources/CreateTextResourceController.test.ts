@@ -1,4 +1,6 @@
+import {readFile} from 'node:fs/promises';
 import {request} from 'node:http';
+import {join} from 'node:path';
 import type {ApiError} from 'contract/ApiError';
 import {CONTENT_TYPES} from 'contract/ContentType';
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
@@ -42,6 +44,20 @@ describe('POST /resources/texts', () => {
 
     expect(response.status).toBe(CREATED);
     expectAResourceRow(await response.json());
+  });
+
+  describe('the Ingest, after the response', () => {
+    it('should make a text file Ready', async () => {
+      const created = await api.createATextResourceRow(
+        'long-text.txt',
+        await readFile(join(import.meta.dirname, '../../../../fixtures/long-text.txt'))
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row.ingestState).toBe('ready');
+      expectAResourceRow(row);
+    });
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {
