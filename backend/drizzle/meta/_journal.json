@@ -8,6 +8,13 @@
       "when": 1790083696024,
       "tag": "0000_the_text_resources_table",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790267621002,
+      "tag": "0001_the_chunks_and_vectors_384_tables",
+      "breakpoints": true
     }
   ]
 }

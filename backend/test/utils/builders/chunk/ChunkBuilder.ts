@@ -15,6 +15,14 @@ export class ChunkBuilder {
     });
   }
 
+  public withResourceId(resourceId: string): ChunkBuilder {
+    return new ChunkBuilder({...this.primitives, resourceId});
+  }
+
+  public withPosition(position: number): ChunkBuilder {
+    return new ChunkBuilder({...this.primitives, position});
+  }
+
   public withPage(page: number): ChunkBuilder {
     return new ChunkBuilder({...this.primitives, page});
   }
