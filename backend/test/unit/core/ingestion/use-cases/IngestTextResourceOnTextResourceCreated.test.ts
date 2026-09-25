@@ -1,7 +1,9 @@
+import {CONTENT_TYPES, type ContentType} from 'contract/ContentType';
 import type {Chunk} from '../../../../../src/core/ingestion/domain/Chunk';
 import type {ChunkRepository} from '../../../../../src/core/ingestion/domain/ChunkRepository';
 import type {Cutter} from '../../../../../src/core/ingestion/domain/Cutter';
 import {TextResourceIngestedDomainEvent} from '../../../../../src/core/ingestion/domain/events/TextResourceIngestedDomainEvent';
+import {TextResourceIngestFailedDomainEvent} from '../../../../../src/core/ingestion/domain/events/TextResourceIngestFailedDomainEvent';
 import type {TextExtractor} from '../../../../../src/core/ingestion/domain/TextExtractor';
 import {IngestTextResourceOnTextResourceCreated} from '../../../../../src/core/ingestion/use-cases/IngestTextResourceOnTextResourceCreated';
 import {TextResourceCreatedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceCreatedDomainEvent';
@@ -135,6 +137,34 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
       expect(steps).toStrictEqual(['delete', 'create', 'publish']);
     });
 
+    it.each(CONTENT_TYPES)(
+      'should raise TextResourceIngestFailedDomainEvent with no_text_found when the cut of a %s gives no Chunk',
+      async contentType => {
+        cutter.cut.mockReturnValue([]);
+        const event = anEventOfACreatedResource(contentType);
+
+        await handler.handle(event);
+
+        expect(eventBus.publish).toHaveBeenCalledTimes(1);
+        expect(eventBus.publish.mock.calls[0]?.[0]).toStrictEqual([
+          new TextResourceIngestFailedDomainEvent({
+            aggregateId: event.aggregateId,
+            reason: 'no_text_found'
+          })
+        ]);
+      }
+    );
+
+    it('should embed nothing and write nothing when the cut gives no Chunk', async () => {
+      cutter.cut.mockReturnValue([]);
+
+      await handler.handle(anEventOfACreatedResource());
+
+      expect(textEmbedder.embedChunk).not.toHaveBeenCalled();
+      expect(chunkRepository.createMany).not.toHaveBeenCalled();
+      expect(steps).toStrictEqual(['delete', 'publish']);
+    });
+
     it('should not wait for the handlers of its events', async () => {
       eventBus.publish.mockImplementation(() => new Promise(() => {}));
 
@@ -143,12 +173,14 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
   });
 });
 
-const anEventOfACreatedResource = (): TextResourceCreatedDomainEvent => {
+const anEventOfACreatedResource = (
+  contentType: ContentType = 'plain_text'
+): TextResourceCreatedDomainEvent => {
   const aggregateId = StringMother.randomUuid();
 
   return new TextResourceCreatedDomainEvent({
     aggregateId,
-    contentType: 'plain_text',
+    contentType,
     fileKey: `resources/${aggregateId}/the notes.txt`
   });
 };

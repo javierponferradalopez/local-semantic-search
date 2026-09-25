@@ -9,6 +9,7 @@ import type {Chunk} from '../domain/Chunk';
 import type {ChunkRepository, EmbeddedChunk} from '../domain/ChunkRepository';
 import type {Cutter} from '../domain/Cutter';
 import {TextResourceIngestedDomainEvent} from '../domain/events/TextResourceIngestedDomainEvent';
+import {TextResourceIngestFailedDomainEvent} from '../domain/events/TextResourceIngestFailedDomainEvent';
 import type {TextExtractor} from '../domain/TextExtractor';
 
 type ConstructorParams = {
@@ -51,6 +52,18 @@ export class IngestTextResourceOnTextResourceCreated
     const bytes = await this.fileStore.read(FileKey.of({value: event.fileKey}));
     const texts = await this.textExtractor.extract(bytes, event.contentType);
     const chunks = this.cutter.cut({resourceId, contentType: event.contentType, texts});
+
+    // One rule for each Content type: a scan, an empty file, a file with no letter and no digit.
+    if (chunks.length === 0) {
+      void this.eventBus.publish([
+        new TextResourceIngestFailedDomainEvent({
+          aggregateId: resourceId.value,
+          reason: 'no_text_found'
+        })
+      ]);
+      return;
+    }
+
     const embeddedChunks = await this.embed(chunks);
 
     await this.chunkRepository.createMany(embeddedChunks);

@@ -91,6 +91,20 @@ describe('POST /resources/texts', () => {
       expect(row.ingestState).toBe('ready');
       expectAResourceRow(row);
     });
+
+    it('should make a scanned PDF Failed with no_text_found', async () => {
+      const created = await api.createATextResourceRow(
+        'scanned-with-no-text.pdf',
+        await readFile(
+          join(import.meta.dirname, '../../../../fixtures/scanned-with-no-text.pdf')
+        )
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row).toMatchObject({ingestState: 'failed', reason: 'no_text_found'});
+      expectAResourceRow(row);
+    });
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {

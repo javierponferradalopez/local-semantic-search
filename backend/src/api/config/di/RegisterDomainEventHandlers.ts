@@ -3,6 +3,7 @@ import {ContentTypeTextExtractor} from '../../../core/ingestion/infrastructure/C
 import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzleChunkRepository';
 import {IngestTextResourceOnTextResourceCreated} from '../../../core/ingestion/use-cases/IngestTextResourceOnTextResourceCreated';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
+import {MarkTextResourceAsFailedOnTextResourceIngestFailed} from '../../../core/resources/use-cases/MarkTextResourceAsFailedOnTextResourceIngestFailed';
 import {MarkTextResourceAsReadyOnTextResourceIngested} from '../../../core/resources/use-cases/MarkTextResourceAsReadyOnTextResourceIngested';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
@@ -26,6 +27,13 @@ export const registerDomainEventHandlers = (): void => {
 
   eventBus.subscribe(
     new MarkTextResourceAsReadyOnTextResourceIngested({
+      resourceRepository: container.getDependency(DrizzleResourceRepository),
+      transactionRunner: container.getDependency(DrizzleConnection)
+    })
+  );
+
+  eventBus.subscribe(
+    new MarkTextResourceAsFailedOnTextResourceIngestFailed({
       resourceRepository: container.getDependency(DrizzleResourceRepository),
       transactionRunner: container.getDependency(DrizzleConnection)
     })
