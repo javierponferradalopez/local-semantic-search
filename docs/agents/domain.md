@@ -52,7 +52,7 @@ If your output contradicts an existing ADR, surface it explicitly rather than si
 
 ## Decision or convention
 
-Each rule of the project lives in one ADR. An ADR is one of two kinds. Its frontmatter gives the kind and the status:
+Each rule of this repo is an ADR in `docs/adr/`, of one of two kinds: a **decision** or a **convention**. The frontmatter of the ADR gives its kind and its status:
 
 ```md
 ---
@@ -61,31 +61,17 @@ status: accepted | superseded by ADR-NNNN
 ---
 ```
 
-### Which kind
+A convention is the shape of the code: names, suffixes, folders, factories, the shape of a test. Its file is `NNNN-convention-<package>-<topic>.md`. The topic is the kind of class or file that it governs, and one package and topic have one `accepted` ADR.
 
-Ask one question: **can a find-and-replace or a codemod revert the rule, with no change to what the system does?**
+The packages:
 
-- **Yes → convention.** Names, suffixes, the factories of a value object, the base class of an aggregate, folders, the shape of a test.
-- **No → decision.** To revert it changes the behaviour, the stored data, a contract with the outside, or the flow between modules. Examples: when the bus publishes, what a handler does with a `throw`, how a deletion reaches another module.
+- `backend` — `backend/`
+- `frontend` — `frontend/`
 
-Two checks support the answer:
+### Before you write code
 
-- **No real alternative was refused** → convention.
-- **A reader would "fix" it** → decision, even when it is small.
+Read the `accepted` convention of each kind of class or file that you add or change: `ls docs/adr/*-convention-<package>-*` lists them. A convention is complete in itself: to follow it, you need no other ADR.
 
-One topic can have a part of each kind. For a handler, the errors it catches are a decision, and its name and its folder are a convention.
+### Code that follows a superseded convention
 
-### A decision
-
-- Its file is `NNNN-<the-decision-as-a-sentence>.md`.
-- It obeys the three conditions of the ADR format: hard to reverse, surprising without context, the result of a real trade-off.
-- To change it, a new decision amends it. The new ADR states only the change, and the old one gets an **Amended by** note at its top.
-- It can link to the convention that applies it.
-
-### A convention
-
-- Its file is `NNNN-convention-<package>-<topic>.md`: `0033-convention-backend-handler.md`. The package is `backend` or `frontend`. The topic is the kind of class or file that the agent writes, and one package and topic have one `accepted` ADR.
-- It holds the rule and its example. It gives a why only when a real one exists.
-- It is complete in itself and links to no decision, so the agent that writes the code reads the convention and nothing more.
-- To change it, write a new ADR with the same package and topic that restates the whole convention, and set the old one to `superseded by ADR-NNNN`.
-- The code that follows a superseded convention stays valid, and the superseded ADR explains it. When you change such a file for another reason, move it to the accepted convention.
+It stays valid, and the superseded ADR explains it. When you change such a file for another reason, move it to the `accepted` convention.
