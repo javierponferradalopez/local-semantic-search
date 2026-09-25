@@ -63,6 +63,20 @@ describe('POST /resources/texts', () => {
       expect(row.ingestState).toBe('ready');
       expectAResourceRow(row);
     });
+
+    it('should make a Markdown file Ready', async () => {
+      const created = await api.createATextResourceRow(
+        'markdown-with-headings.md',
+        await readFile(
+          join(import.meta.dirname, '../../../../fixtures/markdown-with-headings.md')
+        )
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row.ingestState).toBe('ready');
+      expectAResourceRow(row);
+    });
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {

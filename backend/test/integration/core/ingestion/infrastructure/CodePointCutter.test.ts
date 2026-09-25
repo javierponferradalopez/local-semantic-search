@@ -26,6 +26,11 @@ describe('CodePointCutter', () => {
       .cut({resourceId, contentType: 'plain_text', texts: [text]})
       .map(chunk => chunk.text.value);
 
+  const markdownTextsOf = (text: string): string[] =>
+    cutter
+      .cut({resourceId, contentType: 'markdown', texts: [text]})
+      .map(chunk => chunk.text.value);
+
   describe('#cut', () => {
     describe('a text file', () => {
       let longText: string;
@@ -176,6 +181,133 @@ describe('CodePointCutter', () => {
 
         expect(emoji.length).toBeGreaterThan(CUT.cap);
         expect(textsOf(emoji)).toStrictEqual([emoji]);
+      });
+    });
+
+    describe('a Markdown file', () => {
+      const HEADINGS_OF_THE_FIXTURE = [
+        '# The lighthouse at Cabo Vilán',
+        '## The tower',
+        '### The lamp',
+        '### The engine room',
+        '## The keepers',
+        '## The rule that the light kept'
+      ];
+
+      let markdown: string;
+      let chunks: string[];
+
+      beforeAll(async () => {
+        markdown = await readFile(join(FIXTURES, 'markdown-with-headings.md'), 'utf8');
+        chunks = markdownTextsOf(markdown);
+      });
+
+      it('should give one Chunk for each section, which opens with its heading', () => {
+        expect(chunks.map(chunk => chunk.split('\n')[0])).toStrictEqual(
+          HEADINGS_OF_THE_FIXTURE
+        );
+      });
+
+      it('should keep the markup: each Chunk is a passage of the file as it is written', () => {
+        for (const chunk of chunks) {
+          expect(markdown).toContain(chunk);
+        }
+      });
+
+      it('should keep the fenced code block whole, and see no heading inside it', () => {
+        const fence = markdown.slice(markdown.indexOf('```sh'), markdown.lastIndexOf('```') + 3);
+
+        expect(chunks.filter(chunk => chunk.includes(fence))).toHaveLength(1);
+      });
+
+      it('should keep every character, in order, with no overlap', () => {
+        expect(withoutWhitespace(chunks.join(''))).toBe(withoutWhitespace(markdown));
+      });
+    });
+
+    describe('a heading', () => {
+      it('should close the Chunk in progress and open the next one', () => {
+        expect(markdownTextsOf('The first.\n\n# A heading\n\nThe second.')).toStrictEqual([
+          'The first.',
+          '# A heading\n\nThe second.'
+        ]);
+      });
+
+      it('should travel with the paragraph after it, when the two pass the cap', () => {
+        const opening = 'The first sentence holds some words. ';
+        // A capital letter, or the segmenter sees no sentence break.
+        const rest = aParagraphOf(CUT.cap - codePointsOf(opening));
+        const paragraph = `${opening}A${rest.slice(1)}`;
+
+        const [first] = markdownTextsOf(`## A heading\n\n${paragraph}`);
+
+        expect(codePointsOf(paragraph)).toBe(CUT.cap);
+        expect(first).toBe('## A heading\n\nThe first sentence holds some words.');
+      });
+
+      it('should travel with the paragraph before it, when nothing follows', () => {
+        expect(markdownTextsOf('The first.\n\n# A heading\n\nThe second.\n\n## The end')).toStrictEqual([
+          'The first.',
+          '# A heading\n\nThe second.\n\n## The end'
+        ]);
+      });
+
+      it('should travel with the next heading and its paragraph, when no paragraph is between them', () => {
+        expect(markdownTextsOf('The first.\n\n# A title\n\n## A heading\n\nThe second.')).toStrictEqual([
+          'The first.',
+          '# A title\n\n## A heading\n\nThe second.'
+        ]);
+      });
+
+      it('should see a heading with no text as a boundary', () => {
+        expect(markdownTextsOf('The first.\n#\nThe second.')).toStrictEqual([
+          'The first.',
+          '#\nThe second.'
+        ]);
+      });
+
+      it('should give a file of headings alone as one Chunk, as there is nothing to join', () => {
+        expect(markdownTextsOf('# A title\n\n## A heading\n')).toStrictEqual([
+          '# A title\n\n## A heading'
+        ]);
+      });
+
+      it('should give no Chunk that spans two sections, even under the minimum', () => {
+        const long = aParagraphOf(1150);
+
+        expect(markdownTextsOf(`# A heading\n\n${long}\n\n# The next\n\nShort.`)).toStrictEqual([
+          `# A heading\n\n${long}`,
+          '# The next\n\nShort.'
+        ]);
+      });
+    });
+
+    describe('a fenced code block', () => {
+      it('should be one passage, and a blank line inside it is not a paragraph break', () => {
+        const [first, second] = [650, 650].map(aParagraphOf);
+        const fence = `\`\`\`\n${first}\n\n${second}\n\`\`\``;
+
+        expect(markdownTextsOf(`The code.\n\n${fence}`)).toStrictEqual([
+          `The code.\n\n${fence}`
+        ]);
+        expect(textsOf(`The code.\n\n${fence}`)).toHaveLength(2);
+      });
+
+      it('should hold a line that opens with # as code, and not as a heading', () => {
+        const fence = '~~~sh\n# The check at dusk\n\ntest-the-lamp\n~~~';
+
+        expect(markdownTextsOf(`Run it:\n\n${fence}`)).toStrictEqual([`Run it:\n\n${fence}`]);
+      });
+    });
+
+    describe('a list', () => {
+      it('should be paragraphs like any other', () => {
+        const [first, second, third] = [500, 500, 500].map(size => `- ${aParagraphOf(size - 2)}`);
+
+        expect(markdownTextsOf(`${first}\n\n${second}\n\n${third}`)).toStrictEqual([
+          `${first}\n\n${second}`,
+          third
+        ]);
       });
     });
 

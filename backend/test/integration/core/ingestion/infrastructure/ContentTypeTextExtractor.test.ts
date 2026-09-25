@@ -16,6 +16,14 @@ describe('ContentTypeTextExtractor', () => {
       ]);
     });
 
+    it('should read a Markdown file as one text, with its markup', async () => {
+      const bytes = await readFile(join(FIXTURES, 'markdown-with-headings.md'));
+
+      expect(await extractor.extract(bytes, 'markdown')).toStrictEqual([
+        bytes.toString('utf8')
+      ]);
+    });
+
     it('should read an empty text file as one empty text', async () => {
       const bytes = await readFile(join(FIXTURES, 'empty.txt'));
 

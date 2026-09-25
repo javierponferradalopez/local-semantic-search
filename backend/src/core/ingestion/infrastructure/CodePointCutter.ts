@@ -15,6 +15,10 @@ type CutParams = {
 type Split = (text: string) => string[];
 
 const BLANK_LINE = /\n\s*\n/g;
+const BLANK = /^\s*$/;
+const LINES = /[^\n]*\n|[^\n]+$/g;
+const HEADING = /^ {0,3}#{1,6}(?:\s|$)/;
+const FENCE = /^ {0,3}(`{3,}|~{3,})/;
 const LETTER_OR_DIGIT = /[\p{L}\p{N}]/u;
 const WHITESPACE = /\s/u;
 const SENTENCES = new Intl.Segmenter('und', {granularity: 'sentence'});
@@ -37,8 +41,21 @@ const paragraphsOf: Split = (text: string): string[] => {
   return [...paragraphs, text.slice(start)];
 };
 
-const sentencesOf: Split = (text: string): string[] =>
-  Array.from(SENTENCES.segment(text), ({segment}) => segment);
+// The segmenter gives the newline after a line break alone, and it belongs to the sentence before it.
+const sentencesOf: Split = (text: string): string[] => {
+  const sentences: string[] = [];
+
+  for (const {segment} of SENTENCES.segment(text)) {
+    if (sentences.length > 0 && BLANK.test(segment)) {
+      sentences[sentences.length - 1] += segment;
+      continue;
+    }
+
+    sentences.push(segment);
+  }
+
+  return sentences;
+};
 
 const hardCutsOf: Split = (text: string): string[] => {
   const pieces: string[] = [];
@@ -55,16 +72,6 @@ const hardCutsOf: Split = (text: string): string[] => {
   }
 
   return [...pieces, rest.join('')];
-};
-
-const PLAIN_TEXT_LADDER: readonly Split[] = [paragraphsOf, sentencesOf, hardCutsOf];
-
-const ladderOf = (contentType: ContentType): readonly Split[] => {
-  if (contentType !== 'plain_text') {
-    throw new Error(`The cut of the Content type ${contentType} is not built`);
-  }
-
-  return PLAIN_TEXT_LADDER;
 };
 
 // The target, the minimum and the cap of ADR-0014.
@@ -108,22 +115,123 @@ const accumulate = (passages: readonly string[]): string[] => {
   return pieces;
 };
 
+const underTheCap = (passages: readonly string[], lowerRungs: readonly Split[]): string[] =>
+  accumulate(
+    passages.flatMap(passage =>
+      sizeOf(passage) <= CUT.cap ? [passage] : piecesOf(passage, lowerRungs)
+    )
+  );
+
 // The first rung always splits, so that short paragraphs accumulate to the target.
 const piecesOf = (text: string, [split, ...lowerRungs]: readonly Split[]): string[] =>
-  accumulate(
-    split(text)
-      .filter(holdsALetterOrADigit)
-      .flatMap(passage =>
-        sizeOf(passage) <= CUT.cap ? [passage] : piecesOf(passage, lowerRungs)
-      )
+  underTheCap(split(text).filter(holdsALetterOrADigit), lowerRungs);
+
+const LOWER_RUNGS: readonly Split[] = [sentencesOf, hardCutsOf];
+const PLAIN_TEXT_LADDER: readonly Split[] = [paragraphsOf, ...LOWER_RUNGS];
+
+type Block = {text: string; isHeading: boolean};
+
+type Section = {heading: string; passages: string[]};
+
+const closingFenceOf = (opening: string): RegExp =>
+  new RegExp(`^ {0,3}${opening[0]}{${opening.length},}\\s*$`);
+
+// A fenced code block is one block, with the blank lines inside it (ADR-0014).
+const blocksOf = (text: string): Block[] => {
+  const blocks: Block[] = [];
+  let closingFence: RegExp | undefined;
+  let blockEnded = true;
+
+  for (const line of text.match(LINES) ?? []) {
+    const current = blocks.at(-1);
+
+    if (closingFence !== undefined && current !== undefined) {
+      current.text += line;
+      blockEnded = closingFence.test(line);
+      closingFence = blockEnded ? undefined : closingFence;
+      continue;
+    }
+
+    const fence = FENCE.exec(line)?.[1];
+    const isHeading = fence === undefined && HEADING.test(line);
+    const isBlank = BLANK.test(line);
+    const continues = !blockEnded && fence === undefined && !isHeading;
+
+    if (current !== undefined && (isBlank || continues)) {
+      current.text += line;
+      blockEnded ||= isBlank;
+      continue;
+    }
+
+    blocks.push({text: line, isHeading});
+    closingFence = fence === undefined ? undefined : closingFenceOf(fence);
+    blockEnded = isHeading;
+  }
+
+  return blocks;
+};
+
+const sectionsOf = (text: string): Section[] =>
+  blocksOf(text).reduce<Section[]>(
+    (sections, {text: block, isHeading}) => {
+      if (isHeading) {
+        return [...sections, {heading: block, passages: []}];
+      }
+
+      sections.at(-1)?.passages.push(block);
+      return sections;
+    },
+    [{heading: '', passages: []}]
   );
+
+// Headings with no paragraph wait for the next one; at the end, they join the one before (ADR-0014).
+const markdownPiecesOf = (text: string): string[] => {
+  const pieces: string[] = [];
+  let headings = '';
+
+  for (const {heading, passages} of sectionsOf(text)) {
+    const [first, ...rest] = passages.filter(holdsALetterOrADigit);
+
+    headings += heading;
+
+    if (first !== undefined) {
+      pieces.push(...underTheCap([headings + first, ...rest], LOWER_RUNGS));
+      headings = '';
+    }
+  }
+
+  if (!holdsALetterOrADigit(headings)) {
+    return pieces;
+  }
+
+  const last = pieces.at(-1);
+
+  return last !== undefined && sizeOf(last + headings) <= CUT.cap
+    ? [...pieces.slice(0, -1), last + headings]
+    : [...pieces, headings];
+};
+
+const PIECES_OF: Partial<Record<ContentType, (text: string) => string[]>> = {
+  plain_text: text => piecesOf(text, PLAIN_TEXT_LADDER),
+  markdown: markdownPiecesOf
+};
+
+const piecesOfTheContentType = (contentType: ContentType): ((text: string) => string[]) => {
+  const pieces = PIECES_OF[contentType];
+
+  if (pieces === undefined) {
+    throw new Error(`The cut of the Content type ${contentType} is not built`);
+  }
+
+  return pieces;
+};
 
 export class CodePointCutter implements Cutter {
   public cut({resourceId, contentType, texts}: CutParams): Chunk[] {
-    const ladder = ladderOf(contentType);
+    const piecesOfAText = piecesOfTheContentType(contentType);
 
     return texts
-      .flatMap(text => piecesOf(text, ladder))
+      .flatMap(text => piecesOfAText(text))
       .map((piece, position) =>
         Chunk.create({
           resourceId,

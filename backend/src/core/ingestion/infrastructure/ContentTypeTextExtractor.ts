@@ -5,7 +5,7 @@ export class ContentTypeTextExtractor implements TextExtractor {
   private readonly decoder = new TextDecoder('utf-8');
 
   public async extract(bytes: Buffer, contentType: ContentType): Promise<string[]> {
-    if (contentType !== 'plain_text') {
+    if (contentType !== 'plain_text' && contentType !== 'markdown') {
       throw new Error(`The extraction of the Content type ${contentType} is not built`);
     }
 
