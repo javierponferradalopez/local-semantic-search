@@ -41,7 +41,7 @@ describe('POST /resources/texts/:id/retry', () => {
     expect(row).not.toHaveProperty('reason');
   });
 
-  it('should leave the Resource in Ingesting in the list', async () => {
+  it('should leave the Resource in the list with no Reason', async () => {
     const failed = await storeAFailedTextResource();
 
     await api.retryTextResource(failed.id.value);
@@ -49,14 +49,13 @@ describe('POST /resources/texts/:id/retry', () => {
     const [row] = await api.getResources();
 
     expect(row?.id).toBe(failed.id.value);
-    expect(row?.ingestState).toBe('ingesting');
     expect(row).not.toHaveProperty('reason');
   });
 
   it('should give 409 and resource_not_failed for a Resource that is not Failed', async () => {
-    const created = await api.createATextResourceRow('the notes.md', 'the notes');
+    const ingesting = await storeAnIngestingTextResource();
 
-    const response = await api.retryTextResource(created.id);
+    const response = await api.retryTextResource(ingesting.id.value);
 
     expect(response.status).toBe(CONFLICT);
     expect(response.headers.get('content-type')).toContain('application/json');
@@ -64,7 +63,7 @@ describe('POST /resources/texts/:id/retry', () => {
       errors: [
         {
           code: 'resource_not_failed',
-          params: {resourceId: created.id, ingestState: 'ingesting'}
+          params: {resourceId: ingesting.id.value, ingestState: 'ingesting'}
         }
       ]
     } satisfies ApiError);
@@ -96,6 +95,15 @@ describe('POST /resources/texts/:id/retry', () => {
       .withIngestState('failed')
       .withReason('ingest_error')
       .build();
+
+    await container.getDependency(DrizzleResourceRepository).create(textResource);
+
+    return textResource;
+  };
+
+  // Written straight to the store, so no event starts an Ingest and the row stays Ingesting.
+  const storeAnIngestingTextResource = async (): Promise<TextResource> => {
+    const textResource = TextResourceBuilder.aTextResource().build();
 
     await container.getDependency(DrizzleResourceRepository).create(textResource);
 

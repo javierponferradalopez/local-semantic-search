@@ -8,7 +8,12 @@ import {INGEST_STATES} from 'contract/IngestState';
 import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import {REASON_CODES} from 'contract/ReasonCode';
 import type {ResourceRow} from 'contract/ResourceRow';
+import {container} from '../../../../../src/api/config/di/Container';
+import type {TextResource} from '../../../../../src/core/resources/domain/TextResource';
+import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
+import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {useTheTestApi} from '../../../../lib/testApi';
+import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 
 const CREATED = 201;
 const BAD_REQUEST = 400;
@@ -61,7 +66,7 @@ describe('POST /resources/texts', () => {
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {
-    const created = await api.createATextResourceRow('the notes.md', 'the same');
+    const stored = await storeAnIngestingTextResource('the notes.md', 'the same');
 
     const response = await api.createTextResource('another name.md', 'the same');
 
@@ -72,7 +77,7 @@ describe('POST /resources/texts', () => {
         {
           code: 'duplicate_resource',
           params: {
-            resourceId: created.id,
+            resourceId: stored.id.value,
             name: 'the notes.md',
             ingestState: 'ingesting'
           }
@@ -187,6 +192,21 @@ describe('POST /resources/texts', () => {
       });
       outgoing.flushHeaders();
     });
+
+  // Written straight to the store, so no event starts an Ingest and the row stays Ingesting.
+  const storeAnIngestingTextResource = async (
+    name: string,
+    content: string
+  ): Promise<TextResource> => {
+    const textResource = TextResourceBuilder.aTextResource()
+      .withName(name)
+      .withChecksum(Checksum.ofBytes({bytes: Buffer.from(content)}).value)
+      .build();
+
+    await container.getDependency(DrizzleResourceRepository).create(textResource);
+
+    return textResource;
+  };
 
   const expectAResourceRow = (value: unknown): void => {
     const row = value as ResourceRow;

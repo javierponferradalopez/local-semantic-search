@@ -24,6 +24,14 @@ export class TextResourceBuilder {
     });
   }
 
+  public withName(name: string): TextResourceBuilder {
+    return new TextResourceBuilder({...this.primitives, name});
+  }
+
+  public withChecksum(checksum: string): TextResourceBuilder {
+    return new TextResourceBuilder({...this.primitives, checksum});
+  }
+
   public withIngestState(ingestState: IngestState): TextResourceBuilder {
     return new TextResourceBuilder({...this.primitives, ingestState});
   }
