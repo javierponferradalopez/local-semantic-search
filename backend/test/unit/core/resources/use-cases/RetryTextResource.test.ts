@@ -27,8 +27,8 @@ describe('RetryTextResource', () => {
     eventBus = mock<EventBus>();
     transactionRunner = mock<TransactionRunner>();
 
-    resourceRepository.save.mockImplementation(async () => {
-      steps.push('save');
+    resourceRepository.update.mockImplementation(async () => {
+      steps.push('update');
     });
     eventBus.publish.mockImplementation(async () => {
       steps.push('publish');
@@ -55,10 +55,10 @@ describe('RetryTextResource', () => {
 
       await retryTextResource.run({id: textResource.id.value});
 
-      const [saved] = resourceRepository.save.mock.calls[0] ?? [];
+      const [updated] = resourceRepository.update.mock.calls[0] ?? [];
 
-      expect(saved?.toPrimitives().ingestState).toBe('ingesting');
-      expect(saved?.toPrimitives().reason).toBeUndefined();
+      expect(updated?.toPrimitives().ingestState).toBe('ingesting');
+      expect(updated?.toPrimitives().reason).toBeUndefined();
     });
 
     it('should keep the File of the Resource', async () => {
@@ -69,7 +69,7 @@ describe('RetryTextResource', () => {
 
       expect(fileStore.delete).not.toHaveBeenCalled();
       expect(fileStore.store).not.toHaveBeenCalled();
-      expect(resourceRepository.save.mock.calls[0]?.[0].fileKey.value).toBe(fileKey);
+      expect(resourceRepository.update.mock.calls[0]?.[0].fileKey.value).toBe(fileKey);
     });
 
     it('should give the row of the Resource in Ingesting', async () => {
@@ -97,7 +97,7 @@ describe('RetryTextResource', () => {
 
       expect(events?.[0]).toBeInstanceOf(TextResourceRetriedDomainEvent);
       expect(events?.[0]?.aggregateId).toBe(textResource.id.value);
-      expect(steps).toStrictEqual(['save', 'commit', 'publish']);
+      expect(steps).toStrictEqual(['update', 'commit', 'publish']);
     });
 
     it('should not wait for the handlers of its events', async () => {

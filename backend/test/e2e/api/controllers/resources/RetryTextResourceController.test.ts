@@ -97,7 +97,7 @@ describe('POST /resources/texts/:id/retry', () => {
       .withReason('ingest_error')
       .build();
 
-    await container.getDependency(DrizzleResourceRepository).save(textResource);
+    await container.getDependency(DrizzleResourceRepository).create(textResource);
 
     return textResource;
   };

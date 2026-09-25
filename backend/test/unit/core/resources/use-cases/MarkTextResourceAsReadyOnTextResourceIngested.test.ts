@@ -17,8 +17,8 @@ describe('MarkTextResourceAsReadyOnTextResourceIngested', () => {
     resourceRepository = mock<ResourceRepository>();
     transactionRunner = mock<TransactionRunner>();
 
-    resourceRepository.save.mockImplementation(async () => {
-      steps.push('save');
+    resourceRepository.update.mockImplementation(async () => {
+      steps.push('update');
     });
     transactionRunner.run.mockImplementation(async work => {
       const result = await work();
@@ -48,10 +48,10 @@ describe('MarkTextResourceAsReadyOnTextResourceIngested', () => {
         new TextResourceIngestedDomainEvent({aggregateId: textResource.id.value})
       );
 
-      const [saved] = resourceRepository.save.mock.calls[0] ?? [];
+      const [updated] = resourceRepository.update.mock.calls[0] ?? [];
 
-      expect(saved?.toPrimitives().ingestState).toBe('ready');
-      expect(steps).toStrictEqual(['save', 'commit']);
+      expect(updated?.toPrimitives().ingestState).toBe('ready');
+      expect(steps).toStrictEqual(['update', 'commit']);
     });
 
     it('should ignore an identifier that no Resource holds any more', async () => {
@@ -63,7 +63,7 @@ describe('MarkTextResourceAsReadyOnTextResourceIngested', () => {
         )
       ).resolves.toBeUndefined();
 
-      expect(resourceRepository.save).not.toHaveBeenCalled();
+      expect(resourceRepository.update).not.toHaveBeenCalled();
     });
   });
 });

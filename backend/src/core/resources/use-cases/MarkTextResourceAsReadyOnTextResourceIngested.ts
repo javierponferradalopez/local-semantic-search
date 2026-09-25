@@ -39,6 +39,6 @@ export class MarkTextResourceAsReadyOnTextResourceIngested
     }
 
     textResource.markAsReady();
-    await this.resourceRepository.save(textResource);
+    await this.resourceRepository.update(textResource);
   }
 }

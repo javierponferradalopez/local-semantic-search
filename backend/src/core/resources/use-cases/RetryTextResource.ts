@@ -51,7 +51,7 @@ export class RetryTextResource {
     }
 
     textResource.retry();
-    await this.resourceRepository.save(textResource);
+    await this.resourceRepository.update(textResource);
 
     return textResource;
   }

@@ -5,6 +5,7 @@ import type {ResourceId} from './value-objects/ResourceId';
 export interface ResourceRepository {
   find(id: ResourceId): Promise<TextResource | undefined>;
   findByChecksum(checksum: Checksum): Promise<TextResource | undefined>;
-  save(resource: TextResource): Promise<void>;
+  create(resource: TextResource): Promise<void>;
+  update(resource: TextResource): Promise<void>;
   delete(resource: TextResource): Promise<void>;
 }

@@ -61,7 +61,7 @@ export class CreateTextResource {
 
     const textResource = this.textResourceOf({name, checksum});
 
-    await this.resourceRepository.save(textResource);
+    await this.resourceRepository.create(textResource);
     await this.fileStore.store(textResource.fileKey, bytes);
 
     return textResource;

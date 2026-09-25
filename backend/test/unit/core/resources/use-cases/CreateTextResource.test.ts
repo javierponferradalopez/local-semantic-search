@@ -32,8 +32,8 @@ describe('CreateTextResource', () => {
     contentTypeResolver = mock<ContentTypeResolver>();
 
     resourceRepository.findByChecksum.mockResolvedValue(undefined);
-    resourceRepository.save.mockImplementation(async () => {
-      steps.push('save');
+    resourceRepository.create.mockImplementation(async () => {
+      steps.push('create');
     });
     fileStore.store.mockImplementation(async () => {
       steps.push('store');
@@ -87,7 +87,7 @@ describe('CreateTextResource', () => {
     it('should write the row before it copies the File', async () => {
       await createTextResource.run({name: 'the notes.md', bytes: someBytes()});
 
-      expect(steps.indexOf('save')).toBeLessThan(steps.indexOf('store'));
+      expect(steps.indexOf('create')).toBeLessThan(steps.indexOf('store'));
     });
 
     it('should raise TextResourceCreatedDomainEvent after the transaction commits', async () => {
@@ -96,7 +96,7 @@ describe('CreateTextResource', () => {
       const [events] = eventBus.publish.mock.calls[0] ?? [];
 
       expect(events?.[0]).toBeInstanceOf(TextResourceCreatedDomainEvent);
-      expect(steps).toStrictEqual(['save', 'store', 'commit', 'publish']);
+      expect(steps).toStrictEqual(['create', 'store', 'commit', 'publish']);
     });
 
     it('should not wait for the handlers of its events', async () => {

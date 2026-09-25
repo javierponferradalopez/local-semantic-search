@@ -25,9 +25,9 @@ describe('DrizzleResourceReader', () => {
     });
 
     it('should give the newest Resource first', async () => {
-      await repository.save(aTextResourceCreatedOn('2026-09-20T10:00:00.000Z'));
-      await repository.save(aTextResourceCreatedOn('2026-09-22T10:00:00.000Z'));
-      await repository.save(aTextResourceCreatedOn('2026-09-21T10:00:00.000Z'));
+      await repository.create(aTextResourceCreatedOn('2026-09-20T10:00:00.000Z'));
+      await repository.create(aTextResourceCreatedOn('2026-09-22T10:00:00.000Z'));
+      await repository.create(aTextResourceCreatedOn('2026-09-21T10:00:00.000Z'));
 
       const listed = await reader.getNewestFirst();
 
@@ -40,7 +40,7 @@ describe('DrizzleResourceReader', () => {
 
     it('should give the fields the list paints, and no Checksum', async () => {
       const textResource = aTextResourceCreatedOn('2026-09-22T10:00:00.000Z');
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       const [listed] = await reader.getNewestFirst();
       const primitives = textResource.toPrimitives();
@@ -56,7 +56,7 @@ describe('DrizzleResourceReader', () => {
     });
 
     it('should carry the Reason of a Failed Resource', async () => {
-      await repository.save(
+      await repository.create(
         TextResourceBuilder.aTextResource()
           .withIngestState('failed')
           .withReason('no_text_found')

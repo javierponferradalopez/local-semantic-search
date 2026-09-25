@@ -38,14 +38,19 @@ export class DrizzleResourceRepository implements ResourceRepository {
     return row === undefined ? undefined : TextResourceMapper.toDomain(row);
   }
 
-  public async save(textResource: TextResource): Promise<void> {
-    const row = TextResourceMapper.toRow(textResource);
-
+  public async create(textResource: TextResource): Promise<void> {
     await this.connection
       .database()
       .insert(textResources)
-      .values(row)
-      .onConflictDoUpdate({target: textResources.id, set: row});
+      .values(TextResourceMapper.toRow(textResource));
+  }
+
+  public async update(textResource: TextResource): Promise<void> {
+    await this.connection
+      .database()
+      .update(textResources)
+      .set(TextResourceMapper.toRow(textResource))
+      .where(eq(textResources.id, textResource.id.value));
   }
 
   public async delete(textResource: TextResource): Promise<void> {

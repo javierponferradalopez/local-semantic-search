@@ -16,11 +16,11 @@ describe('DrizzleResourceRepository', () => {
     repository = new DrizzleResourceRepository({connection});
   });
 
-  describe('#save', () => {
+  describe('#create', () => {
     it('should give back through #find what the aggregate held', async () => {
       const textResource = TextResourceBuilder.aTextResource().build();
 
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       const stored = await repository.find(textResource.id);
 
@@ -33,7 +33,7 @@ describe('DrizzleResourceRepository', () => {
         .withReason('unreadable_file')
         .build();
 
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       expect((await repository.find(textResource.id))?.toPrimitives().reason).toBe(
         'unreadable_file'
@@ -43,23 +43,48 @@ describe('DrizzleResourceRepository', () => {
     it('should keep no Reason key on a Resource that has none', async () => {
       const textResource = TextResourceBuilder.aTextResource().build();
 
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       const stored = await repository.find(textResource.id);
 
       expect(stored?.toPrimitives()).not.toHaveProperty('reason');
     });
 
-    it('should write the state a second save carries', async () => {
+    it('should fail for an identifier that a Resource already holds', async () => {
       const textResource = TextResourceBuilder.aTextResource().build();
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       textResource.markAsReady();
-      await repository.save(textResource);
+
+      await expect(repository.create(textResource)).rejects.toThrow();
+      expect((await repository.find(textResource.id))?.toPrimitives().ingestState).toBe(
+        'ingesting'
+      );
+    });
+  });
+
+  describe('#update', () => {
+    it('should write the state that the aggregate carries', async () => {
+      const textResource = TextResourceBuilder.aTextResource().build();
+      await repository.create(textResource);
+
+      textResource.markAsReady();
+      await repository.update(textResource);
 
       expect((await repository.find(textResource.id))?.toPrimitives().ingestState).toBe(
         'ready'
       );
+    });
+
+    it('should leave no row when the Resource is gone', async () => {
+      const textResource = TextResourceBuilder.aTextResource().build();
+      await repository.create(textResource);
+      await repository.delete(textResource);
+
+      textResource.markAsReady();
+      await repository.update(textResource);
+
+      expect(await repository.find(textResource.id)).toBeUndefined();
     });
   });
 
@@ -72,7 +97,7 @@ describe('DrizzleResourceRepository', () => {
   describe('#findByChecksum', () => {
     it('should give the Resource that holds those bytes', async () => {
       const textResource = TextResourceBuilder.aTextResource().build();
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       const checksum = Checksum.fromPrimitive({
         value: textResource.toPrimitives().checksum
@@ -93,7 +118,7 @@ describe('DrizzleResourceRepository', () => {
   describe('#delete', () => {
     it('should remove the row of the Resource', async () => {
       const textResource = TextResourceBuilder.aTextResource().build();
-      await repository.save(textResource);
+      await repository.create(textResource);
 
       await repository.delete(textResource);
 
@@ -107,7 +132,7 @@ describe('DrizzleResourceRepository', () => {
 
       await expect(
         connection.run(async () => {
-          await repository.save(textResource);
+          await repository.create(textResource);
 
           throw new Error('the work broke');
         })
