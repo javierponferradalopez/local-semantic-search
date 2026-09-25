@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A Text Resource and an Image Resource are two aggregates with the same fields
 
 `resources/` holds two aggregates, `TextResource` and `ImageResource`, in two

@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # Postgres with pgvector as the single store
 
 > **Amended by [ADR-0020](0020-no-foreign-key-crosses-a-module.md).** No foreign

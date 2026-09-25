@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The text model is multilingual-e5-small, 384 dimensions, fp32
 
 The search needs one model to embed a `Chunk` and a `Query`. Twenty-one

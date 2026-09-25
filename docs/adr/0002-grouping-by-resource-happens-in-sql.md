@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # Grouping by Resource happens in SQL
 
 A search returns one row per Resource, ranked by its best Chunk, and the screen
@@ -22,7 +27,7 @@ Decided in
   protect. It moves from the use case to the driven adapter. A query port is still
   not a repository: it returns the shape the screen needs, not aggregates.
 - **The scan cost is unchanged.**
-  [ADR-0001](./0001-postgres-with-pgvector-as-the-single-store.md) chose exact search
+  [ADR-0001](0001-postgres-with-pgvector-as-the-single-store.md) chose exact search
   with no HNSW index, so every query already walks the whole table. `DISTINCT ON` adds
   a sort over rows that are already being read.
 - **The rest of a Resource's Matches need a second query**, scoped to one Resource.

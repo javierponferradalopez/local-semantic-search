@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A Chunk knows its page and nothing else
 
 The glossary held a `Locator` — *the place, inside its Resource, where a Chunk or

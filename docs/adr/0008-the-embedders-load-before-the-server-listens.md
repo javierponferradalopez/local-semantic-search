@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The embedders load before the server listens
 
 The three encoder towers — the Text model, and the text and vision towers of

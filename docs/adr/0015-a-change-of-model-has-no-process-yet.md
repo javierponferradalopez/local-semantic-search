@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A Vector is a row per model, and a change of model has no process yet
 
 **A `Chunk` and a `Picture` hold no `Vector`. Each has one `Vector` per model

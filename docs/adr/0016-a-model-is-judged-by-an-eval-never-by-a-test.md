@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A model is judged by an eval, never by a test
 
 > **Amended by [ADR-0021](0021-a-floor-rejects-only-what-is-far-from-everything.md).**

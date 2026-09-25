@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # An SVG is served without a sandbox, and the script risk is accepted
 
 SVG is a Content type of a Resource, because most diagrams are born vector and

@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # Two contexts share one glossary, and Search never loads a Resource
 
 > **Amended by [ADR-0017](0017-three-contexts-speak-by-domain-events.md) and
@@ -60,7 +65,7 @@ a capability and the capabilities are two.
   most into `ingestion/`, `Vector` into the shared kernel. A third context for
   content would be a data layer with a business name.
 - **One database serves both.** The foreign key from
-  [ADR-0001](./0001-postgres-with-pgvector-as-the-single-store.md) crosses the
+  [ADR-0001](0001-postgres-with-pgvector-as-the-single-store.md) crosses the
   boundary, which a strict reading of bounded contexts does not allow. It is
   accepted: one store was the decision, and the lifecycle of a Chunk belongs to
   its Resource.

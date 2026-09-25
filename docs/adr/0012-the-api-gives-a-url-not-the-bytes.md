@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The API gives a URL, not the bytes
 
 The interface must show a stored `File` and a thumbnail. The API does not stream

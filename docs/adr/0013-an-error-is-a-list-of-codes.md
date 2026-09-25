@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # An error is a list of codes, not a problem document
 
 > **Amended by [ADR-0018](0018-the-ingest-runs-after-the-response.md).** The row

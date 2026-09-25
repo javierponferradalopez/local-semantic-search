@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The cut follows the structure the format gives
 
 > **Amended by [ADR-0014](0014-the-cut-belongs-to-no-model.md).** The unit is no

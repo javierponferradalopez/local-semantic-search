@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # No foreign key crosses a module, and a deletion is a business operation
 
 The tables of `ingestion/` reference a `Resource` by its `id` as a plain value.

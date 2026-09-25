@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # Modules depend inward, and each module writes only its own aggregates
 
 `resources/`, `ingestion/` and `search/` are **modules of one bounded context**,

@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A Chunk carries the rule that cut it, and an old cut keeps serving
 
 > **Amended by [ADR-0015](0015-a-change-of-model-has-no-process-yet.md).** The

@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The cut belongs to no model
 
 > **Amended by [ADR-0021](0021-a-floor-rejects-only-what-is-far-from-everything.md).**

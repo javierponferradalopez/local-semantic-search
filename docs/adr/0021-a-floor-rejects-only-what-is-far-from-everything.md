@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A Floor rejects only what is far from everything
 
 **Each `Floor` is a low constant. It keeps every real answer that the probes

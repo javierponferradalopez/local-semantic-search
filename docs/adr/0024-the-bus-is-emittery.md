@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The bus is emittery, and the publisher chooses to wait
 
 The bus is `EmitteryEventBus`, an adapter of the port `EventBus` on the library

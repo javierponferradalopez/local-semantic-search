@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The ingest runs after the response, and nothing recovers a stopped one
 
 The upload request lands the `File`, writes the row in `Ingesting`, returns

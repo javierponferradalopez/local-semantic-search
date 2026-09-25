@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A PDF yields text and nothing else
 
 A PDF can hold artwork, and its pages can be rasterised. The glossary defines a

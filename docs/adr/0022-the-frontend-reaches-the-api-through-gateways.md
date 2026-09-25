@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # The frontend reaches the API through gateways
 
 **`frontend/src/api/` is replaced by one port for each context of the backend

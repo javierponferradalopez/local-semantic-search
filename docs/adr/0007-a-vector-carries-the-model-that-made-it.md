@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # A Vector carries the model that made it
 
 > **Amended by [ADR-0014](0014-the-cut-belongs-to-no-model.md) and

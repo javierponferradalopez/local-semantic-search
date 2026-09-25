@@ -1,3 +1,8 @@
+---
+kind: decision
+status: accepted
+---
+
 # Three contexts, and Resources and Ingestion speak by domain events
 
 > **Amended by [ADR-0023](0023-modules-depend-inward-and-write-only-their-own.md).**
