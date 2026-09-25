@@ -115,7 +115,10 @@ const accumulate = (passages: readonly string[]): string[] => {
   return pieces;
 };
 
-const underTheCap = (passages: readonly string[], lowerRungs: readonly Split[]): string[] =>
+const underTheCap = (
+  passages: readonly string[],
+  lowerRungs: readonly Split[]
+): string[] =>
   accumulate(
     passages.flatMap(passage =>
       sizeOf(passage) <= CUT.cap ? [passage] : piecesOf(passage, lowerRungs)
@@ -175,10 +178,11 @@ const sectionsOf = (text: string): Section[] =>
   blocksOf(text).reduce<Section[]>(
     (sections, {text: block, isHeading}) => {
       if (isHeading) {
-        return [...sections, {heading: block, passages: []}];
+        sections.push({heading: block, passages: []});
+      } else {
+        sections.at(-1)?.passages.push(block);
       }
 
-      sections.at(-1)?.passages.push(block);
       return sections;
     },
     [{heading: '', passages: []}]
@@ -212,11 +216,13 @@ const markdownPiecesOf = (text: string): string[] => {
 };
 
 const PIECES_OF: Partial<Record<ContentType, (text: string) => string[]>> = {
-  plain_text: text => piecesOf(text, PLAIN_TEXT_LADDER),
+  plain_text: (text: string) => piecesOf(text, PLAIN_TEXT_LADDER),
   markdown: markdownPiecesOf
 };
 
-const piecesOfTheContentType = (contentType: ContentType): ((text: string) => string[]) => {
+const piecesOfTheContentType = (
+  contentType: ContentType
+): ((text: string) => string[]) => {
   const pieces = PIECES_OF[contentType];
 
   if (pieces === undefined) {

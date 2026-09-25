@@ -215,7 +215,10 @@ describe('CodePointCutter', () => {
       });
 
       it('should keep the fenced code block whole, and see no heading inside it', () => {
-        const fence = markdown.slice(markdown.indexOf('```sh'), markdown.lastIndexOf('```') + 3);
+        const fence = markdown.slice(
+          markdown.indexOf('```sh'),
+          markdown.lastIndexOf('```') + 3
+        );
 
         expect(chunks.filter(chunk => chunk.includes(fence))).toHaveLength(1);
       });
@@ -227,10 +230,9 @@ describe('CodePointCutter', () => {
 
     describe('a heading', () => {
       it('should close the Chunk in progress and open the next one', () => {
-        expect(markdownTextsOf('The first.\n\n# A heading\n\nThe second.')).toStrictEqual([
-          'The first.',
-          '# A heading\n\nThe second.'
-        ]);
+        expect(markdownTextsOf('The first.\n\n# A heading\n\nThe second.')).toStrictEqual(
+          ['The first.', '# A heading\n\nThe second.']
+        );
       });
 
       it('should travel with the paragraph after it, when the two pass the cap', () => {
@@ -246,17 +248,15 @@ describe('CodePointCutter', () => {
       });
 
       it('should travel with the paragraph before it, when nothing follows', () => {
-        expect(markdownTextsOf('The first.\n\n# A heading\n\nThe second.\n\n## The end')).toStrictEqual([
-          'The first.',
-          '# A heading\n\nThe second.\n\n## The end'
-        ]);
+        expect(
+          markdownTextsOf('The first.\n\n# A heading\n\nThe second.\n\n## The end')
+        ).toStrictEqual(['The first.', '# A heading\n\nThe second.\n\n## The end']);
       });
 
       it('should travel with the next heading and its paragraph, when no paragraph is between them', () => {
-        expect(markdownTextsOf('The first.\n\n# A title\n\n## A heading\n\nThe second.')).toStrictEqual([
-          'The first.',
-          '# A title\n\n## A heading\n\nThe second.'
-        ]);
+        expect(
+          markdownTextsOf('The first.\n\n# A title\n\n## A heading\n\nThe second.')
+        ).toStrictEqual(['The first.', '# A title\n\n## A heading\n\nThe second.']);
       });
 
       it('should see a heading with no text as a boundary', () => {
@@ -275,10 +275,9 @@ describe('CodePointCutter', () => {
       it('should give no Chunk that spans two sections, even under the minimum', () => {
         const long = aParagraphOf(1150);
 
-        expect(markdownTextsOf(`# A heading\n\n${long}\n\n# The next\n\nShort.`)).toStrictEqual([
-          `# A heading\n\n${long}`,
-          '# The next\n\nShort.'
-        ]);
+        expect(
+          markdownTextsOf(`# A heading\n\n${long}\n\n# The next\n\nShort.`)
+        ).toStrictEqual([`# A heading\n\n${long}`, '# The next\n\nShort.']);
       });
     });
 
@@ -296,13 +295,17 @@ describe('CodePointCutter', () => {
       it('should hold a line that opens with # as code, and not as a heading', () => {
         const fence = '~~~sh\n# The check at dusk\n\ntest-the-lamp\n~~~';
 
-        expect(markdownTextsOf(`Run it:\n\n${fence}`)).toStrictEqual([`Run it:\n\n${fence}`]);
+        expect(markdownTextsOf(`Run it:\n\n${fence}`)).toStrictEqual([
+          `Run it:\n\n${fence}`
+        ]);
       });
     });
 
     describe('a list', () => {
       it('should be paragraphs like any other', () => {
-        const [first, second, third] = [500, 500, 500].map(size => `- ${aParagraphOf(size - 2)}`);
+        const [first, second, third] = [500, 500, 500].map(
+          size => `- ${aParagraphOf(size - 2)}`
+        );
 
         expect(markdownTextsOf(`${first}\n\n${second}\n\n${third}`)).toStrictEqual([
           `${first}\n\n${second}`,
