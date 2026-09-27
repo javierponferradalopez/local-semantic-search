@@ -12,7 +12,7 @@ import {ResourceId} from '../../../../../src/core/resources/domain/value-objects
 import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {FilesystemFileStore} from '../../../../../src/core/shared/infrastructure/FilesystemFileStore';
 import {useTheTestApi} from '../../../../lib/testApi';
-import {testDatabase} from '../../../../lib/testInfrastructure';
+import {countTheChunksAndVectorsOf} from '../../../../lib/testInfrastructure';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 
 const OK = 200;
@@ -129,20 +129,6 @@ describe('POST /resources/texts/:id/retry', () => {
         reason: 'ingest_error'
       })
     );
-  };
-
-  // The API shows no Chunk, so the test reads the tables.
-  const countTheChunksAndVectorsOf = async (
-    resourceId: string
-  ): Promise<{chunks: number; vectors: number}> => {
-    const {rows} = await testDatabase().query<{chunks: number; vectors: number}>(
-      `SELECT count(DISTINCT chunks.id)::int AS chunks, count(vectors_384.chunk_id)::int AS vectors
-       FROM chunks LEFT JOIN vectors_384 ON vectors_384.chunk_id = chunks.id
-       WHERE chunks.resource_id = $1`,
-      [resourceId]
-    );
-
-    return rows[0] as {chunks: number; vectors: number};
   };
 
   // Written straight to the store, with a File that holds text, so the Ingest of the Retry gives no Reason.
