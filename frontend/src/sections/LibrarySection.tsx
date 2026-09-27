@@ -11,6 +11,7 @@ export const LibrarySection = (): JSX.Element => {
   const resources = useResourceGateway();
   const [rows, setRows] = useState<ResourceRow[]>([]);
   const [refusal, setRefusal] = useState<string[]>([]);
+  const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(new Set());
 
   useEffect(() => {
     resources
@@ -26,6 +27,21 @@ export const LibrarySection = (): JSX.Element => {
       .createTextResource(file)
       .then(row => setRows(listed => [row, ...listed]))
       .catch((failure: unknown) => setRefusal(textsOfFailure(failure)));
+  };
+
+  const retry = ({id}: ResourceRow): void => {
+    setRefusal([]);
+    setBusyIds(busy => new Set(busy).add(id));
+
+    resources
+      .retryTextResource(id)
+      .then(retried =>
+        setRows(listed => listed.map(row => (row.id === id ? retried : row)))
+      )
+      .catch((failure: unknown) => setRefusal(textsOfFailure(failure)))
+      .finally(() =>
+        setBusyIds(busy => new Set([...busy].filter(busyId => busyId !== id)))
+      );
   };
 
   const remove = ({id}: ResourceRow): void => {
@@ -51,7 +67,7 @@ export const LibrarySection = (): JSX.Element => {
           ))}
         </ul>
       )}
-      <ResourceList rows={rows} onDelete={remove} />
+      <ResourceList rows={rows} busyIds={busyIds} onRetry={retry} onDelete={remove} />
     </section>
   );
 };

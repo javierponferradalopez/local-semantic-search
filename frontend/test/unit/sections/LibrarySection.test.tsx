@@ -121,6 +121,128 @@ describe('LibrarySection', () => {
     });
   });
 
+  describe('Retry', () => {
+    let resources: MockProxy<ResourceGateway>;
+
+    beforeEach(() => {
+      resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([
+        {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'},
+        rowNamed('notes.md'),
+        {...rowNamed('manual.pdf'), ingestState: 'ready'}
+      ]);
+    });
+
+    it('should offer Retry on a Failed row alone, and Delete on every row', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      expect(await screen.findByRole('button', {name: 'Retry scan.pdf'})).toBeDefined();
+      expect(screen.getAllByRole('button', {name: /^Retry /})).toHaveLength(1);
+      expect(screen.getAllByRole('button', {name: /^Delete /})).toHaveLength(3);
+    });
+
+    it('should show the row that the gateway gives back, in Ingesting', async () => {
+      resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
+
+      expect(resources.retryTextResource).toHaveBeenCalledWith('scan.pdf');
+      await waitFor(() =>
+        expect(screen.queryByRole('button', {name: 'Retry scan.pdf'})).toBeNull()
+      );
+      expect(screen.queryByText('Something went wrong.')).toBeNull();
+      expect(screen.getAllByLabelText('Ingesting')).toHaveLength(2);
+    });
+
+    it('should block the actions of the row until the gateway answers', async () => {
+      let answer: (row: ResourceRow) => void = () => {};
+      resources.retryTextResource.mockReturnValue(
+        new Promise(resolve => {
+          answer = resolve;
+        })
+      );
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const retry = await screen.findByRole('button', {name: 'Retry scan.pdf'});
+      await userEvent.click(retry);
+      await userEvent.click(retry);
+      await userEvent.click(screen.getByRole('button', {name: 'Delete scan.pdf'}));
+
+      expect(retry.hasAttribute('disabled')).toBe(true);
+      expect(retry.textContent).toBe('Retrying…');
+      expect(
+        screen.getByRole('button', {name: 'Delete scan.pdf'}).hasAttribute('disabled')
+      ).toBe(true);
+      expect(
+        screen.getByRole('button', {name: 'Delete notes.md'}).hasAttribute('disabled')
+      ).toBe(false);
+      expect(resources.retryTextResource).toHaveBeenCalledTimes(1);
+      expect(resources.deleteTextResource).not.toHaveBeenCalled();
+
+      answer(rowNamed('scan.pdf'));
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole('button', {name: 'Delete scan.pdf'}).hasAttribute('disabled')
+        ).toBe(false)
+      );
+    });
+
+    it('should remove the text of an earlier Refusal when a Retry succeeds', async () => {
+      resources.retryTextResource
+        .mockRejectedValueOnce(
+          new Refusal([{code: 'resource_not_found', params: {resourceId: 'scan.pdf'}}])
+        )
+        .mockResolvedValueOnce(rowNamed('scan.pdf'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const retry = await screen.findByRole('button', {name: 'Retry scan.pdf'});
+      await userEvent.click(retry);
+      await screen.findByRole('alert');
+      await userEvent.click(retry);
+
+      await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+    });
+
+    it.each([
+      [
+        'resource_not_failed',
+        {
+          code: 'resource_not_failed',
+          params: {resourceId: 'scan.pdf', ingestState: 'ingesting'}
+        },
+        'This Resource is Ingesting. Only a Failed Resource can be ingested again. Reload the page.'
+      ],
+      [
+        'resource_not_found',
+        {code: 'resource_not_found', params: {resourceId: 'scan.pdf'}},
+        'The library no longer holds this Resource. Reload the page.'
+      ]
+    ] as const)(
+      'should keep the row and show the text of the Refusal %s',
+      async (_, item, text) => {
+        resources.retryTextResource.mockRejectedValue(new Refusal([item]));
+
+        renderWithGateways(<LibrarySection />, {resources});
+
+        await userEvent.click(
+          await screen.findByRole('button', {name: 'Retry scan.pdf'})
+        );
+
+        expect(await screen.findByText(text)).toBeDefined();
+        await waitFor(() =>
+          expect(
+            screen.getByRole('button', {name: 'Retry scan.pdf'}).hasAttribute('disabled')
+          ).toBe(false)
+        );
+      }
+    );
+  });
+
   describe('the Gate', () => {
     let resources: MockProxy<ResourceGateway>;
 
