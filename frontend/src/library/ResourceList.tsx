@@ -1,5 +1,6 @@
 import type {ResourceRow} from 'contract/ResourceRow';
 import type {JSX} from 'react';
+import {textOfReason} from '@/errors/textOfReason';
 import {textOfIngestState} from '@/library/textOfIngestState';
 
 type Props = {rows: ResourceRow[]; onDelete: (row: ResourceRow) => void};
@@ -32,6 +33,7 @@ export const ResourceList = ({rows, onDelete}: Props): JSX.Element => {
             <td>
               {textOfIngestState(row.ingestState)}
               {row.ingestState === 'ingesting' && <progress aria-label="Ingesting" />}
+              {row.reason !== undefined && <p>{textOfReason(row.reason)}</p>}
             </td>
             <td>
               <time dateTime={row.createdAt}>

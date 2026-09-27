@@ -41,6 +41,25 @@ describe('LibrarySection', () => {
     expect(link.getAttribute('target')).toBe('_blank');
   });
 
+  it.each([
+    ['no_text_found', 'No text was found in this file.'],
+    ['image_too_large', 'The image is too large.'],
+    ['unreadable_file', 'The file could not be read.'],
+    ['ingest_error', 'Something went wrong.']
+  ] as const)(
+    'should show the text of the Reason %s on a Failed row',
+    async (reason, text) => {
+      const resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([
+        {...rowNamed('scan.pdf'), ingestState: 'failed', reason}
+      ]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      expect(await screen.findByText(text)).toBeDefined();
+    }
+  );
+
   it('should show the text of a Refusal, and never the failure itself', async () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([]);
