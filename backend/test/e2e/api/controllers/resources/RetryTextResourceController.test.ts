@@ -1,13 +1,18 @@
 import {randomUUID} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import type {ApiError} from 'contract/ApiError';
 import {CONTENT_TYPES} from 'contract/ContentType';
 import {INGEST_STATES} from 'contract/IngestState';
 import {REASON_CODES} from 'contract/ReasonCode';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {container} from '../../../../../src/api/config/di/Container';
-import type {TextResource} from '../../../../../src/core/resources/domain/TextResource';
+import {TextResource} from '../../../../../src/core/resources/domain/TextResource';
+import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
+import {FilesystemFileStore} from '../../../../../src/core/shared/infrastructure/FilesystemFileStore';
 import {useTheTestApi} from '../../../../lib/testApi';
+import {testDatabase} from '../../../../lib/testInfrastructure';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 
 const OK = 200;
@@ -39,6 +44,8 @@ describe('POST /resources/texts/:id/retry', () => {
     expectAResourceRow(row);
     expect((row as ResourceRow).ingestState).toBe('ingesting');
     expect(row).not.toHaveProperty('reason');
+    // So the Ingest of the Retry does not run into the next test.
+    await api.rowOnceIngested(failed.id.value);
   });
 
   it('should leave the Resource in the list with no Reason', async () => {
@@ -46,10 +53,29 @@ describe('POST /resources/texts/:id/retry', () => {
 
     await api.retryTextResource(failed.id.value);
 
-    const [row] = await api.getResources();
+    const row = await api.rowOnceIngested(failed.id.value);
 
     expect(row?.id).toBe(failed.id.value);
     expect(row).not.toHaveProperty('reason');
+  });
+
+  it('should make a Failed Resource whose File holds text Ready, with one set of Chunks', async () => {
+    const created = await api.createATextResourceRow(
+      'long-text.txt',
+      await readFile(join(import.meta.dirname, '../../../../fixtures/long-text.txt'))
+    );
+    await api.rowOnceIngested(created.id);
+    const chunksOfTheFirstIngest = await countTheChunksAndVectorsOf(created.id);
+    await markAsFailed(created.id);
+
+    await api.retryTextResource(created.id);
+    const row = await api.rowOnceIngested(created.id);
+
+    expect(row.ingestState).toBe('ready');
+    expect(chunksOfTheFirstIngest.chunks).toBeGreaterThan(0);
+    expect(await countTheChunksAndVectorsOf(created.id)).toStrictEqual(
+      chunksOfTheFirstIngest
+    );
   });
 
   it('should give 409 and resource_not_failed for a Resource that is not Failed', async () => {
@@ -89,13 +115,46 @@ describe('POST /resources/texts/:id/retry', () => {
     } satisfies ApiError);
   });
 
-  // No Resource reaches Failed over HTTP yet, so the row is written straight to the store.
+  // The aggregate never makes a Ready Resource Failed, so the test writes the row and keeps its Chunks.
+  const markAsFailed = async (id: string): Promise<void> => {
+    const resourceRepository = container.getDependency(DrizzleResourceRepository);
+    const ready = (await resourceRepository.find(
+      ResourceId.of({value: id})
+    )) as TextResource;
+
+    await resourceRepository.update(
+      TextResource.fromPrimitives({
+        ...ready.toPrimitives(),
+        ingestState: 'failed',
+        reason: 'ingest_error'
+      })
+    );
+  };
+
+  // The API shows no Chunk, so the test reads the tables.
+  const countTheChunksAndVectorsOf = async (
+    resourceId: string
+  ): Promise<{chunks: number; vectors: number}> => {
+    const {rows} = await testDatabase().query<{chunks: number; vectors: number}>(
+      `SELECT count(DISTINCT chunks.id)::int AS chunks, count(vectors_384.chunk_id)::int AS vectors
+       FROM chunks LEFT JOIN vectors_384 ON vectors_384.chunk_id = chunks.id
+       WHERE chunks.resource_id = $1`,
+      [resourceId]
+    );
+
+    return rows[0] as {chunks: number; vectors: number};
+  };
+
+  // Written straight to the store, with a File that holds text, so the Ingest of the Retry gives no Reason.
   const storeAFailedTextResource = async (): Promise<TextResource> => {
     const textResource = TextResourceBuilder.aTextResource()
       .withIngestState('failed')
       .withReason('ingest_error')
       .build();
 
+    await container
+      .getDependency(FilesystemFileStore)
+      .store(textResource.fileKey, Buffer.from('The notes of the owner.'));
     await container.getDependency(DrizzleResourceRepository).create(textResource);
 
     return textResource;
