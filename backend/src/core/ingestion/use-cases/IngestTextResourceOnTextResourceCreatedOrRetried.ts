@@ -1,6 +1,7 @@
 import type {ReasonCode} from 'contract/ReasonCode';
 import {TextResourceCreatedDomainEvent} from '../../resources/domain/events/TextResourceCreatedDomainEvent';
 import {TextResourceRetriedDomainEvent} from '../../resources/domain/events/TextResourceRetriedDomainEvent';
+import type {ResourceRepository} from '../../resources/domain/ResourceRepository';
 import {ResourceId} from '../../resources/domain/value-objects/ResourceId';
 import type {DomainEvent} from '../../shared/domain/DomainEvent';
 import type {DomainEventHandler} from '../../shared/domain/DomainEventHandler';
@@ -26,6 +27,7 @@ type ConstructorParams = {
   cutter: Cutter;
   textEmbedder: TextEmbedder;
   chunkRepository: ChunkRepository;
+  resourceRepository: ResourceRepository;
   eventBus: EventBus;
 };
 
@@ -37,6 +39,7 @@ export class IngestTextResourceOnTextResourceCreatedOrRetried
   private readonly cutter: Cutter;
   private readonly textEmbedder: TextEmbedder;
   private readonly chunkRepository: ChunkRepository;
+  private readonly resourceRepository: ResourceRepository;
   private readonly eventBus: EventBus;
 
   public constructor(params: ConstructorParams) {
@@ -45,6 +48,7 @@ export class IngestTextResourceOnTextResourceCreatedOrRetried
     this.cutter = params.cutter;
     this.textEmbedder = params.textEmbedder;
     this.chunkRepository = params.chunkRepository;
+    this.resourceRepository = params.resourceRepository;
     this.eventBus = params.eventBus;
   }
 
@@ -86,6 +90,13 @@ export class IngestTextResourceOnTextResourceCreatedOrRetried
     const embeddedChunks = await this.embed(chunks);
 
     await this.chunkRepository.createMany(embeddedChunks);
+
+    // A Delete during the Ingest can find no Chunk to delete, so the Ingest deletes what it wrote.
+    if ((await this.resourceRepository.find(resourceId)) === undefined) {
+      await this.chunkRepository.deleteManyByResourceId(resourceId);
+
+      return [];
+    }
 
     return [
       ...chunks.flatMap(chunk => chunk.pullEvents()),

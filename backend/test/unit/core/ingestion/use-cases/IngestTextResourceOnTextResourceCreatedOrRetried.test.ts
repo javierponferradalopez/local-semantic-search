@@ -10,11 +10,13 @@ import type {TextExtractor} from '../../../../../src/core/ingestion/domain/TextE
 import {IngestTextResourceOnTextResourceCreatedOrRetried} from '../../../../../src/core/ingestion/use-cases/IngestTextResourceOnTextResourceCreatedOrRetried';
 import {TextResourceCreatedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceCreatedDomainEvent';
 import {TextResourceRetriedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceRetriedDomainEvent';
+import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import type {EventBus} from '../../../../../src/core/shared/domain/services/EventBus';
 import type {FileStore} from '../../../../../src/core/shared/domain/services/FileStore';
 import type {TextEmbedder} from '../../../../../src/core/shared/domain/services/TextEmbedder';
 import type {Vector} from '../../../../../src/core/shared/domain/value-objects/Vector';
 import {ChunkBuilder} from '../../../../utils/builders/chunk/ChunkBuilder';
+import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 import {type MockProxy, mock} from '../../../../utils/mock';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
 import {VectorMother} from '../../../../utils/object-mother/VectorMother';
@@ -28,6 +30,7 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
   let cutter: MockProxy<Cutter>;
   let textEmbedder: MockProxy<TextEmbedder>;
   let chunkRepository: MockProxy<ChunkRepository>;
+  let resourceRepository: MockProxy<ResourceRepository>;
   let eventBus: MockProxy<EventBus>;
   let handler: IngestTextResourceOnTextResourceCreatedOrRetried;
   let steps: string[];
@@ -42,6 +45,7 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
     cutter = mock<Cutter>();
     textEmbedder = mock<TextEmbedder>();
     chunkRepository = mock<ChunkRepository>();
+    resourceRepository = mock<ResourceRepository>();
     eventBus = mock<EventBus>();
 
     chunks = [
@@ -64,6 +68,11 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
     chunkRepository.createMany.mockImplementation(async () => {
       steps.push('create');
     });
+    resourceRepository.find.mockImplementation(async () => {
+      steps.push('find');
+
+      return TextResourceBuilder.aTextResource().build();
+    });
     eventBus.publish.mockImplementation(async () => {
       steps.push('publish');
     });
@@ -76,6 +85,7 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
       cutter,
       textEmbedder,
       chunkRepository,
+      resourceRepository,
       eventBus
     });
   });
@@ -163,7 +173,25 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
         );
 
         expect(ingested?.aggregateId).toBe(event.aggregateId);
-        expect(steps).toStrictEqual(['delete', 'create', 'publish']);
+        expect(steps).toStrictEqual(['delete', 'create', 'find', 'publish']);
+      });
+
+      it('should delete its output and raise no event when the Resource is gone after the write', async () => {
+        const event = anEventOfAResource();
+        resourceRepository.find.mockImplementation(async () => {
+          steps.push('find');
+
+          return undefined;
+        });
+
+        await handler.handle(event);
+
+        expect(resourceRepository.find.mock.calls[0]?.[0].value).toBe(event.aggregateId);
+        expect(chunkRepository.deleteManyByResourceId.mock.calls[1]?.[0].value).toBe(
+          event.aggregateId
+        );
+        expect(steps).toStrictEqual(['delete', 'create', 'find', 'delete', 'publish']);
+        expect(eventBus.publish.mock.calls[0]?.[0]).toStrictEqual([]);
       });
 
       it.each(CONTENT_TYPES)(
