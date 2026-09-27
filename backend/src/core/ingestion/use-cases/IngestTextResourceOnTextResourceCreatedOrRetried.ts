@@ -1,5 +1,6 @@
 import type {ReasonCode} from 'contract/ReasonCode';
 import {TextResourceCreatedDomainEvent} from '../../resources/domain/events/TextResourceCreatedDomainEvent';
+import {TextResourceRetriedDomainEvent} from '../../resources/domain/events/TextResourceRetriedDomainEvent';
 import {ResourceId} from '../../resources/domain/value-objects/ResourceId';
 import type {DomainEvent} from '../../shared/domain/DomainEvent';
 import type {DomainEventHandler} from '../../shared/domain/DomainEventHandler';
@@ -15,6 +16,10 @@ import {TextResourceIngestedDomainEvent} from '../domain/events/TextResourceInge
 import {TextResourceIngestFailedDomainEvent} from '../domain/events/TextResourceIngestFailedDomainEvent';
 import type {TextExtractor} from '../domain/TextExtractor';
 
+type TextResourceCreatedOrRetried =
+  | TextResourceCreatedDomainEvent
+  | TextResourceRetriedDomainEvent;
+
 type ConstructorParams = {
   fileStore: FileStore;
   textExtractor: TextExtractor;
@@ -24,8 +29,8 @@ type ConstructorParams = {
   eventBus: EventBus;
 };
 
-export class IngestTextResourceOnTextResourceCreated
-  implements DomainEventHandler<TextResourceCreatedDomainEvent>
+export class IngestTextResourceOnTextResourceCreatedOrRetried
+  implements DomainEventHandler<TextResourceCreatedOrRetried>
 {
   private readonly fileStore: FileStore;
   private readonly textExtractor: TextExtractor;
@@ -43,11 +48,14 @@ export class IngestTextResourceOnTextResourceCreated
     this.eventBus = params.eventBus;
   }
 
-  public subscribeTo(): [typeof TextResourceCreatedDomainEvent] {
-    return [TextResourceCreatedDomainEvent];
+  public subscribeTo(): [
+    typeof TextResourceCreatedDomainEvent,
+    typeof TextResourceRetriedDomainEvent
+  ] {
+    return [TextResourceCreatedDomainEvent, TextResourceRetriedDomainEvent];
   }
 
-  public async handle(event: TextResourceCreatedDomainEvent): Promise<void> {
+  public async handle(event: TextResourceCreatedOrRetried): Promise<void> {
     const resourceId = ResourceId.of({value: event.aggregateId});
 
     const events = await this.ingest(resourceId, event).catch((error: unknown) => {
@@ -62,7 +70,7 @@ export class IngestTextResourceOnTextResourceCreated
 
   private async ingest(
     resourceId: ResourceId,
-    event: TextResourceCreatedDomainEvent
+    event: TextResourceCreatedOrRetried
   ): Promise<DomainEvent[]> {
     await this.chunkRepository.deleteManyByResourceId(resourceId);
 

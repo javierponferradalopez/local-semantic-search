@@ -1,7 +1,7 @@
 import {CodePointCutter} from '../../../core/ingestion/infrastructure/CodePointCutter';
 import {ContentTypeTextExtractor} from '../../../core/ingestion/infrastructure/ContentTypeTextExtractor';
 import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzleChunkRepository';
-import {IngestTextResourceOnTextResourceCreated} from '../../../core/ingestion/use-cases/IngestTextResourceOnTextResourceCreated';
+import {IngestTextResourceOnTextResourceCreatedOrRetried} from '../../../core/ingestion/use-cases/IngestTextResourceOnTextResourceCreatedOrRetried';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {MarkTextResourceAsFailedOnTextResourceIngestFailed} from '../../../core/resources/use-cases/MarkTextResourceAsFailedOnTextResourceIngestFailed';
 import {MarkTextResourceAsReadyOnTextResourceIngested} from '../../../core/resources/use-cases/MarkTextResourceAsReadyOnTextResourceIngested';
@@ -15,7 +15,7 @@ export const registerDomainEventHandlers = (): void => {
   const eventBus = container.getDependency(EmitteryEventBus);
 
   eventBus.subscribe(
-    new IngestTextResourceOnTextResourceCreated({
+    new IngestTextResourceOnTextResourceCreatedOrRetried({
       fileStore: container.getDependency(FilesystemFileStore),
       textExtractor: container.getDependency(ContentTypeTextExtractor),
       cutter: container.getDependency(CodePointCutter),
