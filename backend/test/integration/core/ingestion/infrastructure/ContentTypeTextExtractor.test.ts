@@ -1,5 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {UnreadableFileError} from '../../../../../src/core/ingestion/domain/errors/UnreadableFileError';
 import {ContentTypeTextExtractor} from '../../../../../src/core/ingestion/infrastructure/ContentTypeTextExtractor';
 
 const FIXTURES = join(import.meta.dirname, '../../../../fixtures');
@@ -52,6 +53,12 @@ describe('ContentTypeTextExtractor', () => {
       const bytes = await readFile(join(FIXTURES, 'scanned-with-no-text.pdf'));
 
       expect(await extractor.extract(bytes, 'pdf')).toStrictEqual(['', '']);
+    });
+
+    it('should throw UnreadableFileError for a corrupt PDF', async () => {
+      const bytes = await readFile(join(FIXTURES, 'corrupt.pdf'));
+
+      await expect(extractor.extract(bytes, 'pdf')).rejects.toThrow(UnreadableFileError);
     });
   });
 });
