@@ -1,7 +1,9 @@
 import {CONTENT_TYPES, type ContentType} from 'contract/ContentType';
+import type {MockInstance} from 'vitest';
 import type {Chunk} from '../../../../../src/core/ingestion/domain/Chunk';
 import type {ChunkRepository} from '../../../../../src/core/ingestion/domain/ChunkRepository';
 import type {Cutter} from '../../../../../src/core/ingestion/domain/Cutter';
+import {UnreadableFileError} from '../../../../../src/core/ingestion/domain/errors/UnreadableFileError';
 import {TextResourceIngestedDomainEvent} from '../../../../../src/core/ingestion/domain/events/TextResourceIngestedDomainEvent';
 import {TextResourceIngestFailedDomainEvent} from '../../../../../src/core/ingestion/domain/events/TextResourceIngestFailedDomainEvent';
 import type {TextExtractor} from '../../../../../src/core/ingestion/domain/TextExtractor';
@@ -30,6 +32,7 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
   let steps: string[];
   let chunks: Chunk[];
   let vectors: Vector[];
+  let consoleError: MockInstance<typeof console.error>;
 
   beforeEach(() => {
     steps = [];
@@ -64,6 +67,8 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
       steps.push('publish');
     });
 
+    consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     handler = new IngestTextResourceOnTextResourceCreated({
       fileStore,
       textExtractor,
@@ -72,6 +77,10 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
       chunkRepository,
       eventBus
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('#subscribeTo', () => {
@@ -163,6 +172,50 @@ describe('IngestTextResourceOnTextResourceCreated', () => {
       expect(textEmbedder.embedChunk).not.toHaveBeenCalled();
       expect(chunkRepository.createMany).not.toHaveBeenCalled();
       expect(steps).toStrictEqual(['delete', 'publish']);
+    });
+
+    it('should raise TextResourceIngestFailedDomainEvent with unreadable_file when the extractor cannot read the File', async () => {
+      textExtractor.extract.mockRejectedValue(
+        UnreadableFileError.causeTheBytesCannotBeReadAs('pdf', new Error('Invalid PDF'))
+      );
+      const event = anEventOfACreatedResource('pdf');
+
+      await handler.handle(event);
+
+      expect(eventBus.publish).toHaveBeenCalledTimes(1);
+      expect(eventBus.publish.mock.calls[0]?.[0]).toStrictEqual([
+        new TextResourceIngestFailedDomainEvent({
+          aggregateId: event.aggregateId,
+          reason: 'unreadable_file'
+        })
+      ]);
+    });
+
+    it('should raise TextResourceIngestFailedDomainEvent with ingest_error for an error that no port translated', async () => {
+      chunkRepository.createMany.mockRejectedValue(new Error('The connection broke'));
+      const event = anEventOfACreatedResource();
+
+      await handler.handle(event);
+
+      expect(eventBus.publish).toHaveBeenCalledTimes(1);
+      expect(eventBus.publish.mock.calls[0]?.[0]).toStrictEqual([
+        new TextResourceIngestFailedDomainEvent({
+          aggregateId: event.aggregateId,
+          reason: 'ingest_error'
+        })
+      ]);
+    });
+
+    it('should give the detail of the error to the developer log, and not to the event', async () => {
+      const error = new Error('The connection broke');
+      chunkRepository.createMany.mockRejectedValue(error);
+
+      await handler.handle(anEventOfACreatedResource());
+
+      expect(consoleError).toHaveBeenCalledWith(expect.any(String), error);
+      expect(JSON.stringify(eventBus.publish.mock.calls[0]?.[0])).not.toContain(
+        'The connection broke'
+      );
     });
 
     it('should not wait for the handlers of its events', async () => {

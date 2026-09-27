@@ -105,6 +105,18 @@ describe('POST /resources/texts', () => {
       expect(row).toMatchObject({ingestState: 'failed', reason: 'no_text_found'});
       expectAResourceRow(row);
     });
+
+    it('should make a corrupt PDF Failed with unreadable_file', async () => {
+      const created = await api.createATextResourceRow(
+        'corrupt.pdf',
+        await readFile(join(import.meta.dirname, '../../../../fixtures/corrupt.pdf'))
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row).toMatchObject({ingestState: 'failed', reason: 'unreadable_file'});
+      expectAResourceRow(row);
+    });
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {

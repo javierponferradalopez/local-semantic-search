@@ -1,5 +1,7 @@
+import type {ReasonCode} from 'contract/ReasonCode';
 import {TextResourceCreatedDomainEvent} from '../../resources/domain/events/TextResourceCreatedDomainEvent';
 import {ResourceId} from '../../resources/domain/value-objects/ResourceId';
+import type {DomainEvent} from '../../shared/domain/DomainEvent';
 import type {DomainEventHandler} from '../../shared/domain/DomainEventHandler';
 import type {EventBus} from '../../shared/domain/services/EventBus';
 import type {FileStore} from '../../shared/domain/services/FileStore';
@@ -8,6 +10,7 @@ import {FileKey} from '../../shared/domain/value-objects/FileKey';
 import type {Chunk} from '../domain/Chunk';
 import type {ChunkRepository, EmbeddedChunk} from '../domain/ChunkRepository';
 import type {Cutter} from '../domain/Cutter';
+import {UnreadableFileError} from '../domain/errors/UnreadableFileError';
 import {TextResourceIngestedDomainEvent} from '../domain/events/TextResourceIngestedDomainEvent';
 import {TextResourceIngestFailedDomainEvent} from '../domain/events/TextResourceIngestFailedDomainEvent';
 import type {TextExtractor} from '../domain/TextExtractor';
@@ -47,6 +50,20 @@ export class IngestTextResourceOnTextResourceCreated
   public async handle(event: TextResourceCreatedDomainEvent): Promise<void> {
     const resourceId = ResourceId.of({value: event.aggregateId});
 
+    const events = await this.ingest(resourceId, event).catch((error: unknown) => {
+      // The detail is for the developer, and never reaches the event.
+      console.error('The Ingest of a Resource failed', error);
+
+      return [failureOf(resourceId, reasonOf(error))];
+    });
+
+    void this.eventBus.publish(events);
+  }
+
+  private async ingest(
+    resourceId: ResourceId,
+    event: TextResourceCreatedDomainEvent
+  ): Promise<DomainEvent[]> {
     await this.chunkRepository.deleteManyByResourceId(resourceId);
 
     const bytes = await this.fileStore.read(FileKey.of({value: event.fileKey}));
@@ -55,23 +72,17 @@ export class IngestTextResourceOnTextResourceCreated
 
     // One rule for each Content type: a scan, an empty file, a file with no letter and no digit.
     if (chunks.length === 0) {
-      void this.eventBus.publish([
-        new TextResourceIngestFailedDomainEvent({
-          aggregateId: resourceId.value,
-          reason: 'no_text_found'
-        })
-      ]);
-      return;
+      return [failureOf(resourceId, 'no_text_found')];
     }
 
     const embeddedChunks = await this.embed(chunks);
 
     await this.chunkRepository.createMany(embeddedChunks);
 
-    void this.eventBus.publish([
+    return [
       ...chunks.flatMap(chunk => chunk.pullEvents()),
       new TextResourceIngestedDomainEvent({aggregateId: resourceId.value})
-    ]);
+    ];
   }
 
   // One at a time: the port is singular, and the work blocks nobody (ADR-0018).
@@ -87,3 +98,12 @@ export class IngestTextResourceOnTextResourceCreated
     return embeddedChunks;
   }
 }
+
+const reasonOf = (error: unknown): ReasonCode =>
+  error instanceof UnreadableFileError ? 'unreadable_file' : 'ingest_error';
+
+const failureOf = (
+  resourceId: ResourceId,
+  reason: ReasonCode
+): TextResourceIngestFailedDomainEvent =>
+  new TextResourceIngestFailedDomainEvent({aggregateId: resourceId.value, reason});
