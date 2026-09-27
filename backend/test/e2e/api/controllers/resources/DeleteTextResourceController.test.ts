@@ -1,10 +1,19 @@
 import {randomUUID} from 'node:crypto';
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import type {ApiError} from 'contract/ApiError';
 import {useTheTestApi} from '../../../../lib/testApi';
+import {
+  countTheChunksAndVectorsOf,
+  testDatabase
+} from '../../../../lib/testInfrastructure';
 
 const NO_CONTENT = 204;
 const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
+
+const DELETE_TIME_LIMIT_IN_MS = 5_000;
+const READ_INTERVAL_IN_MS = 100;
 
 describe('DELETE /resources/texts/:id', () => {
   const api = useTheTestApi();
@@ -16,6 +25,27 @@ describe('DELETE /resources/texts/:id', () => {
 
     expect(response.status).toBe(NO_CONTENT);
     await api.expectNothingStored();
+  });
+
+  it('should leave no Chunk and no Vector of a Ready Resource', async () => {
+    const created = await api.createATextResourceRow(
+      'long-text.txt',
+      await readFile(join(import.meta.dirname, '../../../../fixtures/long-text.txt'))
+    );
+    const row = await api.rowOnceIngested(created.id);
+    const countsOfTheIngest = await countTheChunksAndVectorsOf(created.id);
+
+    await api.deleteTextResource(created.id);
+
+    expect(row.ingestState).toBe('ready');
+    expect(countsOfTheIngest.chunks).toBeGreaterThan(0);
+    expect(countsOfTheIngest.vectors).toBe(countsOfTheIngest.chunks);
+    expect((await chunksAndVectorsOnceDeleted(created.id)).chunks).toBe(0);
+    // A Vector knows no Resource, and this Resource is the only one, so the whole table must be empty.
+    expect(
+      (await testDatabase().query('SELECT count(*)::int AS vectors FROM vectors_384'))
+        .rows
+    ).toStrictEqual([{vectors: 0}]);
   });
 
   it('should leave the other Resources alone', async () => {
@@ -49,4 +79,19 @@ describe('DELETE /resources/texts/:id', () => {
       errors: [{code: 'invalid_input', params: {path: 'id'}}]
     } satisfies ApiError);
   });
+
+  // Reads the tables, and never waits on the bus (ADR-0024).
+  const chunksAndVectorsOnceDeleted = async (
+    resourceId: string
+  ): Promise<{chunks: number; vectors: number}> => {
+    const deadline = Date.now() + DELETE_TIME_LIMIT_IN_MS;
+    let counts = await countTheChunksAndVectorsOf(resourceId);
+
+    while (counts.chunks > 0 && Date.now() < deadline) {
+      await new Promise(resolve => setTimeout(resolve, READ_INTERVAL_IN_MS));
+      counts = await countTheChunksAndVectorsOf(resourceId);
+    }
+
+    return counts;
+  };
 });
