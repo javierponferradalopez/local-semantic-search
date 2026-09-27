@@ -2,7 +2,10 @@ import {CONTENT_TYPES} from 'contract/ContentType';
 import {INGEST_STATES} from 'contract/IngestState';
 import {REASON_CODES} from 'contract/ReasonCode';
 import type {ResourceRow} from 'contract/ResourceRow';
+import {container} from '../../../../../src/api/config/di/Container';
+import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {useTheTestApi} from '../../../../lib/testApi';
+import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 
 const OK = 200;
 
@@ -44,6 +47,31 @@ describe('GET /resources', () => {
     const rows = (await response.json()) as unknown[];
 
     expect(rows).toHaveLength(1);
+
+    for (const row of rows) {
+      expectAResourceRow(row);
+    }
+  });
+
+  it('should give the reason of a Failed row, and no reason on the other rows', async () => {
+    await api.createTextResource('the notes.md', 'the notes');
+    await container
+      .getDependency(DrizzleResourceRepository)
+      .create(
+        TextResourceBuilder.aTextResource()
+          .withIngestState('failed')
+          .withReason('no_text_found')
+          .build()
+      );
+
+    const rows = await api.getResources();
+
+    expect(rows.map(({ingestState, reason}) => ({ingestState, reason}))).toStrictEqual(
+      expect.arrayContaining([
+        {ingestState: 'ingesting', reason: undefined},
+        {ingestState: 'failed', reason: 'no_text_found'}
+      ])
+    );
 
     for (const row of rows) {
       expectAResourceRow(row);
