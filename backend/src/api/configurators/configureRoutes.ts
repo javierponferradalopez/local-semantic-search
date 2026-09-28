@@ -5,6 +5,7 @@ import {CreateTextResourceController} from '../controllers/resources/CreateTextR
 import {DeleteTextResourceController} from '../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../controllers/resources/GetResourcesController';
 import {RetryTextResourceController} from '../controllers/resources/RetryTextResourceController';
+import {GetMatchesController} from '../controllers/search/GetMatchesController';
 import {SearchController} from '../controllers/search/SearchController';
 import {env} from '../env/env';
 import {handleErrors} from '../middlewares/handleErrors';
@@ -19,6 +20,7 @@ export const configureRoutes = (app: Express): void => {
   const deleteTextResource = container.getDependency(DeleteTextResourceController);
   const retryTextResource = container.getDependency(RetryTextResourceController);
   const search = container.getDependency(SearchController);
+  const getMatches = container.getDependency(GetMatchesController);
 
   app.post(
     '/resources/texts',
@@ -39,6 +41,10 @@ export const configureRoutes = (app: Express): void => {
   );
 
   app.get('/search', (request, response) => search.run(request, response));
+
+  app.get('/resources/texts/:id/matches', (request, response) =>
+    getMatches.run(request, response)
+  );
 
   app.use(FILES_URL_PREFIX, serveTheFiles(env.files.directory));
 

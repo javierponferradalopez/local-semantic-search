@@ -3,6 +3,7 @@ import {drizzle} from 'drizzle-orm/node-postgres';
 import {CUT} from '../../../../../../src/core/ingestion/domain/Cut';
 import {DrizzleChunkRepository} from '../../../../../../src/core/ingestion/infrastructure/drizzle/DrizzleChunkRepository';
 import type {TextResource} from '../../../../../../src/core/resources/domain/TextResource';
+import {ResourceId} from '../../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {DrizzleResourceRepository} from '../../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {DrizzleResultReader} from '../../../../../../src/core/search/infrastructure/drizzle/DrizzleResultReader';
 import type {ModelIdentity} from '../../../../../../src/core/shared/domain/value-objects/Vector';
@@ -22,7 +23,8 @@ type AChunk = {
   model?: ModelIdentity;
 };
 
-const LIMIT = 50;
+const RESULTS_LIMIT = 50;
+const MATCHES_LIMIT = 10;
 
 const ANOTHER_MODEL: ModelIdentity = {...TEXT_MODEL, repository: 'another/model'};
 
@@ -38,7 +40,11 @@ describe('DrizzleResultReader', () => {
     connection = new DrizzleConnection({database: drizzle(testDatabase())});
     resourceRepository = new DrizzleResourceRepository({connection});
     chunkRepository = new DrizzleChunkRepository({connection});
-    reader = new DrizzleResultReader({connection, limit: LIMIT});
+    reader = new DrizzleResultReader({
+      connection,
+      resultsLimit: RESULTS_LIMIT,
+      matchesLimit: MATCHES_LIMIT
+    });
   });
 
   const aResource = async (ingestState: IngestState = 'ready'): Promise<TextResource> => {
@@ -148,7 +154,11 @@ describe('DrizzleResultReader', () => {
     });
 
     it('should count the Resources in the limit, and not the Matches', async () => {
-      reader = new DrizzleResultReader({connection, limit: 2});
+      reader = new DrizzleResultReader({
+        connection,
+        resultsLimit: 2,
+        matchesLimit: MATCHES_LIMIT
+      });
       const long = await aResource();
       const second = await aResource();
       const third = await aResource();
@@ -206,6 +216,103 @@ describe('DrizzleResultReader', () => {
       const [result] = await reader.getBestFirst(VectorMother.axis());
 
       expect(result?.bestMatch.text).toBe('Another cut.');
+    });
+  });
+
+  describe('#getMatchesBestFirst', () => {
+    const textsOfTheMatches = async (resourceId: ResourceId): Promise<string[]> =>
+      (await reader.getMatchesBestFirst(resourceId, VectorMother.axis())).map(
+        match => match.text
+      );
+
+    it('should give the Matches of the Resource only, nearest first', async () => {
+      const resource = await aResource();
+      const another = await aResource();
+      await chunksOf(resource.id.value, [
+        {similarity: 0.5, text: 'The far Chunk.'},
+        {similarity: 0.9, text: 'The near Chunk.'},
+        {similarity: 0.7, text: 'The middle Chunk.'}
+      ]);
+      await chunksOf(another.id.value, [{similarity: 0.99, text: 'Another Resource.'}]);
+
+      expect(await textsOfTheMatches(resource.id)).toStrictEqual([
+        'The near Chunk.',
+        'The middle Chunk.',
+        'The far Chunk.'
+      ]);
+    });
+
+    it('should give the text, the page and the score of each Match', async () => {
+      const resource = await aResource();
+      await chunksOf(resource.id.value, [
+        {similarity: 0.8, text: 'The page.', page: 4},
+        {similarity: 0.6, text: 'No page.'}
+      ]);
+
+      expect(
+        await reader.getMatchesBestFirst(resource.id, VectorMother.axis())
+      ).toStrictEqual([
+        {text: 'The page.', page: 4, score: expect.closeTo(0.8, 5)},
+        {text: 'No page.', score: expect.closeTo(0.6, 5)}
+      ]);
+    });
+
+    it('should give ten Matches at most, the nearest ones', async () => {
+      const resource = await aResource();
+      await chunksOf(
+        resource.id.value,
+        Array.from({length: MATCHES_LIMIT + 2}, (_, index) => ({
+          similarity: index / 20,
+          text: `The Chunk ${index}.`
+        }))
+      );
+
+      const texts = await textsOfTheMatches(resource.id);
+
+      expect(texts).toHaveLength(MATCHES_LIMIT);
+      expect(texts[0]).toBe(`The Chunk ${MATCHES_LIMIT + 1}.`);
+      expect(texts).not.toContain('The Chunk 0.');
+      expect(texts).not.toContain('The Chunk 1.');
+    });
+
+    it.each<IngestState>(['ingesting', 'failed'])(
+      'should give nothing for a Resource that is %s',
+      async ingestState => {
+        const notReady = await aResource(ingestState);
+        await chunksOf(notReady.id.value, [{similarity: 0.9}]);
+
+        expect(await textsOfTheMatches(notReady.id)).toStrictEqual([]);
+      }
+    );
+
+    it('should give nothing for an orphan Chunk', async () => {
+      const orphan = StringMother.randomUuid();
+      await chunksOf(orphan, [{similarity: 0.9}]);
+
+      expect(await textsOfTheMatches(ResourceId.of({value: orphan}))).toStrictEqual([]);
+    });
+
+    it('should never read a Vector of another model', async () => {
+      const resource = await aResource();
+      await chunksOf(resource.id.value, [
+        {similarity: 0.99, text: 'Another model.', model: ANOTHER_MODEL},
+        {similarity: 0.5, text: 'The model in use.'}
+      ]);
+
+      expect(await textsOfTheMatches(resource.id)).toStrictEqual(['The model in use.']);
+    });
+
+    it('should read a Chunk of another cut version', async () => {
+      const resource = await aResource();
+      await chunksOf(resource.id.value, [
+        {similarity: 0.5, text: 'The cut in use.'},
+        {similarity: 0.9, text: 'Another cut.', cutVersion: CUT.version + 1}
+      ]);
+
+      expect(await textsOfTheMatches(resource.id)).toStrictEqual([
+        'Another cut.',
+        'The cut in use.'
+      ]);
     });
   });
 });

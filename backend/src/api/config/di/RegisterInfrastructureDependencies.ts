@@ -13,6 +13,7 @@ import {FilesystemFileStore} from '../../../core/shared/infrastructure/Filesyste
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
+import {MATCHES_LIMIT} from '../MatchesLimit';
 import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
 
@@ -52,6 +53,10 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
   container.registerImplementation(CodePointCutter, new CodePointCutter());
   container.registerImplementation(
     DrizzleResultReader,
-    new DrizzleResultReader({connection, limit: TEXT_RESULTS_LIMIT})
+    new DrizzleResultReader({
+      connection,
+      resultsLimit: TEXT_RESULTS_LIMIT,
+      matchesLimit: MATCHES_LIMIT
+    })
   );
 };

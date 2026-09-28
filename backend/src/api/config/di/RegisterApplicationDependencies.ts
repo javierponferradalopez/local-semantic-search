@@ -6,6 +6,7 @@ import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
+import {GetMatches} from '../../../core/search/use-cases/GetMatches';
 import {Search} from '../../../core/search/use-cases/Search';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
@@ -19,6 +20,8 @@ export const registerApplicationDependencies = (): void => {
   const fileStore = container.getDependency(FilesystemFileStore);
   const eventBus = container.getDependency(EmitteryEventBus);
   const transactionRunner = container.getDependency(DrizzleConnection);
+  const textEmbedder = container.getDependency(TransformersTextEmbedder);
+  const resultReader = container.getDependency(DrizzleResultReader);
 
   container.registerImplementation(
     CreateTextResource,
@@ -52,10 +55,15 @@ export const registerApplicationDependencies = (): void => {
   container.registerImplementation(
     Search,
     new Search({
-      textEmbedder: container.getDependency(TransformersTextEmbedder),
-      resultReader: container.getDependency(DrizzleResultReader),
+      textEmbedder,
+      resultReader,
       fileStore,
       textFloor: TEXT_MODEL.floor
     })
+  );
+
+  container.registerImplementation(
+    GetMatches,
+    new GetMatches({textEmbedder, resultReader})
   );
 };
