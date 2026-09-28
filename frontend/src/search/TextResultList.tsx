@@ -1,14 +1,12 @@
 import type {TextResult} from 'contract/TextResult';
 import type {JSX} from 'react';
 import {ContentTypeIcon} from '@/search/ContentTypeIcon';
+import {hrefOf} from '@/search/hrefOf';
+import {MoreInThisResource} from '@/search/MoreInThisResource';
 
-type Props = {results: TextResult[]};
+type Props = {results: TextResult[]; query: string};
 
-// The fragment is presentation, so the browser adds it to the URL as it is (ADR-0012).
-const hrefOf = ({fileUrl, page}: TextResult): string =>
-  page === undefined ? fileUrl : `${fileUrl}#page=${page}`;
-
-export const TextResultList = ({results}: Props): JSX.Element => {
+export const TextResultList = ({results, query}: Props): JSX.Element => {
   if (results.length === 0) {
     return <p>Nothing was found.</p>;
   }
@@ -25,6 +23,7 @@ export const TextResultList = ({results}: Props): JSX.Element => {
             {result.page !== undefined && <span> · Page {result.page}</span>}
           </p>
           <p className="text-result__text">{result.text}</p>
+          <MoreInThisResource result={result} query={query} />
         </li>
       ))}
     </ol>

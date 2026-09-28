@@ -22,6 +22,7 @@ describe('SearchSection', () => {
   beforeEach(() => {
     search = mock<SearchGateway>();
     search.search.mockResolvedValue({text: [], images: []});
+    search.matches.mockResolvedValue([]);
   });
 
   const searchFor = async (query: string): Promise<void> => {
@@ -165,5 +166,173 @@ describe('SearchSection', () => {
     await screen.findByRole('alert');
 
     expect(screen.queryByRole('link', {name: 'the notes.md'})).toBeNull();
+  });
+
+  describe('More in this file', () => {
+    beforeEach(() => {
+      search.search.mockResolvedValue({
+        text: [aTextResult('the manual.pdf', {resourceId: 'the id', contentType: 'pdf'})],
+        images: []
+      });
+    });
+
+    const openMoreInThisFile = async (): Promise<void> => {
+      await userEvent.click(
+        await screen.findByRole('button', {name: 'More in this file'})
+      );
+    };
+
+    it('should show a link that carries no number, and say neither passage nor chunk', async () => {
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+
+      const link = await screen.findByRole('button', {name: 'More in this file'});
+
+      expect(link.textContent).toBe('More in this file');
+      expect(document.body.textContent).not.toMatch(/passage|chunk/i);
+    });
+
+    it('should give the Resource and the Query of the Search to the gateway', async () => {
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await userEvent.type(screen.getByRole('searchbox', {name: 'Search'}), ' later');
+      await openMoreInThisFile();
+
+      expect(search.matches).toHaveBeenCalledWith('the id', 'the trip');
+    });
+
+    it('should list the Matches under the row, in the order of the gateway, with their page', async () => {
+      search.matches.mockResolvedValue([
+        {text: 'The best text.', page: 4},
+        {text: 'The second text.', page: 2}
+      ]);
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      const panel = await screen.findByRole('list', {name: 'More in the manual.pdf'});
+      const rows = within(panel).getAllByRole('listitem');
+
+      expect(rows.map(row => row.textContent)).toStrictEqual([
+        'Page 4The best text.',
+        'Page 2The second text.'
+      ]);
+    });
+
+    it('should open the fileUrl at the page of each Match', async () => {
+      search.matches.mockResolvedValue([{text: 'The best text.', page: 4}]);
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      const link = await screen.findByRole('link', {name: 'Page 4'});
+
+      expect(link.getAttribute('href')).toBe('/files/the manual.pdf#page=4');
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('should show no page when the Content type has none', async () => {
+      search.search.mockResolvedValue({
+        text: [aTextResult('the notes.md', {resourceId: 'the id'})],
+        images: []
+      });
+      search.matches.mockResolvedValue([{text: 'The best text.'}]);
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      const panel = await screen.findByRole('list', {name: 'More in the notes.md'});
+
+      expect(within(panel).getByRole('listitem').textContent).toBe('The best text.');
+    });
+
+    it('should show the text of a Refusal, and never the failure itself', async () => {
+      search.matches.mockRejectedValue(
+        new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+      );
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      expect(
+        await screen.findByText('The server refused the value of "q".')
+      ).toBeDefined();
+    });
+
+    it('should ask the gateway once when the owner clicks twice before the answer', async () => {
+      search.matches.mockReturnValue(new Promise(() => undefined));
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+      await openMoreInThisFile();
+
+      expect(search.matches).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show every Match, also two with the same text', async () => {
+      search.matches.mockResolvedValue([
+        {text: 'The same text.'},
+        {text: 'The same text.'}
+      ]);
+      const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      const panel = await screen.findByRole('list', {name: 'More in the manual.pdf'});
+
+      expect(within(panel).getAllByRole('listitem')).toHaveLength(2);
+      expect(error).not.toHaveBeenCalled();
+      error.mockRestore();
+    });
+
+    it('should remove the Refusal when the owner asks again, and show the Matches', async () => {
+      search.matches
+        .mockRejectedValueOnce(
+          new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+        )
+        .mockResolvedValueOnce([{text: 'The best text.'}]);
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+      await screen.findByRole('alert');
+      await openMoreInThisFile();
+
+      expect(await screen.findByText('The best text.')).toBeDefined();
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('should close the panel when the owner searches another Query', async () => {
+      search.matches.mockResolvedValue([{text: 'The best text.'}]);
+
+      renderWithGateways(<SearchSection />, {search});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+      await screen.findByText('The best text.');
+      await searchFor(' later');
+
+      expect(
+        await screen.findByRole('button', {name: 'More in this file'})
+      ).toBeDefined();
+      expect(screen.queryByText('The best text.')).toBeNull();
+    });
   });
 });

@@ -7,7 +7,8 @@ import {TextResultList} from '@/search/TextResultList';
 export const SearchSection = (): JSX.Element => {
   const gateway = useSearchGateway();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<TextResult[] | undefined>(undefined);
+  // The Query that gave the Results, which the box no longer holds once the owner types.
+  const [searched, setSearched] = useState<{query: string; results: TextResult[]}>();
   const [refusal, setRefusal] = useState<string[]>([]);
   const latestSearch = useRef(0);
 
@@ -25,12 +26,12 @@ export const SearchSection = (): JSX.Element => {
       .search(query)
       .then(({text}) => {
         if (thisSearch === latestSearch.current) {
-          setResults(text);
+          setSearched({query, results: text});
         }
       })
       .catch((failure: unknown) => {
         if (thisSearch === latestSearch.current) {
-          setResults(undefined);
+          setSearched(undefined);
           setRefusal(textsOfFailure(failure));
         }
       });
@@ -60,10 +61,10 @@ export const SearchSection = (): JSX.Element => {
           ))}
         </ul>
       )}
-      {results !== undefined && (
+      {searched !== undefined && (
         <section aria-labelledby="text-results-heading">
           <h3 id="text-results-heading">Text</h3>
-          <TextResultList results={results} />
+          <TextResultList key={searched.query} {...searched} />
         </section>
       )}
     </section>
