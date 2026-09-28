@@ -9,11 +9,13 @@ import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import {REASON_CODES} from 'contract/ReasonCode';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {container} from '../../../../../src/api/config/di/Container';
+import {CUT} from '../../../../../src/core/ingestion/domain/Cut';
 import type {TextResource} from '../../../../../src/core/resources/domain/TextResource';
 import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
 import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {useTheTestApi} from '../../../../lib/testApi';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
+import {StringMother} from '../../../../utils/object-mother/StringMother';
 
 const CREATED = 201;
 const BAD_REQUEST = 400;
@@ -62,6 +64,17 @@ describe('POST /resources/texts', () => {
 
       expect(row.ingestState).toBe('ready');
       expectAResourceRow(row);
+    });
+
+    it('should make a text file that holds a long run of digits Ready', async () => {
+      const created = await api.createATextResourceRow(
+        'digits.txt',
+        StringMother.randomDigits(CUT.cap * 2)
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row.ingestState).toBe('ready');
     });
 
     it('should make a Markdown file Ready', async () => {
