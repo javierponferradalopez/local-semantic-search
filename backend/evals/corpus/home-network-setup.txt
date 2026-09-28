@@ -1,0 +1,17 @@
+Home network setup
+
+The fibre line comes in at the hall, so the ISP router sits there. It is in
+bridge mode: it only turns the fibre signal into Ethernet, and the mesh system
+does the routing and the wifi.
+
+There are three mesh nodes: one in the hall, one in the living room and one in
+the upstairs office. The office node is wired back to the hall with a Cat6
+cable through the stairwell, so video calls do not depend on the wireless
+backhaul.
+
+The main network uses WPA3. Guests join a separate SSID that cannot see the
+printer or the NAS. The smart plugs and the thermostat live on a third network
+for IoT devices, because many of them only speak 2.4 GHz.
+
+If the internet drops, restart in this order: the ISP router first, wait two
+minutes, then the main mesh node. The other nodes reconnect on their own.
