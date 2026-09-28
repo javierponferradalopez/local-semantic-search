@@ -44,6 +44,17 @@ export class ValueObjectError extends DomainError {
     return new ValueObjectError(`A ${valueObject} holds a number that is not finite`);
   }
 
+  public static causeItIsNotBetween(
+    valueObject: string,
+    value: number,
+    least: number,
+    most: number
+  ): ValueObjectError {
+    return new ValueObjectError(
+      `The ${valueObject} ${value} is not between ${least} and ${most}`
+    );
+  }
+
   public static causeItDoesNotHoldItsWidth(
     valueObject: string,
     length: number,

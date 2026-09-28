@@ -44,6 +44,14 @@ describe('Search', () => {
     });
   });
 
+  describe('#constructor', () => {
+    it('should refuse a Floor that is not a cosine similarity', () => {
+      expect(
+        () => new Search({textEmbedder, resultReader, fileStore, textFloor: 78})
+      ).toThrow(ValueObjectError);
+    });
+  });
+
   describe('#run', () => {
     it('should embed the Query exactly as the user typed it', async () => {
       await search.run({query: '  Animales ACUÁTICOS '});

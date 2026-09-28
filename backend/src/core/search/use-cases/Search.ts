@@ -5,6 +5,7 @@ import type {TextEmbedder} from '../../shared/domain/services/TextEmbedder';
 import {FileKey} from '../../shared/domain/value-objects/FileKey';
 import type {Result} from '../domain/Result';
 import type {ResultReader} from '../domain/ResultReader';
+import {Floor} from '../domain/value-objects/Floor';
 import {Query} from '../domain/value-objects/Query';
 
 type ConstructorParams = {
@@ -18,29 +19,24 @@ export class Search {
   private readonly textEmbedder: TextEmbedder;
   private readonly resultReader: ResultReader;
   private readonly fileStore: FileStore;
-  private readonly textFloor: number;
+  private readonly textFloor: Floor;
 
   public constructor(params: ConstructorParams) {
     this.textEmbedder = params.textEmbedder;
     this.resultReader = params.resultReader;
     this.fileStore = params.fileStore;
-    this.textFloor = params.textFloor;
+    this.textFloor = Floor.of({value: params.textFloor});
   }
 
   public async run({query}: {query: string}): Promise<SearchResponse> {
     const {value} = Query.of({value: query});
     const vector = await this.textEmbedder.embedQuery(value);
     const results = await this.resultReader.getBestFirst(vector);
-    const text = this.reachesTheFloor(results)
+    const text = this.textFloor.isReachedBy(results)
       ? results.map(result => this.textResultOf(result))
       : [];
 
     return {text, images: []};
-  }
-
-  // A gate, not a filter: only the best Match is compared (ADR-0021).
-  private reachesTheFloor([best]: Result[]): boolean {
-    return best !== undefined && best.bestMatch.score >= this.textFloor;
   }
 
   private textResultOf({
