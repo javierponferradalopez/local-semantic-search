@@ -5,6 +5,7 @@ import {CreateTextResourceController} from '../controllers/resources/CreateTextR
 import {DeleteTextResourceController} from '../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../controllers/resources/GetResourcesController';
 import {RetryTextResourceController} from '../controllers/resources/RetryTextResourceController';
+import {SearchController} from '../controllers/search/SearchController';
 import {env} from '../env/env';
 import {handleErrors} from '../middlewares/handleErrors';
 import {refuseAFileTooLarge} from '../middlewares/refuseAFileTooLarge';
@@ -17,6 +18,7 @@ export const configureRoutes = (app: Express): void => {
   const getResources = container.getDependency(GetResourcesController);
   const deleteTextResource = container.getDependency(DeleteTextResourceController);
   const retryTextResource = container.getDependency(RetryTextResourceController);
+  const search = container.getDependency(SearchController);
 
   app.post(
     '/resources/texts',
@@ -35,6 +37,8 @@ export const configureRoutes = (app: Express): void => {
   app.post('/resources/texts/:id/retry', (request, response) =>
     retryTextResource.run(request, response)
   );
+
+  app.get('/search', (request, response) => search.run(request, response));
 
   app.use(FILES_URL_PREFIX, serveTheFiles(env.files.directory));
 

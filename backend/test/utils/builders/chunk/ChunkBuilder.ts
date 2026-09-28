@@ -19,6 +19,10 @@ export class ChunkBuilder {
     return new ChunkBuilder({...this.primitives, resourceId});
   }
 
+  public withText(text: string): ChunkBuilder {
+    return new ChunkBuilder({...this.primitives, text});
+  }
+
   public withPosition(position: number): ChunkBuilder {
     return new ChunkBuilder({...this.primitives, position});
   }

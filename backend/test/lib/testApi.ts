@@ -22,6 +22,7 @@ export type TestApi = {
   getResources: () => Promise<ResourceRow[]>;
   deleteTextResource: (id: string) => Promise<Response>;
   retryTextResource: (id: string) => Promise<Response>;
+  search: (query: string) => Promise<Response>;
   rowOnceIngested: (id: string) => Promise<ResourceRow>;
   expectNothingStored: () => Promise<void>;
 };
@@ -86,6 +87,9 @@ export const useTheTestApi = (): TestApi => {
   const retryTextResource = (id: string): Promise<Response> =>
     fetch(`${origin}/resources/texts/${id}/retry`, {method: 'POST'});
 
+  const search = (query: string): Promise<Response> =>
+    fetch(`${origin}/search?${new URLSearchParams({q: query})}`);
+
   // Reads the row through the API, and never waits on the bus (ADR-0024).
   const rowOnceIngested = async (id: string): Promise<ResourceRow> => {
     const deadline = Date.now() + INGEST_TIME_LIMIT_IN_MS;
@@ -110,6 +114,7 @@ export const useTheTestApi = (): TestApi => {
     getResources,
     deleteTextResource,
     retryTextResource,
+    search,
     rowOnceIngested,
     expectNothingStored
   };

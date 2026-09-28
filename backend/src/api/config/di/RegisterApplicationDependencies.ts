@@ -5,9 +5,12 @@ import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextRe
 import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
+import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
+import {Search} from '../../../core/search/use-cases/Search';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
+import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {container} from './Container';
 
 export const registerApplicationDependencies = (): void => {
@@ -43,5 +46,14 @@ export const registerApplicationDependencies = (): void => {
   container.registerImplementation(
     RetryTextResource,
     new RetryTextResource({resourceRepository, fileStore, eventBus, transactionRunner})
+  );
+
+  container.registerImplementation(
+    Search,
+    new Search({
+      textEmbedder: container.getDependency(TransformersTextEmbedder),
+      resultReader: container.getDependency(DrizzleResultReader),
+      fileStore
+    })
   );
 };

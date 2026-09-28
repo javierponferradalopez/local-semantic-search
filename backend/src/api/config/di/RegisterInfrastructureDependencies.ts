@@ -6,12 +6,14 @@ import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/dri
 import {DrizzleResourceReader} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceReader';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
+import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
+import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
 
 export const registerInfrastructureDependencies = async (): Promise<void> => {
@@ -48,4 +50,8 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     new ContentTypeTextExtractor()
   );
   container.registerImplementation(CodePointCutter, new CodePointCutter());
+  container.registerImplementation(
+    DrizzleResultReader,
+    new DrizzleResultReader({connection, limit: TEXT_RESULTS_LIMIT})
+  );
 };
