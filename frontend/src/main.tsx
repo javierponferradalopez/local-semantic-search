@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {App} from '@/App';
 import {GatewaysProvider} from '@/config/GatewaysContext';
 import {HttpResourceGateway} from '@/gateways/http/HttpResourceGateway';
+import {HttpSearchGateway} from '@/gateways/http/HttpSearchGateway';
 import '@/index.css';
 
 const root = document.getElementById('root');
@@ -13,7 +14,9 @@ if (root === null) {
 
 createRoot(root).render(
   <StrictMode>
-    <GatewaysProvider gateways={{resources: new HttpResourceGateway()}}>
+    <GatewaysProvider
+      gateways={{resources: new HttpResourceGateway(), search: new HttpSearchGateway()}}
+    >
       <App />
     </GatewaysProvider>
   </StrictMode>

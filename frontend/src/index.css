@@ -37,3 +37,33 @@ body {
   padding: 0.5rem;
   text-align: left;
 }
+
+.search-box {
+  box-sizing: border-box;
+  font: inherit;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.text-results {
+  list-style: none;
+  padding: 0;
+}
+
+.text-result {
+  border-bottom: 1px solid currentcolor;
+  padding: 0.5rem 0;
+}
+
+.text-result__citation {
+  margin: 0 0 0.25rem;
+}
+
+.text-result__text {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  margin: 0;
+  overflow: hidden;
+}

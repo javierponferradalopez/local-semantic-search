@@ -1,7 +1,8 @@
 import {createContext, type JSX, type ReactNode, useContext} from 'react';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
+import type {SearchGateway} from '@/gateways/SearchGateway';
 
-export type Gateways = {resources: ResourceGateway};
+export type Gateways = {resources: ResourceGateway; search: SearchGateway};
 
 const GatewaysContext = createContext<Gateways | undefined>(undefined);
 
@@ -11,12 +12,16 @@ export const GatewaysProvider = ({gateways, children}: Props): JSX.Element => (
   <GatewaysContext value={gateways}>{children}</GatewaysContext>
 );
 
-export const useResourceGateway = (): ResourceGateway => {
+const useGateways = (): Gateways => {
   const gateways = useContext(GatewaysContext);
 
   if (gateways === undefined) {
     throw new Error('The gateways are missing. The GatewaysProvider is not above.');
   }
 
-  return gateways.resources;
+  return gateways;
 };
+
+export const useResourceGateway = (): ResourceGateway => useGateways().resources;
+
+export const useSearchGateway = (): SearchGateway => useGateways().search;

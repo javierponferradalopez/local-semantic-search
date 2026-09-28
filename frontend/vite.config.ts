@@ -10,6 +10,10 @@ export default defineConfig({
     alias: {'@': fileURLToPath(new URL('./src', import.meta.url))}
   },
   server: {
-    proxy: {'/resources': BACKEND_ORIGIN, '/files': BACKEND_ORIGIN}
+    proxy: {
+      '/resources': BACKEND_ORIGIN,
+      '/files': BACKEND_ORIGIN,
+      '/search': BACKEND_ORIGIN
+    }
   }
 });
