@@ -17,9 +17,9 @@ const SAMPLES = {
   'English prose':
     'The library keeps every file that the owner adds, and reads it so that later it can be found by what it says and not by its name. A scanned report has no text, so the row says so and does not lie. ',
   Markdown:
-    '## Retry\n\n- Press **Retry** on a `Failed` row.\n- See [the ADR](https://github.com/javierponferradalopez/local-semantic-search/blob/master/docs/adr/0014-the-cut-belongs-to-no-model.md).\n\n| Reason | Action |\n|---|---|\n| `no_text_found` | OCR the scan |\n\n',
+    '## Installation\n\n- Run **npm install** in the `app` folder.\n- See [the guide](https://example.com/docs/getting-started/installation.html).\n\n| Option | Default |\n|---|---|\n| `port` | 8080 |\n\n',
   'source code':
-    'const windowsOf = (ids: readonly number[], size: number): number[][] => {\n  const count = Math.max(1, Math.ceil(ids.length / size));\n  return Array.from({length: count}, (_, i) => ids.slice(i * size, (i + 1) * size));\n};\nSELECT id, text FROM chunks WHERE resource_id = $1 ORDER BY position;\n',
+    'const totalOf = (items: readonly {price: number; quantity: number}[]): number => {\n  return items.reduce((sum, {price, quantity}) => sum + price * quantity, 0);\n};\nSELECT id, name FROM customers WHERE country = $1 ORDER BY created_at;\n',
   'a table of numbers':
     'INV-2026-0417  12/03/2026  4.312,50 EUR  21 %  905,63  5.218,13\nINV-2026-0418  13/03/2026  17,99 EUR  10 %  1,80  19,79\n',
   'PDF-extracted text':

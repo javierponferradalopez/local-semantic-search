@@ -1,8 +1,8 @@
 {
   "name": "the-cap-fits-the-wall-of-tokens",
   "means": {
-    "fits the wall": 0.3333333333333333,
-    "share of the wall": 1.3667534722222223
+    "fits the wall": 0.4444444444444444,
+    "share of the wall": 1.3350694444444444
   },
   "cases": [
     {
@@ -26,15 +26,15 @@
       "expected": 512,
       "scores": {
         "fits the wall": 0,
-        "share of the wall": 1.279296875
+        "share of the wall": 1.095703125
       }
     },
     {
       "input": "source code",
       "expected": 512,
       "scores": {
-        "fits the wall": 0,
-        "share of the wall": 1.09375
+        "fits the wall": 1,
+        "share of the wall": 0.9921875
       }
     },
     {
