@@ -1,21 +1,53 @@
+import type {ResourceRow} from 'contract/ResourceRow';
 import type {TextResult} from 'contract/TextResult';
-import {type ChangeEvent, type FormEvent, type JSX, useRef, useState} from 'react';
-import {useSearchGateway} from '@/config/GatewaysContext';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  type JSX,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
+import {useResourceGateway, useSearchGateway} from '@/config/GatewaysContext';
 import {textsOfFailure} from '@/errors/textsOfFailure';
+import {RecentResourceList} from '@/search/RecentResourceList';
 import {TextResultList} from '@/search/TextResultList';
+
+const RECENT_RESOURCES = 5;
 
 export const SearchSection = (): JSX.Element => {
   const gateway = useSearchGateway();
+  const resources = useResourceGateway();
   const [query, setQuery] = useState('');
+  const [recent, setRecent] = useState<ResourceRow[]>([]);
   // The Query that gave the Results, which the box no longer holds once the owner types.
   const [searched, setSearched] = useState<{query: string; results: TextResult[]}>();
   const [refusal, setRefusal] = useState<string[]>([]);
   const latestSearch = useRef(0);
+  const boxIsEmpty = query.trim().length === 0;
+
+  // Asked again each time the box is emptied, so a Resource created in the library shows.
+  useEffect(() => {
+    if (!boxIsEmpty) {
+      return;
+    }
+
+    let current = true;
+
+    resources
+      .list()
+      .then(rows => current && setRecent(rows.slice(0, RECENT_RESOURCES)))
+      .catch((failure: unknown) => current && setRefusal(textsOfFailure(failure)));
+
+    return (): void => {
+      current = false;
+    };
+  }, [resources, boxIsEmpty]);
 
   const search = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
 
-    if (query.trim().length === 0) {
+    if (boxIsEmpty) {
       return;
     }
 
@@ -61,7 +93,8 @@ export const SearchSection = (): JSX.Element => {
           ))}
         </ul>
       )}
-      {searched !== undefined && (
+      {boxIsEmpty && <RecentResourceList rows={recent} />}
+      {!boxIsEmpty && searched !== undefined && (
         <section aria-labelledby="text-results-heading">
           <h3 id="text-results-heading">Text</h3>
           <TextResultList key={searched.query} {...searched} />

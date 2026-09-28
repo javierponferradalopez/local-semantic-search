@@ -38,6 +38,15 @@ body {
   text-align: left;
 }
 
+.recent-resources {
+  list-style: none;
+  padding: 0;
+}
+
+.recent-resource {
+  padding: 0.25rem 0;
+}
+
 .search-box {
   box-sizing: border-box;
   font: inherit;
