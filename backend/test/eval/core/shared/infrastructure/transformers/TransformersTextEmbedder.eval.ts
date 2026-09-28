@@ -75,5 +75,6 @@ runEval<Kind, number, number>('the-cap-fits-the-wall-of-tokens', {
   scorers: [
     {name: 'fits the wall', score: fitsTheWall},
     {name: 'share of the wall', score: shareOfTheWall}
-  ]
+  ],
+  counts: []
 });
