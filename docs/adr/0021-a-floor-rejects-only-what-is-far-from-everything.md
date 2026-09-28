@@ -84,8 +84,8 @@ width of its model
 `Search` its two `Floor` from the same constant. The embedder port keeps two
 operations and does not expose a `Floor`: an embedder does not know what
 "found nothing" means. The `Floor` is written as a cosine similarity, which is
-what the research measured, and the pgvector adapter translates it to a
-distance.
+what the research measured. The pgvector adapter translates each distance
+to a similarity, so `Search` compares two similarities.
 
 ## The eval measures the gate
 
