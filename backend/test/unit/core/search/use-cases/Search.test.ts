@@ -8,6 +8,8 @@ import {type MockProxy, mock} from '../../../../utils/mock';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
 import {VectorMother} from '../../../../utils/object-mother/VectorMother';
 
+const TEXT_FLOOR = 0.5;
+
 const aResult = (overrides: Partial<Result> = {}): Result => {
   const resourceId = StringMother.randomUuid();
 
@@ -34,7 +36,12 @@ describe('Search', () => {
     textEmbedder.embedQuery.mockResolvedValue(VectorMother.random());
     resultReader.getBestFirst.mockResolvedValue([]);
     fileStore.urlOf.mockImplementation(fileKey => `/files/${fileKey.value}`);
-    search = new Search({textEmbedder, resultReader, fileStore});
+    search = new Search({
+      textEmbedder,
+      resultReader,
+      fileStore,
+      textFloor: TEXT_FLOOR
+    });
   });
 
   describe('#run', () => {
@@ -113,6 +120,52 @@ describe('Search', () => {
       const {images} = await search.run({query: 'the trip'});
 
       expect(images).toStrictEqual([]);
+    });
+
+    it('should give no text Result when the best Match is under the Floor', async () => {
+      resultReader.getBestFirst.mockResolvedValue([
+        aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR - 0.01}}),
+        aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR - 0.2}})
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text).toStrictEqual([]);
+    });
+
+    it('should keep the Results under the Floor when the best Match reaches the Floor', async () => {
+      resultReader.getBestFirst.mockResolvedValue([
+        aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR}}),
+        aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR - 0.01}}),
+        aResult({bestMatch: {text: 'The third.', score: TEXT_FLOOR - 0.4}})
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text.map(result => result.text)).toStrictEqual([
+        'The best.',
+        'The second.',
+        'The third.'
+      ]);
+    });
+
+    it('should compare only the first Result with the Floor', async () => {
+      resultReader.getBestFirst.mockResolvedValue([
+        aResult({bestMatch: {text: 'The first.', score: TEXT_FLOOR - 0.01}}),
+        aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR + 0.4}})
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text).toStrictEqual([]);
+    });
+
+    it('should give no text Result when the port gives no Result', async () => {
+      resultReader.getBestFirst.mockResolvedValue([]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text).toStrictEqual([]);
     });
 
     it('should refuse a Query that holds only spaces, and embed nothing', async () => {

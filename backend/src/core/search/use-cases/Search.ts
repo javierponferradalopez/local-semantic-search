@@ -11,25 +11,36 @@ type ConstructorParams = {
   textEmbedder: TextEmbedder;
   resultReader: ResultReader;
   fileStore: FileStore;
+  textFloor: number;
 };
 
 export class Search {
   private readonly textEmbedder: TextEmbedder;
   private readonly resultReader: ResultReader;
   private readonly fileStore: FileStore;
+  private readonly textFloor: number;
 
   public constructor(params: ConstructorParams) {
     this.textEmbedder = params.textEmbedder;
     this.resultReader = params.resultReader;
     this.fileStore = params.fileStore;
+    this.textFloor = params.textFloor;
   }
 
   public async run({query}: {query: string}): Promise<SearchResponse> {
     const {value} = Query.of({value: query});
     const vector = await this.textEmbedder.embedQuery(value);
     const results = await this.resultReader.getBestFirst(vector);
+    const text = this.reachesTheFloor(results)
+      ? results.map(result => this.textResultOf(result))
+      : [];
 
-    return {text: results.map(result => this.textResultOf(result)), images: []};
+    return {text, images: []};
+  }
+
+  // A gate, not a filter: only the best Match is compared (ADR-0021).
+  private reachesTheFloor([best]: Result[]): boolean {
+    return best !== undefined && best.bestMatch.score >= this.textFloor;
   }
 
   private textResultOf({

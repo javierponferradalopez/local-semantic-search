@@ -10,6 +10,7 @@ import {Search} from '../../../core/search/use-cases/Search';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
+import {TEXT_MODEL} from '../../../core/shared/infrastructure/transformers/TextModel';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {container} from './Container';
 
@@ -53,7 +54,8 @@ export const registerApplicationDependencies = (): void => {
     new Search({
       textEmbedder: container.getDependency(TransformersTextEmbedder),
       resultReader: container.getDependency(DrizzleResultReader),
-      fileStore
+      fileStore,
+      textFloor: TEXT_MODEL.floor
     })
   );
 };
