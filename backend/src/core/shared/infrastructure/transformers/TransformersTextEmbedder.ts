@@ -1,9 +1,11 @@
 import {
   AutoModel,
   AutoTokenizer,
+  cat,
   mean_pooling,
   type PreTrainedModel,
-  type PreTrainedTokenizer
+  type PreTrainedTokenizer,
+  Tensor
 } from '@huggingface/transformers';
 import type {TextEmbedder} from '../../domain/services/TextEmbedder';
 import {Vector} from '../../domain/value-objects/Vector';
@@ -13,8 +15,28 @@ import {TEXT_MODEL} from './TextModel';
 type ConstructorParams = {tokenizer: PreTrainedTokenizer; model: PreTrainedModel};
 
 // E5 was trained with these prefixes. They stay here, and the domain never names them.
-const PASSAGE_PREFIX = 'passage: ';
-const QUERY_PREFIX = 'query: ';
+// No space ends them: the tokenizer gives that space to the first word of the text.
+const PASSAGE_PREFIX = 'passage:';
+const QUERY_PREFIX = 'query:';
+
+// The tokenizer puts each input between <s> and </s>.
+const SPECIAL_TOKENS = 2;
+
+// Windows of almost one length, so the mean weighs them the same.
+const windowsOf = (ids: readonly number[], size: number): number[][] => {
+  const count = Math.max(1, Math.ceil(ids.length / size));
+  const length = Math.ceil(ids.length / count);
+
+  return Array.from({length: count}, (_, index) =>
+    ids.slice(index * length, (index + 1) * length)
+  );
+};
+
+const normalizedMeanOf = (vectors: Tensor[]): Tensor =>
+  cat(vectors, 0).mean(0).normalize(2, -1);
+
+const int64TensorOf = (values: readonly number[]): Tensor =>
+  new Tensor('int64', BigInt64Array.from(values, BigInt), [1, values.length]);
 
 export class TransformersTextEmbedder implements TextEmbedder {
   private readonly tokenizer: PreTrainedTokenizer;
@@ -38,25 +60,41 @@ export class TransformersTextEmbedder implements TextEmbedder {
   }
 
   public embedChunk(text: string): Promise<Vector> {
-    return this.embed(`${PASSAGE_PREFIX}${text}`);
+    return this.embed(PASSAGE_PREFIX, text);
   }
 
   public embedQuery(query: string): Promise<Vector> {
-    return this.embed(`${QUERY_PREFIX}${query}`);
+    return this.embed(QUERY_PREFIX, query);
   }
 
   // No truncation: it drops text, and a Ready row would then lie (ADR-0014).
-  private async embed(text: string): Promise<Vector> {
-    const inputs = this.tokenizer(text);
-    const {last_hidden_state} = await this.model(inputs);
-    const pooled = mean_pooling(last_hidden_state, inputs.attention_mask).normalize(
-      2,
-      -1
-    );
+  private async embed(prefix: string, text: string): Promise<Vector> {
+    const prefixIds = this.idsOf(prefix);
+    const room = this.tokenizer.model_max_length - SPECIAL_TOKENS - prefixIds.length;
+    const windows: Tensor[] = [];
+
+    for (const window of windowsOf(this.idsOf(text), room)) {
+      windows.push(await this.embedWindow([...prefixIds, ...window]));
+    }
 
     return Vector.of({
-      values: Array.from(pooled.data as Float32Array),
+      values: Array.from(normalizedMeanOf(windows).data as Float32Array),
       model: TEXT_MODEL
     });
+  }
+
+  private idsOf(text: string): number[] {
+    return this.tokenizer.encode(text, {add_special_tokens: false});
+  }
+
+  private async embedWindow(ids: readonly number[]): Promise<Tensor> {
+    const inputIds = [this.tokenizer.bos_token_id, ...ids, this.tokenizer.eos_token_id];
+    const attentionMask = int64TensorOf(inputIds.map(() => 1));
+    const {last_hidden_state} = await this.model({
+      input_ids: int64TensorOf(inputIds),
+      attention_mask: attentionMask
+    });
+
+    return mean_pooling(last_hidden_state, attentionMask).normalize(2, -1);
   }
 }
