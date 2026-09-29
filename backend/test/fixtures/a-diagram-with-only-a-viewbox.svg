@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+  <title>A pipeline of three steps</title>
+  <rect x="2" y="12" width="28" height="16" fill="none" stroke="black" stroke-width="1.5"/>
+  <rect x="46" y="12" width="28" height="16" fill="none" stroke="black" stroke-width="1.5"/>
+  <rect x="90" y="12" width="28" height="16" fill="none" stroke="black" stroke-width="1.5"/>
+  <path d="M30 20 H44 M40 17 L44 20 L40 23" fill="none" stroke="black" stroke-width="1.5"/>
+  <path d="M74 20 H88 M84 17 L88 20 L84 23" fill="none" stroke="black" stroke-width="1.5"/>
+</svg>
