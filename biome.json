@@ -62,6 +62,21 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["frontend/src/components/ui/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": { "strictCase": false, "filenameCases": ["kebab-case"] }
+            }
+          }
+        }
+      }
+    }
+  ],
   "assist": {
     "actions": {
       "source": {
