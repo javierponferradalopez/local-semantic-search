@@ -1,7 +1,16 @@
 import type {ResourceRow} from 'contract/ResourceRow';
 import type {JSX} from 'react';
+import {Button} from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 import {textOfReason} from '@/errors/textOfReason';
-import {textOfIngestState} from '@/library/textOfIngestState';
+import {IngestStateBadge} from '@/library/IngestStateBadge';
 
 type Props = {
   rows: ResourceRow[];
@@ -12,66 +21,78 @@ type Props = {
 
 export const ResourceList = ({rows, busyIds, onRetry, onDelete}: Props): JSX.Element => {
   if (rows.length === 0) {
-    return <p>The library holds nothing yet.</p>;
+    return <p className="text-muted-foreground">The library holds nothing yet.</p>;
   }
 
   return (
-    <table className="resource-list">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Content type</th>
-          <th scope="col">Ingest state</th>
-          <th scope="col">Created</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead scope="col">Name</TableHead>
+          <TableHead scope="col">Content type</TableHead>
+          <TableHead scope="col">Ingest state</TableHead>
+          <TableHead scope="col">Created</TableHead>
+          <TableHead scope="col">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {rows.map(row => {
           const busy = busyIds.has(row.id);
 
           return (
-            <tr key={row.id} aria-busy={busy}>
-              <td>
-                <a href={row.fileUrl} target="_blank" rel="noopener noreferrer">
+            <TableRow key={row.id} aria-busy={busy}>
+              <TableCell>
+                <a
+                  href={row.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
                   {row.name}
                 </a>
-              </td>
-              <td>{row.contentType}</td>
-              <td>
-                {textOfIngestState(row.ingestState)}
-                {row.ingestState === 'ingesting' && <progress aria-label="Ingesting" />}
-                {row.reason !== undefined && <p>{textOfReason(row.reason)}</p>}
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>{row.contentType}</TableCell>
+              <TableCell>
+                <IngestStateBadge ingestState={row.ingestState} />
+                {row.reason !== undefined && (
+                  <p className="mt-1 whitespace-normal text-destructive">
+                    {textOfReason(row.reason)}
+                  </p>
+                )}
+              </TableCell>
+              <TableCell>
                 <time dateTime={row.createdAt}>
                   {new Date(row.createdAt).toLocaleString('en-GB')}
                 </time>
-              </td>
-              <td>
+              </TableCell>
+              <TableCell className="space-x-2">
                 {row.ingestState === 'failed' && (
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     aria-label={`Retry ${row.name}`}
                     disabled={busy}
                     onClick={(): void => onRetry(row)}
                   >
                     {busy ? 'Retrying…' : 'Retry'}
-                  </button>
+                  </Button>
                 )}
-                <button
+                <Button
                   type="button"
+                  variant="outline"
+                  size="sm"
                   aria-label={`Delete ${row.name}`}
                   disabled={busy}
                   onClick={(): void => onDelete(row)}
                 >
                   Delete
-                </button>
-              </td>
-            </tr>
+                </Button>
+              </TableCell>
+            </TableRow>
           );
         })}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 };

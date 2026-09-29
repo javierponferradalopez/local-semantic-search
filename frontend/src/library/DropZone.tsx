@@ -1,3 +1,4 @@
+import {cn} from 'cn';
 import {CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ErrorItem} from 'contract/ErrorItem';
 import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
@@ -52,7 +53,10 @@ export const DropZone = ({onFile, onRefusal}: Props): JSX.Element => {
   return (
     <>
       <label
-        className={isUnderADrag ? 'drop-zone drop-zone--under-a-drag' : 'drop-zone'}
+        className={cn(
+          'flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed p-8 text-sm transition-colors hover:bg-muted/50',
+          isUnderADrag && 'border-solid border-ring bg-muted'
+        )}
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={() => setIsUnderADrag(false)}
@@ -63,9 +67,12 @@ export const DropZone = ({onFile, onRefusal}: Props): JSX.Element => {
           accept={ACCEPT}
           aria-describedby={whatItTakesId}
           onChange={onChange}
+          className="text-muted-foreground file:mr-2 file:cursor-pointer file:rounded-md file:border file:border-border file:bg-background file:px-2.5 file:py-1 file:font-medium file:text-foreground"
         />
       </label>
-      <p id={whatItTakesId}>{WHAT_IT_TAKES}</p>
+      <p id={whatItTakesId} className="mt-2 text-sm text-muted-foreground">
+        {WHAT_IT_TAKES}
+      </p>
     </>
   );
 };

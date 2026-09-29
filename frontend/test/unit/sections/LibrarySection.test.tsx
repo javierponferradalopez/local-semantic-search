@@ -54,6 +54,82 @@ describe('LibrarySection', () => {
     expect(link.getAttribute('target')).toBe('_blank');
   });
 
+  it('should give the creation date as a machine-readable time', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockResolvedValue([rowNamed('notes.md')]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    const cell = await screen.findByRole('cell', {name: /2026/});
+
+    expect(cell.querySelector('time')?.getAttribute('datetime')).toBe(
+      '2026-09-23T10:00:00.000Z'
+    );
+  });
+
+  it('should show the Ingest state of each row as a badge', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockResolvedValue([
+      rowNamed('notes.md'),
+      {...rowNamed('manual.pdf'), ingestState: 'ready'},
+      {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'}
+    ]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    const rowOf = async (name: string): Promise<HTMLElement> =>
+      screen.findByRole('row', {name: new RegExp(name)});
+
+    expect(
+      within(await rowOf('notes.md')).getByRole('status', {name: 'Ingesting'})
+    ).toBeDefined();
+    expect(within(await rowOf('manual.pdf')).getByText('Ready')).toBeDefined();
+    expect(within(await rowOf('scan.pdf')).getByText('Failed')).toBeDefined();
+    expect(
+      within(await rowOf('scan.pdf')).getByText('Something went wrong.')
+    ).toBeDefined();
+  });
+
+  it('should give Ready a neutral badge and Failed a destructive badge', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockResolvedValue([
+      {...rowNamed('manual.pdf'), ingestState: 'ready'},
+      {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'}
+    ]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    expect((await screen.findByText('Ready')).getAttribute('data-variant')).toBe(
+      'secondary'
+    );
+    expect(screen.getByText('Failed').getAttribute('data-variant')).toBe('destructive');
+  });
+
+  it('should show a spinner in the badge of an Ingesting row alone', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockResolvedValue([
+      rowNamed('notes.md'),
+      {...rowNamed('manual.pdf'), ingestState: 'ready'}
+    ]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    const ingesting = await screen.findByRole('status', {name: 'Ingesting'});
+
+    expect(ingesting.querySelector('svg.animate-spin')).not.toBeNull();
+    expect(screen.getByText('Ready').querySelector('svg')).toBeNull();
+  });
+
+  it('should say that the library holds nothing when the gateway gives no row', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockResolvedValue([]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    expect(await screen.findByText('The library holds nothing yet.')).toBeDefined();
+    expect(screen.queryByRole('table')).toBeNull();
+  });
+
   it.each([
     ['no_text_found', 'No text was found in this file.'],
     ['image_too_large', 'The image is too large.'],
@@ -280,7 +356,7 @@ describe('LibrarySection', () => {
         expect(screen.queryByRole('button', {name: 'Retry scan.pdf'})).toBeNull()
       );
       expect(screen.queryByText('Something went wrong.')).toBeNull();
-      expect(screen.getAllByLabelText('Ingesting')).toHaveLength(2);
+      expect(screen.getAllByRole('status', {name: 'Ingesting'})).toHaveLength(2);
     });
 
     it('should send the Retry of an image to the route of the images', async () => {
@@ -327,6 +403,12 @@ describe('LibrarySection', () => {
 
       expect(retry.hasAttribute('disabled')).toBe(true);
       expect(retry.textContent).toBe('Retrying…');
+      expect(screen.getByRole('row', {name: /scan\.pdf/}).getAttribute('aria-busy')).toBe(
+        'true'
+      );
+      expect(screen.getByRole('row', {name: /notes\.md/}).getAttribute('aria-busy')).toBe(
+        'false'
+      );
       expect(
         screen.getByRole('button', {name: 'Delete scan.pdf'}).hasAttribute('disabled')
       ).toBe(true);
@@ -545,6 +627,23 @@ describe('LibrarySection', () => {
         await screen.findByText('3 files arrived. Drop one file at a time.')
       ).toBeDefined();
       expect(resources.createTextResource).not.toHaveBeenCalled();
+    });
+
+    it('should show the drop zone differently while a drag is over it', () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const zone = theDropZone().closest('label') as HTMLLabelElement;
+      const atRest = zone.className;
+
+      fireEvent.dragOver(zone);
+      expect(zone.className).not.toBe(atRest);
+
+      fireEvent.dragLeave(zone);
+      expect(zone.className).toBe(atRest);
+
+      fireEvent.dragOver(zone);
+      fireEvent.drop(zone, {dataTransfer: {files: []}});
+      expect(zone.className).toBe(atRest);
     });
 
     it('should keep the refusal until the next action of the owner', async () => {
