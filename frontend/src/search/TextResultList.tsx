@@ -8,21 +8,31 @@ type Props = {results: TextResult[]; query: string};
 
 export const TextResultList = ({results, query}: Props): JSX.Element => {
   if (results.length === 0) {
-    return <p>No text was found.</p>;
+    return <p className="text-muted-foreground">No text was found.</p>;
   }
 
   return (
-    <ol className="text-results">
+    <ol className="divide-y">
       {results.map(result => (
-        <li key={result.resourceId} className="text-result">
-          <p className="text-result__citation">
-            <ContentTypeIcon contentType={result.contentType} />{' '}
-            <a href={hrefOf(result)} target="_blank" rel="noopener noreferrer">
+        <li key={result.resourceId} className="py-3">
+          <p className="mb-1 flex items-center gap-1.5 font-medium">
+            <ContentTypeIcon contentType={result.contentType} />
+            <a
+              href={hrefOf(result)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4"
+            >
               {result.name}
             </a>
-            {result.page !== undefined && <span> · Page {result.page}</span>}
+            {result.page !== undefined && (
+              <span className="font-normal text-muted-foreground">
+                {' '}
+                · Page {result.page}
+              </span>
+            )}
           </p>
-          <p className="text-result__text">{result.text}</p>
+          <p className="line-clamp-3 text-muted-foreground">{result.text}</p>
           <MoreInThisResource result={result} query={query} />
         </li>
       ))}

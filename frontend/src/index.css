@@ -136,9 +136,7 @@ body {
   padding: 1rem;
 }
 
-.recent-resource a,
-.text-result a,
-.match a {
+.recent-resource a {
   text-decoration: underline;
 }
 
@@ -149,84 +147,4 @@ body {
 
 .recent-resource {
   padding: 0.25rem 0;
-}
-
-.search-box {
-  border: 1px solid currentcolor;
-  border-radius: 0.25rem;
-  box-sizing: border-box;
-  font: inherit;
-  padding: 0.5rem;
-  width: 100%;
-}
-
-.text-results {
-  list-style: none;
-  padding: 0;
-}
-
-.text-result {
-  border-bottom: 1px solid currentcolor;
-  padding: 0.5rem 0;
-}
-
-.text-result__citation {
-  margin: 0 0 0.25rem;
-}
-
-.text-result__text {
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  margin: 0;
-  overflow: hidden;
-}
-
-.more-in-this-file {
-  background: none;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  margin-top: 0.25rem;
-  padding: 0;
-  text-decoration: underline;
-}
-
-.matches {
-  list-style: none;
-  margin: 0.5rem 0 0;
-  padding: 0 0 0 1rem;
-}
-
-.match {
-  padding: 0.25rem 0;
-}
-
-.image-results {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  list-style: none;
-  padding: 0;
-}
-
-.image-result a {
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.image-result__thumbnail {
-  aspect-ratio: 1;
-  object-fit: cover;
-  width: 100%;
-}
-
-.image-result__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }

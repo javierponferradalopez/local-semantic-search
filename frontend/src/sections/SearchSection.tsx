@@ -1,6 +1,7 @@
 import type {SearchResponse} from 'contract/SearchResponse';
 import {type ChangeEvent, type FormEvent, type JSX, useRef, useState} from 'react';
 import {RefusalAlert} from '@/components/RefusalAlert';
+import {Input} from '@/components/ui/input';
 import {useSearchGateway} from '@/config/GatewaysContext';
 import {textsOfFailure} from '@/errors/textsOfFailure';
 import {useResources} from '@/resources/ResourcesContext';
@@ -52,11 +53,11 @@ export const SearchSection = (): JSX.Element => {
       </h2>
       <search>
         <form onSubmit={search}>
-          <input
+          <Input
             type="search"
             aria-label="Search"
             placeholder="Describe what you remember, like “the lighthouse on the Galician coast”"
-            className="search-box"
+            className="h-10"
             value={query}
             onChange={(event: ChangeEvent<HTMLInputElement>): void =>
               setQuery(event.target.value)
@@ -80,7 +81,7 @@ const Groups = ({
   response: SearchResponse;
 }): JSX.Element => {
   if (text.length === 0 && images.length === 0) {
-    return <p>Nothing was found.</p>;
+    return <p className="mt-6 text-muted-foreground">Nothing was found.</p>;
   }
 
   return (
