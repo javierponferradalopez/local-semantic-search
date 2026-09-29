@@ -1,6 +1,5 @@
-export type GoldenCase = {query: string; expected: string | null};
+import type {GoldenCase} from './GoldenCase';
 
-// null: the corpus does not hold the answer.
 export const TEXT_GOLDEN_SET: readonly GoldenCase[] = [
   {
     query: 'cómo hacer un guiso de legumbres con chorizo',
