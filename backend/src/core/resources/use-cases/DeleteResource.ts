@@ -2,8 +2,9 @@ import type {EventBus} from '../../shared/domain/services/EventBus';
 import type {FileStore} from '../../shared/domain/services/FileStore';
 import type {TransactionRunner} from '../../shared/domain/services/TransactionRunner';
 import {ResourceNotFoundError} from '../domain/errors/ResourceNotFoundError';
+import type {ImageResource} from '../domain/ImageResource';
 import type {ResourceRepository} from '../domain/ResourceRepository';
-import {TextResource} from '../domain/TextResource';
+import type {TextResource} from '../domain/TextResource';
 import {ResourceId} from '../domain/value-objects/ResourceId';
 
 type ConstructorParams = {
@@ -36,10 +37,10 @@ export class DeleteResource {
     void this.eventBus.publish(resource.pullEvents());
   }
 
-  private async remove(id: ResourceId): Promise<TextResource> {
+  private async remove(id: ResourceId): Promise<ImageResource | TextResource> {
     const resource = await this.resourceRepository.find(id);
 
-    if (!(resource instanceof TextResource)) {
+    if (resource === undefined) {
       throw ResourceNotFoundError.causeNoResourceHoldsTheIdentifier(id);
     }
 

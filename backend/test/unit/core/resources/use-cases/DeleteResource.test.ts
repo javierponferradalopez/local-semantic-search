@@ -1,5 +1,6 @@
 import {INGEST_STATES, type IngestState} from 'contract/IngestState';
 import {ResourceNotFoundError} from '../../../../../src/core/resources/domain/errors/ResourceNotFoundError';
+import {ImageResourceDeletedDomainEvent} from '../../../../../src/core/resources/domain/events/ImageResourceDeletedDomainEvent';
 import {TextResourceDeletedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceDeletedDomainEvent';
 import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import type {TextResource} from '../../../../../src/core/resources/domain/TextResource';
@@ -7,6 +8,7 @@ import {DeleteResource} from '../../../../../src/core/resources/use-cases/Delete
 import type {EventBus} from '../../../../../src/core/shared/domain/services/EventBus';
 import type {FileStore} from '../../../../../src/core/shared/domain/services/FileStore';
 import type {TransactionRunner} from '../../../../../src/core/shared/domain/services/TransactionRunner';
+import {ImageResourceBuilder} from '../../../../utils/builders/image-resource/ImageResourceBuilder';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 import {type MockProxy, mock} from '../../../../utils/mock';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
@@ -51,7 +53,7 @@ describe('DeleteResource', () => {
   });
 
   describe('#run', () => {
-    it('should delete the row and the File of the Resource', async () => {
+    it('should delete the row and the File of a TextResource', async () => {
       const textResource = aStoredTextResource();
 
       await deleteResource.run({id: textResource.id.value});
@@ -75,6 +77,20 @@ describe('DeleteResource', () => {
         'commit',
         'publish'
       ]);
+    });
+
+    it('should delete the row and the File of an ImageResource, and raise ImageResourceDeletedDomainEvent', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      resourceRepository.find.mockResolvedValue(imageResource);
+
+      await deleteResource.run({id: imageResource.id.value});
+
+      const [events] = eventBus.publish.mock.calls[0] ?? [];
+
+      expect(resourceRepository.delete).toHaveBeenCalledWith(imageResource);
+      expect(fileStore.delete.mock.calls[0]?.[0].value).toBe(imageResource.fileKey.value);
+      expect(events?.[0]).toBeInstanceOf(ImageResourceDeletedDomainEvent);
+      expect(events?.[0]?.aggregateId).toBe(imageResource.id.value);
     });
 
     it('should not wait for the handlers of its events', async () => {

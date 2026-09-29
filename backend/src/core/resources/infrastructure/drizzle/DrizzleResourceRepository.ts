@@ -91,10 +91,19 @@ export class DrizzleResourceRepository implements ResourceRepository {
       .where(eq(textResources.id, textResource.id.value));
   }
 
-  public async delete(textResource: TextResource): Promise<void> {
+  public async delete(resource: ImageResource | TextResource): Promise<void> {
+    if (resource instanceof ImageResource) {
+      await this.connection
+        .database()
+        .delete(imageResources)
+        .where(eq(imageResources.id, resource.id.value));
+
+      return;
+    }
+
     await this.connection
       .database()
       .delete(textResources)
-      .where(eq(textResources.id, textResource.id.value));
+      .where(eq(textResources.id, resource.id.value));
   }
 }

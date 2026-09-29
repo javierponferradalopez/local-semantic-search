@@ -5,6 +5,7 @@ import {container} from '../config/di/Container';
 import {FILES_URL_PREFIX} from '../config/FilesUrlPrefix';
 import {CreateImageResourceController} from '../controllers/resources/CreateImageResourceController';
 import {CreateTextResourceController} from '../controllers/resources/CreateTextResourceController';
+import {DeleteImageResourceController} from '../controllers/resources/DeleteImageResourceController';
 import {DeleteTextResourceController} from '../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../controllers/resources/GetResourcesController';
 import {RetryTextResourceController} from '../controllers/resources/RetryTextResourceController';
@@ -22,6 +23,7 @@ export const configureRoutes = (app: Express): void => {
   const createImageResource = container.getDependency(CreateImageResourceController);
   const getResources = container.getDependency(GetResourcesController);
   const deleteTextResource = container.getDependency(DeleteTextResourceController);
+  const deleteImageResource = container.getDependency(DeleteImageResourceController);
   const retryTextResource = container.getDependency(RetryTextResourceController);
   const search = container.getDependency(SearchController);
   const getMatches = container.getDependency(GetMatchesController);
@@ -46,6 +48,10 @@ export const configureRoutes = (app: Express): void => {
 
   app.delete('/resources/texts/:id', (request, response) =>
     deleteTextResource.run(request, response)
+  );
+
+  app.delete('/resources/images/:id', (request, response) =>
+    deleteImageResource.run(request, response)
   );
 
   app.post('/resources/texts/:id/retry', (request, response) =>

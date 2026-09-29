@@ -7,6 +7,7 @@ import {GetMatches} from '../../../core/search/use-cases/GetMatches';
 import {Search} from '../../../core/search/use-cases/Search';
 import {CreateImageResourceController} from '../../controllers/resources/CreateImageResourceController';
 import {CreateTextResourceController} from '../../controllers/resources/CreateTextResourceController';
+import {DeleteImageResourceController} from '../../controllers/resources/DeleteImageResourceController';
 import {DeleteTextResourceController} from '../../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../../controllers/resources/GetResourcesController';
 import {RetryTextResourceController} from '../../controllers/resources/RetryTextResourceController';
@@ -37,6 +38,13 @@ export const registerControllersDependencies = (): void => {
   container.registerImplementation(
     DeleteTextResourceController,
     new DeleteTextResourceController({
+      deleteResource: container.getDependency(DeleteResource)
+    })
+  );
+
+  container.registerImplementation(
+    DeleteImageResourceController,
+    new DeleteImageResourceController({
       deleteResource: container.getDependency(DeleteResource)
     })
   );

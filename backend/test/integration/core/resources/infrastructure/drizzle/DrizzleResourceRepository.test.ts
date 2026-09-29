@@ -218,6 +218,33 @@ describe('DrizzleResourceRepository', () => {
 
       expect(await repository.find(textResource.id)).toBeUndefined();
     });
+
+    it('should remove the row of an ImageResource', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      await repository.create(imageResource);
+
+      await repository.delete(imageResource);
+
+      expect(await repository.find(imageResource.id)).toBeUndefined();
+    });
+
+    it('should leave the rows of the other Resources when it removes an ImageResource', async () => {
+      const deleted = ImageResourceBuilder.anImageResource().build();
+      const otherImageResource = ImageResourceBuilder.anImageResource().build();
+      const textResource = TextResourceBuilder.aTextResource().build();
+      await repository.create(deleted);
+      await repository.create(otherImageResource);
+      await repository.create(textResource);
+
+      await repository.delete(deleted);
+
+      expect((await repository.find(otherImageResource.id))?.id.value).toBe(
+        otherImageResource.id.value
+      );
+      expect((await repository.find(textResource.id))?.id.value).toBe(
+        textResource.id.value
+      );
+    });
   });
 
   describe('the transaction of the connection', () => {

@@ -10,5 +10,5 @@ export interface ResourceRepository {
   findImageResourceByChecksum(checksum: Checksum): Promise<ImageResource | undefined>;
   create(resource: ImageResource | TextResource): Promise<void>;
   update(resource: TextResource): Promise<void>;
-  delete(resource: TextResource): Promise<void>;
+  delete(resource: ImageResource | TextResource): Promise<void>;
 }
