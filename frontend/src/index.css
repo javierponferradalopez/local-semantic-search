@@ -130,12 +130,6 @@
   }
 }
 
-body {
-  margin: 0 auto;
-  max-width: 60rem;
-  padding: 1rem;
-}
-
 .recent-resource a {
   text-decoration: underline;
 }
