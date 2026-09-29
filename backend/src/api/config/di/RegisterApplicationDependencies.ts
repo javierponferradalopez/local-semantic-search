@@ -7,6 +7,7 @@ import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
 import {RetryImageResource} from '../../../core/resources/use-cases/RetryImageResource';
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
+import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {GetMatches} from '../../../core/search/use-cases/GetMatches';
 import {Search} from '../../../core/search/use-cases/Search';
@@ -14,7 +15,9 @@ import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/Dri
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
 import {TEXT_MODEL} from '../../../core/shared/infrastructure/transformers/TextModel';
+import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
+import {VISION_MODEL} from '../../../core/shared/infrastructure/transformers/VisionModel';
 import {container} from './Container';
 
 export const registerApplicationDependencies = (): void => {
@@ -75,9 +78,12 @@ export const registerApplicationDependencies = (): void => {
     Search,
     new Search({
       textEmbedder,
+      imageEmbedder: container.getDependency(TransformersImageEmbedder),
       resultReader,
+      pictureResultReader: container.getDependency(DrizzlePictureResultReader),
       fileStore,
-      textFloor: TEXT_MODEL.floor
+      textFloor: TEXT_MODEL.floor,
+      imageFloor: VISION_MODEL.floor
     })
   );
 

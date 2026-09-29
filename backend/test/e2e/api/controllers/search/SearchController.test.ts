@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import type {ApiError} from 'contract/ApiError';
 import {CONTENT_TYPES} from 'contract/ContentType';
+import type {ImageResult} from 'contract/ImageResult';
 import type {SearchResponse} from 'contract/SearchResponse';
 import type {TextResult} from 'contract/TextResult';
 import {useTheTestApi} from '../../../../lib/testApi';
@@ -10,6 +11,7 @@ const OK = 200;
 const BAD_REQUEST = 400;
 
 const FIELDS_OF_A_TEXT_RESULT = ['contentType', 'fileUrl', 'name', 'resourceId', 'text'];
+const FIELDS_OF_AN_IMAGE_RESULT = ['fileUrl', 'name', 'resourceId', 'thumbnailUrl'];
 
 const fixture = (name: string): Promise<Buffer> =>
   readFile(join(import.meta.dirname, '../../../../fixtures', name));
@@ -21,6 +23,14 @@ describe('GET /search', () => {
     const {id} = await api.createATextResourceRow(name, content);
 
     expect((await api.rowOnceIngested(id)).ingestState).toBe('ready');
+  };
+
+  const createAReadyImageResource = async (name: string): Promise<string> => {
+    const {id} = await api.createAnImageResourceRow(name, await fixture(name));
+
+    expect((await api.rowOnceIngested(id)).ingestState).toBe('ready');
+
+    return id;
   };
 
   it('should give one text Result for each Ready Resource, and no image', async () => {
@@ -63,6 +73,57 @@ describe('GET /search', () => {
     expect(markdown).not.toHaveProperty('page');
   });
 
+  it('should give one image Result for a Ready Image Resource, next to the text Results', async () => {
+    await createAReadyResource(
+      'the lighthouse.md',
+      await fixture('markdown-with-headings.md')
+    );
+    const id = await createAReadyImageResource('a-small-picture.png');
+
+    const response = await api.search('a beach under the sun');
+
+    expect(response.status).toBe(OK);
+
+    const body = (await response.json()) as SearchResponse;
+
+    expect(body.images.map(result => result.resourceId)).toStrictEqual([id]);
+    expect(body.images[0]?.name).toBe('a-small-picture.png');
+
+    for (const result of body.text) {
+      expectATextResult(result);
+    }
+
+    for (const result of body.images) {
+      expectAnImageResult(result);
+    }
+  });
+
+  it('should give a thumbnailUrl that resolves to the bytes of a WebP', async () => {
+    await createAReadyImageResource('a-small-picture.png');
+
+    const {images} = (await (
+      await api.search('a beach under the sun')
+    ).json()) as SearchResponse;
+    const thumbnail = await fetch(`${api.origin()}${images[0]?.thumbnailUrl}`);
+
+    expect(thumbnail.status).toBe(OK);
+    expect(thumbnail.headers.get('content-type')).toBe('image/webp');
+    expect((await thumbnail.arrayBuffer()).byteLength).toBeGreaterThan(0);
+  });
+
+  it('should give a fileUrl that resolves to the File of the Image Resource', async () => {
+    await createAReadyImageResource('a-small-picture.png');
+
+    const {images} = (await (
+      await api.search('a beach under the sun')
+    ).json()) as SearchResponse;
+    const file = await fetch(`${api.origin()}${images[0]?.fileUrl}`);
+
+    expect(Buffer.from(await file.arrayBuffer())).toStrictEqual(
+      await fixture('a-small-picture.png')
+    );
+  });
+
   it('should give no text Result when no Resource is stored', async () => {
     const response = await api.search('the lighthouse');
 
@@ -101,5 +162,18 @@ describe('GET /search', () => {
     }
 
     expect(fields).toStrictEqual(FIELDS_OF_A_TEXT_RESULT.toSorted());
+    expect(result).not.toHaveProperty('thumbnailUrl');
+  };
+
+  const expectAnImageResult = (value: unknown): void => {
+    const result = value as ImageResult;
+
+    expect(typeof result.resourceId).toBe('string');
+    expect(typeof result.name).toBe('string');
+    expect(typeof result.fileUrl).toBe('string');
+    expect(typeof result.thumbnailUrl).toBe('string');
+    expect(Object.keys(result).toSorted()).toStrictEqual(
+      FIELDS_OF_AN_IMAGE_RESULT.toSorted()
+    );
   };
 });

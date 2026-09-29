@@ -8,6 +8,7 @@ import {SharpImageDecoder} from '../../../core/ingestion/infrastructure/sharp/Sh
 import {DrizzleResourceReader} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceReader';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
+import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
@@ -16,6 +17,7 @@ import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/tra
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
+import {IMAGE_RESULTS_LIMIT} from '../ImageResultsLimit';
 import {MATCHES_LIMIT} from '../MatchesLimit';
 import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
@@ -70,5 +72,9 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
       resultsLimit: TEXT_RESULTS_LIMIT,
       matchesLimit: MATCHES_LIMIT
     })
+  );
+  container.registerImplementation(
+    DrizzlePictureResultReader,
+    new DrizzlePictureResultReader({connection, resultsLimit: IMAGE_RESULTS_LIMIT})
   );
 };
