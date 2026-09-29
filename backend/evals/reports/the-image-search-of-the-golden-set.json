@@ -1,0 +1,230 @@
+{
+  "name": "the-image-search-of-the-golden-set",
+  "means": {
+    "reciprocal rank": 0.9659090909090909,
+    "verdict of the Floor": 0.9285714285714286
+  },
+  "counts": {
+    "real Query the Floor rejects": 1
+  },
+  "cases": [
+    {
+      "input": "un tranvía por una calle empedrada",
+      "expected": "tranvia-en-lisboa.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "bici aparcada de noche",
+      "expected": "bicicleta-de-carretera.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "un plato de lentejas",
+      "expected": "guiso-de-lentejas-con-salchicha.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "planta de hojas grandes con agujeros",
+      "expected": "hojas-de-monstera.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "hogaza de pan recién horneada",
+      "expected": "pan-de-masa-madre.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "el router de casa",
+      "expected": "router-wifi.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "gente corriendo una carrera por la ciudad",
+      "expected": "corredores-de-maraton.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "un perro mordiendo un palo",
+      "expected": "golden-retriever-con-un-palo.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "un pico con nieve",
+      "expected": "montana-nevada.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "puesta de sol en la playa",
+      "expected": "atardecer-en-la-playa.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "cocina con armarios de madera",
+      "expected": "cocina-moderna.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "dog chewing a stick",
+      "expected": "golden-retriever-con-un-palo.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "snowy mountain peak",
+      "expected": "montana-nevada.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "sourdough loaf on a cutting board",
+      "expected": "pan-de-masa-madre.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "Lisboa",
+      "expected": "tranvia-en-lisboa.jpg",
+      "scores": {
+        "reciprocal rank": 0.25,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "mi mascota",
+      "expected": "golden-retriever-con-un-palo.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "la conexión a internet",
+      "expected": "router-wifi.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "entrenar para una media maratón",
+      "expected": "corredores-de-maraton.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 0
+      }
+    },
+    {
+      "input": "vacaciones en la sierra",
+      "expected": "montana-nevada.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "una planta de interior",
+      "expected": "hojas-de-monstera.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "comida de cuchara",
+      "expected": "guiso-de-lentejas-con-salchicha.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "where I cook at home",
+      "expected": "cocina-moderna.jpg",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "un gato durmiendo en el sofá",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "una bicicleta de montaña en el barro",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "un tren de alta velocidad",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "coches de Fórmula 1 en un circuito",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 0
+      }
+    },
+    {
+      "input": "partitura de piano",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1
+      }
+    },
+    {
+      "input": "a birthday cake with candles",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1
+      }
+    }
+  ]
+}
