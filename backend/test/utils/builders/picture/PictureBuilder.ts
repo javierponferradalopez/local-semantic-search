@@ -4,16 +4,20 @@ import {
 } from '../../../../src/core/ingestion/domain/Picture';
 import {StringMother} from '../../object-mother/StringMother';
 
+const primitivesOf = (resourceId: string): PicturePrimitives => ({
+  resourceId,
+  thumbnailKey: `ingestion/thumbnails/${resourceId}.webp`
+});
+
 export class PictureBuilder {
   private constructor(private readonly primitives: PicturePrimitives) {}
 
   public static aPicture(): PictureBuilder {
-    const resourceId = StringMother.randomUuid();
+    return new PictureBuilder(primitivesOf(StringMother.randomUuid()));
+  }
 
-    return new PictureBuilder({
-      resourceId,
-      thumbnailKey: `ingestion/thumbnails/${resourceId}.webp`
-    });
+  public withResourceId(resourceId: string): PictureBuilder {
+    return new PictureBuilder(primitivesOf(resourceId));
   }
 
   public build(): Picture {
