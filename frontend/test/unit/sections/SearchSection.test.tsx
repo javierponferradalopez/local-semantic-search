@@ -1,5 +1,6 @@
 import {screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type {ImageResult} from 'contract/ImageResult';
 import type {ResourceRow} from 'contract/ResourceRow';
 import type {TextResult} from 'contract/TextResult';
 import {textOfReason} from '@/errors/textOfReason';
@@ -17,6 +18,17 @@ const aTextResult = (name: string, overrides: Partial<TextResult> = {}): TextRes
   contentType: 'markdown',
   text: `The text of ${name}.`,
   fileUrl: `/files/${name}`,
+  ...overrides
+});
+
+const anImageResult = (
+  name: string,
+  overrides: Partial<ImageResult> = {}
+): ImageResult => ({
+  resourceId: name,
+  name,
+  fileUrl: `/files/${name}`,
+  thumbnailUrl: `/files/thumbnails/${name}.webp`,
   ...overrides
 });
 
@@ -85,7 +97,6 @@ describe('SearchSection', () => {
       .map(link => link.textContent);
 
     expect(names).toStrictEqual(['the best.md', 'the second.md']);
-    expect(screen.queryByRole('heading', {name: 'Images'})).toBeNull();
   });
 
   it('should show the icon of the Content type, the text of the Chunk and the page', async () => {
@@ -153,12 +164,149 @@ describe('SearchSection', () => {
     expect(link.getAttribute('target')).toBe('_blank');
   });
 
-  it('should say that nothing was found when the gateway gives no text Result', async () => {
+  it('should say once that nothing was found, in place of both groups, when both are empty', async () => {
     renderWithGateways(<SearchSection />, {search, resources});
 
     await searchFor('the trip');
 
     expect(await screen.findByText('Nothing was found.')).toBeDefined();
+    expect(screen.queryByRole('heading', {name: 'Text'})).toBeNull();
+    expect(screen.queryByRole('heading', {name: 'Images'})).toBeNull();
+  });
+
+  describe('Images', () => {
+    it('should show the images under the header Images, in the order of the gateway', async () => {
+      search.search.mockResolvedValue({
+        text: [],
+        images: [anImageResult('the best.png'), anImageResult('the second.png')]
+      });
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+
+      const group = await screen.findByRole('region', {name: 'Images'});
+      const names = within(group)
+        .getAllByRole('link')
+        .map(link => link.textContent);
+
+      expect(names).toStrictEqual(['the best.png', 'the second.png']);
+    });
+
+    it('should show the thumbnail inside an img, with the name of the File', async () => {
+      search.search.mockResolvedValue({
+        text: [],
+        images: [anImageResult('the beach.svg', {thumbnailUrl: '/files/the beach.webp'})]
+      });
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+
+      const link = await screen.findByRole('link', {name: 'the beach.svg'});
+      const thumbnail = link.querySelector('img');
+
+      expect(thumbnail?.getAttribute('src')).toBe('/files/the beach.webp');
+      expect(thumbnail?.getAttribute('alt')).toBe('');
+    });
+
+    it('should open the fileUrl as it is, with no fragment, in a new tab', async () => {
+      const fileUrl = 'https://store.example/resources/an%20id/beach.png?signature=a';
+      search.search.mockResolvedValue({
+        text: [],
+        images: [anImageResult('the beach.png', {fileUrl})]
+      });
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+
+      const link = await screen.findByRole('link', {name: 'the beach.png'});
+
+      expect(link.getAttribute('href')).toBe(fileUrl);
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    it('should show no More in this file link', async () => {
+      search.search.mockResolvedValue({
+        text: [],
+        images: [anImageResult('the beach.png')]
+      });
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+      await screen.findByRole('link', {name: 'the beach.png'});
+
+      expect(screen.queryByRole('button', {name: 'More in this file'})).toBeNull();
+    });
+
+    it('should show two images with the same name', async () => {
+      search.search.mockResolvedValue({
+        text: [],
+        images: [
+          anImageResult('the beach.png', {resourceId: 'the first'}),
+          anImageResult('the beach.png', {resourceId: 'the second'})
+        ]
+      });
+      const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+
+      const group = await screen.findByRole('region', {name: 'Images'});
+
+      expect(within(group).getAllByRole('link')).toHaveLength(2);
+      expect(error).not.toHaveBeenCalled();
+      error.mockRestore();
+    });
+
+    it('should show the Text group first and the Images group second', async () => {
+      search.search.mockResolvedValue({
+        text: [aTextResult('the notes.md')],
+        images: [anImageResult('the beach.png')]
+      });
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+      await screen.findByRole('region', {name: 'Images'});
+
+      expect(
+        screen.getAllByRole('heading', {level: 3}).map(heading => heading.textContent)
+      ).toStrictEqual(['Text', 'Images']);
+    });
+
+    it('should keep the Images group with its own empty message when only the text group has Results', async () => {
+      search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('the trip');
+
+      const group = await screen.findByRole('region', {name: 'Images'});
+
+      expect(within(group).getByText('No image was found.')).toBeDefined();
+      expect(screen.queryByText('Nothing was found.')).toBeNull();
+    });
+
+    it('should keep the Text group with its own empty message when only the Images group has Results', async () => {
+      search.search.mockResolvedValue({
+        text: [],
+        images: [anImageResult('the beach.png')]
+      });
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('a beach');
+
+      const group = await screen.findByRole('region', {name: 'Text'});
+
+      expect(within(group).getByText('No text was found.')).toBeDefined();
+      expect(screen.queryByText('Nothing was found.')).toBeNull();
+    });
   });
 
   it('should show the text of a Refusal, and never the failure itself', async () => {
@@ -422,13 +570,16 @@ describe('SearchSection', () => {
 
       await screen.findByRole('link', {name: 'notes.md'});
       await searchFor('the trip');
-      await screen.findByText(/nothing/i);
+      await screen.findByText('Nothing was found.');
 
       expect(screen.queryByRole('heading', {name: 'Recently created'})).toBeNull();
     });
 
-    it('should hide the text Results when the owner empties the box', async () => {
-      search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
+    it('should hide both groups when the owner empties the box', async () => {
+      search.search.mockResolvedValue({
+        text: [aTextResult('the notes.md')],
+        images: [anImageResult('the beach.png')]
+      });
 
       renderWithGateways(<SearchSection />, {search, resources});
 
@@ -437,6 +588,7 @@ describe('SearchSection', () => {
       await userEvent.clear(screen.getByRole('searchbox', {name: 'Search'}));
 
       expect(screen.queryByRole('heading', {name: 'Text'})).toBeNull();
+      expect(screen.queryByRole('heading', {name: 'Images'})).toBeNull();
       expect(screen.queryByRole('link', {name: 'the notes.md'})).toBeNull();
     });
 

@@ -1,5 +1,5 @@
 import type {ResourceRow} from 'contract/ResourceRow';
-import type {TextResult} from 'contract/TextResult';
+import type {SearchResponse} from 'contract/SearchResponse';
 import {
   type ChangeEvent,
   type FormEvent,
@@ -10,6 +10,7 @@ import {
 } from 'react';
 import {useResourceGateway, useSearchGateway} from '@/config/GatewaysContext';
 import {textsOfFailure} from '@/errors/textsOfFailure';
+import {ImageResultGrid} from '@/search/ImageResultGrid';
 import {RecentResourceList} from '@/search/RecentResourceList';
 import {TextResultList} from '@/search/TextResultList';
 
@@ -21,7 +22,7 @@ export const SearchSection = (): JSX.Element => {
   const [query, setQuery] = useState('');
   const [recent, setRecent] = useState<ResourceRow[]>([]);
   // The Query that gave the Results, which the box no longer holds once the owner types.
-  const [searched, setSearched] = useState<{query: string; results: TextResult[]}>();
+  const [searched, setSearched] = useState<{query: string; response: SearchResponse}>();
   const [refusal, setRefusal] = useState<string[]>([]);
   const latestSearch = useRef(0);
   const boxIsEmpty = query.trim().length === 0;
@@ -56,9 +57,9 @@ export const SearchSection = (): JSX.Element => {
 
     gateway
       .search(query)
-      .then(({text}) => {
+      .then(response => {
         if (thisSearch === latestSearch.current) {
-          setSearched({query, results: text});
+          setSearched({query, response});
         }
       })
       .catch((failure: unknown) => {
@@ -94,12 +95,33 @@ export const SearchSection = (): JSX.Element => {
         </ul>
       )}
       {boxIsEmpty && <RecentResourceList rows={recent} />}
-      {!boxIsEmpty && searched !== undefined && (
-        <section aria-labelledby="text-results-heading">
-          <h3 id="text-results-heading">Text</h3>
-          <TextResultList key={searched.query} {...searched} />
-        </section>
-      )}
+      {!boxIsEmpty && searched !== undefined && <Groups {...searched} />}
     </section>
+  );
+};
+
+// Stacked, text first, in a fixed order: an order by which group won compares two spaces.
+const Groups = ({
+  query,
+  response: {text, images}
+}: {
+  query: string;
+  response: SearchResponse;
+}): JSX.Element => {
+  if (text.length === 0 && images.length === 0) {
+    return <p>Nothing was found.</p>;
+  }
+
+  return (
+    <>
+      <section aria-labelledby="text-results-heading">
+        <h3 id="text-results-heading">Text</h3>
+        <TextResultList key={query} results={text} query={query} />
+      </section>
+      <section aria-labelledby="image-results-heading">
+        <h3 id="image-results-heading">Images</h3>
+        <ImageResultGrid results={images} />
+      </section>
+    </>
   );
 };

@@ -97,3 +97,30 @@ body {
 .match {
   padding: 0.25rem 0;
 }
+
+.image-results {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  list-style: none;
+  padding: 0;
+}
+
+.image-result a {
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.image-result__thumbnail {
+  aspect-ratio: 1;
+  object-fit: cover;
+  width: 100%;
+}
+
+.image-result__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

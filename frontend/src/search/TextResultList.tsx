@@ -8,7 +8,7 @@ type Props = {results: TextResult[]; query: string};
 
 export const TextResultList = ({results, query}: Props): JSX.Element => {
   if (results.length === 0) {
-    return <p>Nothing was found.</p>;
+    return <p>No text was found.</p>;
   }
 
   return (
