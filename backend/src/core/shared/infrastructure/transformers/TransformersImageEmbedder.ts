@@ -7,12 +7,22 @@ import {
   RawImage,
   SiglipTextModel,
   SiglipVisionModel,
-  type Tensor
+  Tensor
 } from '@huggingface/transformers';
 import type {ImageEmbedder, Pixels} from '../../domain/services/ImageEmbedder';
 import {Vector} from '../../domain/value-objects/Vector';
 import {readFromTheModelStore, refuseAMissingModel} from './modelStore';
+import {TokenWindows} from './TokenWindows';
 import {VISION_MODEL} from './VisionModel';
+
+// The text tower was trained on 64 tokens. The model_max_length of the tokenizer does not say it.
+const WALL_OF_TOKENS = 64;
+
+// The tokenizer ends each input with <eos>.
+const SPECIAL_TOKENS = 1;
+
+const int64TensorOf = (values: readonly number[]): Tensor =>
+  new Tensor('int64', BigInt64Array.from(values, BigInt), [1, values.length]);
 
 type ConstructorParams = {
   tokenizer: PreTrainedTokenizer;
@@ -22,12 +32,8 @@ type ConstructorParams = {
 };
 
 export class TransformersImageEmbedder implements ImageEmbedder {
-  // @ts-expect-error TS6138: nothing reads the field yet.
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: embedQuery reads it, #67.
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly imageProcessor: ImageProcessor;
-  // @ts-expect-error TS6138: nothing reads the field yet.
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: embedQuery reads it, #67.
   private readonly textTower: PreTrainedModel;
   private readonly visionTower: PreTrainedModel;
 
@@ -76,7 +82,32 @@ export class TransformersImageEmbedder implements ImageEmbedder {
     });
   }
 
-  public embedQuery(): Promise<Vector> {
-    return Promise.reject(new Error('The Vision model embeds no Query yet, #67'));
+  // Verbatim: no prefix and no case change, as the probes that set the Floor (ADR-0021).
+  public async embedQuery(query: string): Promise<Vector> {
+    const ids = this.tokenizer.encode(query, {add_special_tokens: false});
+    const windows: Tensor[] = [];
+
+    for (const window of TokenWindows.of(ids, WALL_OF_TOKENS - SPECIAL_TOKENS)) {
+      windows.push(await this.embedWindow(window));
+    }
+
+    return Vector.of({
+      values: Array.from(TokenWindows.normalizedMeanOf(windows).data as Float32Array),
+      model: VISION_MODEL
+    });
+  }
+
+  // padding: 'max_length'. Padded to the longest input, SigLIP gives noise and no error.
+  private async embedWindow(ids: readonly number[]): Promise<Tensor> {
+    const inputIds = [...ids, this.tokenizer.eos_token_id];
+    const padding = Array.from(
+      {length: WALL_OF_TOKENS - inputIds.length},
+      () => this.tokenizer.pad_token_id
+    );
+    const {pooler_output} = (await this.textTower({
+      input_ids: int64TensorOf([...inputIds, ...padding])
+    })) as {pooler_output: Tensor};
+
+    return pooler_output.normalize(2, -1);
   }
 }
