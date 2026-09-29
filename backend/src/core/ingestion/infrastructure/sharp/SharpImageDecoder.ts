@@ -1,5 +1,7 @@
 import type {ImageContentType} from 'contract/ContentType';
 import sharp, {type Sharp} from 'sharp';
+import {ImageTooLargeError} from '../../domain/errors/ImageTooLargeError';
+import {UnreadableFileError} from '../../domain/errors/UnreadableFileError';
 import type {DecodedImage, ImageDecoder} from '../../domain/ImageDecoder';
 
 // The resize fixes the memory of the decode, whatever the size of the File.
@@ -14,9 +16,18 @@ const LEAST_SVG_DENSITY = 1;
 const WHITE = '#ffffff';
 const CHANNELS = 3;
 
+// sharp gives no code for its pixel ceiling: libvips says it in this message.
+const PIXEL_CEILING_MESSAGE = 'exceeds pixel limit';
+
 // It does not call RawImage.read, which decodes the full bitmap before any resize (#17 §6).
 export class SharpImageDecoder implements ImageDecoder {
-  public async decode(
+  public decode(bytes: Buffer, contentType: ImageContentType): Promise<DecodedImage> {
+    return this.decodeWithSharp(bytes, contentType).catch((error: unknown) => {
+      throw errorOf(error, contentType);
+    });
+  }
+
+  private async decodeWithSharp(
     bytes: Buffer,
     contentType: ImageContentType
   ): Promise<DecodedImage> {
@@ -66,3 +77,11 @@ export class SharpImageDecoder implements ImageDecoder {
     return sharp(bytes, {density});
   }
 }
+
+const errorOf = (
+  error: unknown,
+  contentType: ImageContentType
+): ImageTooLargeError | UnreadableFileError =>
+  error instanceof Error && error.message.includes(PIXEL_CEILING_MESSAGE)
+    ? ImageTooLargeError.causeItHoldsMorePixelsThanTheCeiling(contentType, error)
+    : UnreadableFileError.causeTheBytesCannotBeReadAs(contentType, error);

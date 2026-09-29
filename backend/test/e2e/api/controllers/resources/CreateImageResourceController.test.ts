@@ -132,6 +132,25 @@ describe('POST /resources/images', () => {
 
       expect((await sharp(thumbnail).metadata()).format).toBe('webp');
     });
+
+    it.each([
+      ['too-many-pixels.png', 'image_too_large'],
+      ['not-a-png.png', 'unreadable_file']
+    ])(
+      'should admit %s at the Gate, and make it Failed with %s',
+      async (name, reason) => {
+        const response = await api.createImageResource(
+          name,
+          await readFile(join(FIXTURES, name))
+        );
+        const created = (await response.json()) as ResourceRow;
+
+        const row = await api.rowOnceIngested(created.id);
+
+        expect(response.status).toBe(CREATED);
+        expect(row).toMatchObject({ingestState: 'failed', reason});
+      }
+    );
   });
 
   describe('the Gate', () => {

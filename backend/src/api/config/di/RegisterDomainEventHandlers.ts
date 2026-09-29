@@ -4,7 +4,7 @@ import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/dri
 import {DrizzlePictureRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzlePictureRepository';
 import {SharpImageDecoder} from '../../../core/ingestion/infrastructure/sharp/SharpImageDecoder';
 import {DeleteChunksOnTextResourceDeleted} from '../../../core/ingestion/use-cases/DeleteChunksOnTextResourceDeleted';
-import {IngestImageResourceOnImageResourceCreated} from '../../../core/ingestion/use-cases/IngestImageResourceOnImageResourceCreated';
+import {IngestImageResourceOnImageResourceCreatedOrRetried} from '../../../core/ingestion/use-cases/IngestImageResourceOnImageResourceCreatedOrRetried';
 import {IngestTextResourceOnTextResourceCreatedOrRetried} from '../../../core/ingestion/use-cases/IngestTextResourceOnTextResourceCreatedOrRetried';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {MarkImageResourceAsFailedOnImageResourceIngestFailed} from '../../../core/resources/use-cases/MarkImageResourceAsFailedOnImageResourceIngestFailed';
@@ -54,7 +54,7 @@ export const registerDomainEventHandlers = (): void => {
   );
 
   eventBus.subscribe(
-    new IngestImageResourceOnImageResourceCreated({
+    new IngestImageResourceOnImageResourceCreatedOrRetried({
       fileStore,
       imageDecoder: container.getDependency(SharpImageDecoder),
       imageEmbedder: container.getDependency(TransformersImageEmbedder),

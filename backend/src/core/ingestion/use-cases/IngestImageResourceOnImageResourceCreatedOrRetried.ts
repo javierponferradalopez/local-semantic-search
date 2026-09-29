@@ -1,4 +1,6 @@
+import type {ReasonCode} from 'contract/ReasonCode';
 import {ImageResourceCreatedDomainEvent} from '../../resources/domain/events/ImageResourceCreatedDomainEvent';
+import {ImageResourceRetriedDomainEvent} from '../../resources/domain/events/ImageResourceRetriedDomainEvent';
 import type {ResourceRepository} from '../../resources/domain/ResourceRepository';
 import {ResourceId} from '../../resources/domain/value-objects/ResourceId';
 import type {DomainEvent} from '../../shared/domain/DomainEvent';
@@ -7,11 +9,17 @@ import type {EventBus} from '../../shared/domain/services/EventBus';
 import type {FileStore} from '../../shared/domain/services/FileStore';
 import type {ImageEmbedder} from '../../shared/domain/services/ImageEmbedder';
 import {FileKey} from '../../shared/domain/value-objects/FileKey';
+import {ImageTooLargeError} from '../domain/errors/ImageTooLargeError';
+import {UnreadableFileError} from '../domain/errors/UnreadableFileError';
 import {ImageResourceIngestedDomainEvent} from '../domain/events/ImageResourceIngestedDomainEvent';
 import {ImageResourceIngestFailedDomainEvent} from '../domain/events/ImageResourceIngestFailedDomainEvent';
 import type {ImageDecoder} from '../domain/ImageDecoder';
 import {Picture} from '../domain/Picture';
 import type {PictureRepository} from '../domain/PictureRepository';
+
+type ImageResourceCreatedOrRetried =
+  | ImageResourceCreatedDomainEvent
+  | ImageResourceRetriedDomainEvent;
 
 type ConstructorParams = {
   fileStore: FileStore;
@@ -27,8 +35,8 @@ const THUMBNAIL_KEY_PREFIX = 'ingestion/thumbnails';
 const thumbnailKeyOf = (resourceId: ResourceId): FileKey =>
   FileKey.of({value: `${THUMBNAIL_KEY_PREFIX}/${resourceId.value}.webp`});
 
-export class IngestImageResourceOnImageResourceCreated
-  implements DomainEventHandler<ImageResourceCreatedDomainEvent>
+export class IngestImageResourceOnImageResourceCreatedOrRetried
+  implements DomainEventHandler<ImageResourceCreatedOrRetried>
 {
   private readonly fileStore: FileStore;
   private readonly imageDecoder: ImageDecoder;
@@ -46,11 +54,14 @@ export class IngestImageResourceOnImageResourceCreated
     this.eventBus = params.eventBus;
   }
 
-  public subscribeTo(): [typeof ImageResourceCreatedDomainEvent] {
-    return [ImageResourceCreatedDomainEvent];
+  public subscribeTo(): [
+    typeof ImageResourceCreatedDomainEvent,
+    typeof ImageResourceRetriedDomainEvent
+  ] {
+    return [ImageResourceCreatedDomainEvent, ImageResourceRetriedDomainEvent];
   }
 
-  public async handle(event: ImageResourceCreatedDomainEvent): Promise<void> {
+  public async handle(event: ImageResourceCreatedOrRetried): Promise<void> {
     const resourceId = ResourceId.of({value: event.aggregateId});
 
     const events = await this.ingest(resourceId, event).catch((error: unknown) => {
@@ -60,7 +71,7 @@ export class IngestImageResourceOnImageResourceCreated
       return [
         new ImageResourceIngestFailedDomainEvent({
           aggregateId: resourceId.value,
-          reason: 'ingest_error'
+          reason: reasonOf(error)
         })
       ];
     });
@@ -70,7 +81,7 @@ export class IngestImageResourceOnImageResourceCreated
 
   private async ingest(
     resourceId: ResourceId,
-    event: ImageResourceCreatedDomainEvent
+    event: ImageResourceCreatedOrRetried
   ): Promise<DomainEvent[]> {
     const thumbnailKey = thumbnailKeyOf(resourceId);
 
@@ -105,3 +116,11 @@ export class IngestImageResourceOnImageResourceCreated
     await this.fileStore.delete(thumbnailKey);
   }
 }
+
+const reasonOf = (error: unknown): ReasonCode => {
+  if (error instanceof ImageTooLargeError) {
+    return 'image_too_large';
+  }
+
+  return error instanceof UnreadableFileError ? 'unreadable_file' : 'ingest_error';
+};

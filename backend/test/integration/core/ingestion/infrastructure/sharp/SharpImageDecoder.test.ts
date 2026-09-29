@@ -1,6 +1,8 @@
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import sharp from 'sharp';
+import {ImageTooLargeError} from '../../../../../../src/core/ingestion/domain/errors/ImageTooLargeError';
+import {UnreadableFileError} from '../../../../../../src/core/ingestion/domain/errors/UnreadableFileError';
 import {SharpImageDecoder} from '../../../../../../src/core/ingestion/infrastructure/sharp/SharpImageDecoder';
 
 const FIXTURES = join(import.meta.dirname, '../../../../../fixtures');
@@ -118,6 +120,47 @@ describe('SharpImageDecoder', () => {
           width,
           height
         });
+      }
+    );
+
+    it('should refuse an image past the pixel ceiling of sharp with ImageTooLargeError', async () => {
+      await expect(
+        decoder.decode(await aFixture('too-many-pixels.png'), 'png')
+      ).rejects.toThrow(ImageTooLargeError);
+    });
+
+    it('should refuse an SVG past the pixel ceiling of sharp at its least density with ImageTooLargeError', async () => {
+      await expect(
+        decoder.decode(
+          Buffer.from(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="2000000" height="2000000"><rect width="10" height="10"/></svg>'
+          ),
+          'svg'
+        )
+      ).rejects.toThrow(ImageTooLargeError);
+    });
+
+    it.each([
+      ['too-many-pixels.png', 'exceeds pixel limit'],
+      ['not-a-png.png', 'unsupported image format']
+    ])('should keep the error of sharp for %s as the cause', async (name, message) => {
+      const refusal = await decoder
+        .decode(await aFixture(name), 'png')
+        .catch((error: unknown) => error);
+
+      expect((refusal as Error).cause).toBeInstanceOf(Error);
+      expect(((refusal as Error).cause as Error).message).toContain(message);
+    });
+
+    it.each([
+      ['a PNG', 'png'],
+      ['an SVG', 'svg']
+    ] as const)(
+      'should refuse bytes that claim to be %s and are not with UnreadableFileError',
+      async (_, contentType) => {
+        await expect(
+          decoder.decode(await aFixture('not-a-png.png'), contentType)
+        ).rejects.toThrow(UnreadableFileError);
       }
     );
   });
