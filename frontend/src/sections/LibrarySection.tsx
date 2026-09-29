@@ -4,6 +4,7 @@ import {type JSX, useState} from 'react';
 import {RefusalAlert} from '@/components/RefusalAlert';
 import {textsOfErrorItems} from '@/errors/textsOfErrorItems';
 import {textsOfFailure} from '@/errors/textsOfFailure';
+import {DeleteResourceDialog} from '@/library/DeleteResourceDialog';
 import {DropZone} from '@/library/DropZone';
 import {ResourceList} from '@/library/ResourceList';
 import {useResources} from '@/resources/ResourcesContext';
@@ -12,6 +13,8 @@ export const LibrarySection = (): JSX.Element => {
   const resources = useResources();
   const [refusal, setRefusal] = useState<string[]>([]);
   const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(new Set());
+  const [toDelete, setToDelete] = useState<ResourceRow>();
+  const deleting = toDelete !== undefined && busyIds.has(toDelete.id);
 
   // It stays until a reload, because until then the Library does not hold the whole list.
   const refusalOfTheList =
@@ -24,21 +27,23 @@ export const LibrarySection = (): JSX.Element => {
     resources.create(file).catch(refuse);
   };
 
-  const retry = (row: ResourceRow): void => {
+  const whileBusy = (row: ResourceRow, action: Promise<void>): Promise<void> => {
     setRefusal([]);
     setBusyIds(busy => new Set(busy).add(row.id));
 
-    resources
-      .retry(row)
+    return action
       .catch(refuse)
       .finally(() =>
         setBusyIds(busy => new Set([...busy].filter(busyId => busyId !== row.id)))
       );
   };
 
+  const retry = (row: ResourceRow): void => {
+    whileBusy(row, resources.retry(row));
+  };
+
   const remove = (row: ResourceRow): void => {
-    setRefusal([]);
-    resources.delete(row).catch(refuse);
+    whileBusy(row, resources.delete(row)).finally(() => setToDelete(undefined));
   };
 
   return (
@@ -55,7 +60,13 @@ export const LibrarySection = (): JSX.Element => {
         rows={resources.rows}
         busyIds={busyIds}
         onRetry={retry}
-        onDelete={remove}
+        onDelete={setToDelete}
+      />
+      <DeleteResourceDialog
+        row={toDelete}
+        deleting={deleting}
+        onConfirm={remove}
+        onCancel={(): void => setToDelete(undefined)}
       />
     </section>
   );

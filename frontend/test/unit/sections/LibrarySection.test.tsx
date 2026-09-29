@@ -258,15 +258,114 @@ describe('LibrarySection', () => {
       resources.list.mockResolvedValue([rowNamed('notes.md'), rowNamed('manual.pdf')]);
     });
 
-    it('should take the row out of the list when the owner deletes it', async () => {
-      resources.deleteTextResource.mockResolvedValue();
+    it('should ask in a dialog, and remove nothing before the owner confirms', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
+
+      expect(await screen.findByRole('alertdialog')).toBeDefined();
+      expect(resources.deleteTextResource).not.toHaveBeenCalled();
+      expect(screen.getByText('notes.md')).toBeDefined();
+    });
+
+    it('should name the Resource, and say that the delete cannot be undone', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
+
+      const dialog = await screen.findByRole('alertdialog', {name: 'Delete notes.md?'});
+
+      expect(
+        within(dialog).getByText(
+          'This removes the Resource, its File and everything the Ingest made from it. You cannot undo this.'
+        )
+      ).toBeDefined();
+    });
+
+    it('should give the focus to Cancel, and close on Cancel without a call to the gateway', async () => {
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
+
+      const cancel = within(await screen.findByRole('alertdialog')).getByRole('button', {
+        name: 'Cancel'
+      });
+
+      expect(document.activeElement).toBe(cancel);
+
+      await userEvent.click(cancel);
+
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+      expect(resources.deleteTextResource).not.toHaveBeenCalled();
+      expect(resources.deleteImageResource).not.toHaveBeenCalled();
+      expect(screen.getByText('notes.md')).toBeDefined();
+    });
+
+    it('should give the Delete of the dialog the destructive variant, and disable it while the gateway answers', async () => {
+      let answer: () => void = () => {};
+      resources.deleteTextResource.mockReturnValue(
+        new Promise(resolve => {
+          answer = resolve;
+        })
+      );
 
       renderWithGateways(<LibrarySection />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
 
+      const confirm = within(await screen.findByRole('alertdialog')).getByRole('button', {
+        name: 'Delete'
+      });
+
+      expect(confirm.getAttribute('data-variant')).toBe('destructive');
+
+      await userEvent.click(confirm);
+      await userEvent.click(confirm);
+
+      expect(confirm.hasAttribute('disabled')).toBe(true);
+      expect(screen.getByRole('alertdialog')).toBeDefined();
+      expect(resources.deleteTextResource).toHaveBeenCalledTimes(1);
+
+      answer();
+
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    });
+
+    it('should keep the dialog open and the row busy until the gateway answers', async () => {
+      let answer: () => void = () => {};
+      resources.deleteTextResource.mockReturnValue(
+        new Promise(resolve => {
+          answer = resolve;
+        })
+      );
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await deleteAndConfirm('notes.md');
+      await userEvent.keyboard('{Escape}');
+
+      expect(screen.getByRole('alertdialog', {name: 'Delete notes.md?'})).toBeDefined();
+      expect(
+        screen
+          .getByRole('row', {name: /notes\.md/, hidden: true})
+          .getAttribute('aria-busy')
+      ).toBe('true');
+
+      answer();
+
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    });
+
+    it('should take the row out of the list and close the dialog when the owner confirms', async () => {
+      resources.deleteTextResource.mockResolvedValue();
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await deleteAndConfirm('notes.md');
+
       expect(resources.deleteTextResource).toHaveBeenCalledWith('notes.md');
       await waitFor(() => expect(screen.queryByText('notes.md')).toBeNull());
+      expect(screen.queryByRole('alertdialog')).toBeNull();
       expect(screen.getByText('manual.pdf')).toBeDefined();
     });
 
@@ -279,9 +378,7 @@ describe('LibrarySection', () => {
 
       renderWithGateways(<LibrarySection />, {resources});
 
-      await userEvent.click(
-        await screen.findByRole('button', {name: 'Delete the beach.png'})
-      );
+      await deleteAndConfirm('the beach.png');
 
       expect(resources.deleteImageResource).toHaveBeenCalledWith('the beach.png');
       expect(resources.deleteTextResource).not.toHaveBeenCalled();
@@ -298,29 +395,80 @@ describe('LibrarySection', () => {
 
       renderWithGateways(<LibrarySection />, {resources});
 
-      const remove = await screen.findByRole('button', {name: 'Delete notes.md'});
-      await userEvent.click(remove);
+      await deleteAndConfirm('notes.md');
       await screen.findByRole('alert');
-      await userEvent.click(remove);
+      await deleteAndConfirm('notes.md');
 
       await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
     });
 
-    it('should keep the row and show the text of a Refusal', async () => {
+    it('should close the dialog, keep the row and show the text of a Refusal', async () => {
       resources.deleteTextResource.mockRejectedValue(
         new Refusal([{code: 'resource_not_found', params: {resourceId: 'notes.md'}}])
       );
 
       renderWithGateways(<LibrarySection />, {resources});
 
-      await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
+      await deleteAndConfirm('notes.md');
 
       expect(
-        await screen.findByText(
+        within(await screen.findByRole('alert')).getByText(
           'The library no longer holds this Resource. Reload the page.'
         )
       ).toBeDefined();
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
       expect(screen.getByText('notes.md')).toBeDefined();
+    });
+
+    it('should let the owner confirm a Delete while a Retry of another row runs', async () => {
+      resources.list.mockResolvedValue([
+        {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'},
+        rowNamed('notes.md')
+      ]);
+      resources.retryTextResource.mockReturnValue(new Promise(() => {}));
+      resources.deleteTextResource.mockResolvedValue();
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
+      await userEvent.click(screen.getByRole('button', {name: 'Delete notes.md'}));
+
+      const confirm = within(await screen.findByRole('alertdialog')).getByRole('button', {
+        name: 'Delete'
+      });
+
+      expect(confirm.hasAttribute('disabled')).toBe(false);
+
+      await userEvent.click(confirm);
+
+      expect(resources.deleteTextResource).toHaveBeenCalledWith('notes.md');
+      await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    });
+
+    it('should keep the name in the title while the dialog fades out', async () => {
+      const fadeOut = theDialogFadesOut();
+
+      try {
+        renderWithGateways(<LibrarySection />, {resources});
+
+        await userEvent.click(
+          await screen.findByRole('button', {name: 'Delete notes.md'})
+        );
+        await userEvent.click(
+          within(await screen.findByRole('alertdialog')).getByRole('button', {
+            name: 'Cancel'
+          })
+        );
+
+        const closing = screen.getByRole('alertdialog', {hidden: true});
+
+        expect(closing.getAttribute('data-state')).toBe('closed');
+        expect(within(closing).getByRole('heading', {hidden: true}).textContent).toBe(
+          'Delete notes.md?'
+        );
+      } finally {
+        fadeOut.mockRestore();
+      }
     });
   });
 
@@ -425,6 +573,17 @@ describe('LibrarySection', () => {
           screen.getByRole('button', {name: 'Delete scan.pdf'}).hasAttribute('disabled')
         ).toBe(false)
       );
+    });
+
+    it('should ask nothing before a Retry', async () => {
+      resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
+
+      expect(screen.queryByRole('alertdialog')).toBeNull();
+      expect(resources.retryTextResource).toHaveBeenCalledWith('scan.pdf');
     });
 
     it('should remove the text of an earlier Refusal when a Retry succeeds', async () => {
@@ -663,6 +822,33 @@ describe('LibrarySection', () => {
 
 const theDropZone = (): HTMLInputElement =>
   screen.getByLabelText<HTMLInputElement>('Drop a file here, or pick one.');
+
+const deleteAndConfirm = async (name: string): Promise<void> => {
+  await userEvent.click(await screen.findByRole('button', {name: `Delete ${name}`}));
+  await userEvent.click(
+    within(await screen.findByRole('alertdialog')).getByRole('button', {name: 'Delete'})
+  );
+};
+
+// jsdom applies no CSS, so it gives the animation that the classes of shadcn start on close.
+const theDialogFadesOut = (): ReturnType<typeof vi.spyOn> => {
+  const computedStyle = window.getComputedStyle;
+
+  return vi
+    .spyOn(window, 'getComputedStyle')
+    .mockImplementation((element, pseudoElement) =>
+      element.getAttribute('data-slot') === 'alert-dialog-content'
+        ? ({
+            display: 'grid',
+            get animationName(): string {
+              return element.getAttribute('data-state') === 'closed'
+                ? 'fade-out'
+                : 'fade-in';
+            }
+          } as CSSStyleDeclaration)
+        : computedStyle(element, pseudoElement)
+    );
+};
 
 const dropOnTheDropZone = (...files: File[]): void => {
   fireEvent.drop(theDropZone(), {dataTransfer: {files}});

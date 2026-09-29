@@ -58,6 +58,9 @@ describe('App', () => {
     await userEvent.click(
       await within(theLibrary()).findByRole('button', {name: 'Delete notes.md'})
     );
+    await userEvent.click(
+      within(await screen.findByRole('alertdialog')).getByRole('button', {name: 'Delete'})
+    );
 
     await waitFor(() =>
       expect(within(theLibrary()).queryByRole('link', {name: 'notes.md'})).toBeNull()
