@@ -1,3 +1,4 @@
+import {IMAGE_CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ErrorItem} from 'contract/ErrorItem';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {type JSX, useEffect, useState} from 'react';
@@ -5,6 +6,7 @@ import {useResourceGateway} from '@/config/GatewaysContext';
 import {textsOfErrorItems} from '@/errors/textsOfErrorItems';
 import {textsOfFailure} from '@/errors/textsOfFailure';
 import {DropZone} from '@/library/DropZone';
+import {extensionOf} from '@/library/extensionOf';
 import {ResourceList} from '@/library/ResourceList';
 
 export const LibrarySection = (): JSX.Element => {
@@ -23,8 +25,11 @@ export const LibrarySection = (): JSX.Element => {
   const create = (file: File): void => {
     setRefusal([]);
 
-    resources
-      .createTextResource(file)
+    const created = IMAGE_CONTENT_TYPE_BY_EXTENSION.has(extensionOf(file.name))
+      ? resources.createImageResource(file)
+      : resources.createTextResource(file);
+
+    created
       .then(row => setRows(listed => [row, ...listed]))
       .catch((failure: unknown) => setRefusal(textsOfFailure(failure)));
   };

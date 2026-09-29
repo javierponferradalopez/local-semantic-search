@@ -28,6 +28,19 @@ describe('LibrarySection', () => {
     expect(screen.getByText('manual.pdf')).toBeDefined();
   });
 
+  it('should tell an image from a text by its Content type', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockResolvedValue([
+      {...rowNamed('the beach.png'), contentType: 'png'},
+      rowNamed('notes.md')
+    ]);
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    expect(await screen.findByRole('cell', {name: 'png'})).toBeDefined();
+    expect(screen.getByRole('cell', {name: 'markdown'})).toBeDefined();
+  });
+
   it('should make the name a link that opens the fileUrl, as it is, in a new tab', async () => {
     const resources = mock<ResourceGateway>();
     const fileUrl = 'https://store.example/resources/an%20id/notes.md?signature=a';
@@ -255,10 +268,58 @@ describe('LibrarySection', () => {
     it('should say what the drop zone takes, from the table of contract/', () => {
       renderWithGateways(<LibrarySection />, {resources});
 
-      expect(screen.getByText('It takes .pdf, .txt or .md, up to 50 MB.')).toBeDefined();
-      expect(theDropZone().getAttribute('accept')).toBe('.pdf,.txt,.md');
+      expect(
+        screen.getByText(
+          'It takes .pdf, .txt, .md, .jpg, .jpeg, .png, .webp, .gif, .avif or .svg, up to 50 MB.'
+        )
+      ).toBeDefined();
+      expect(theDropZone().getAttribute('accept')).toBe(
+        '.pdf,.txt,.md,.jpg,.jpeg,.png,.webp,.gif,.avif,.svg'
+      );
       expect(theDropZone().hasAttribute('multiple')).toBe(false);
     });
+
+    it.each(['the beach.png', 'THE BEACH.JPG', 'the diagram.svg'])(
+      'should send the image %j to the route of the images',
+      async name => {
+        resources.createImageResource.mockResolvedValue(rowNamed(name));
+
+        renderWithGateways(<LibrarySection />, {resources});
+
+        await userEvent.upload(theDropZone(), aFile(name));
+
+        expect(await screen.findByText(name)).toBeDefined();
+        expect(resources.createImageResource).toHaveBeenCalledTimes(1);
+        expect(resources.createTextResource).not.toHaveBeenCalled();
+      }
+    );
+
+    it.each(['notes.md', 'manual.pdf', 'NOTES.TXT'])(
+      'should send the text %j to the route of the texts',
+      async name => {
+        renderWithGateways(<LibrarySection />, {resources});
+
+        await userEvent.upload(theDropZone(), aFile(name));
+
+        await waitFor(() =>
+          expect(resources.createTextResource).toHaveBeenCalledTimes(1)
+        );
+        expect(resources.createImageResource).not.toHaveBeenCalled();
+      }
+    );
+
+    it.each(['the scan.tiff', 'the photo.heic'])(
+      'should refuse %j, which the table does not hold, before the bytes travel',
+      async name => {
+        renderWithGateways(<LibrarySection />, {resources});
+
+        dropOnTheDropZone(aFile(name));
+
+        expect(await screen.findByRole('alert')).toBeDefined();
+        expect(resources.createImageResource).not.toHaveBeenCalled();
+        expect(resources.createTextResource).not.toHaveBeenCalled();
+      }
+    );
 
     it('should refuse a drop that names no Content type, before the bytes travel', async () => {
       renderWithGateways(<LibrarySection />, {resources});

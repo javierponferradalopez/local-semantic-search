@@ -1,3 +1,5 @@
+import {CreateImageResourceRequest} from 'contract/CreateImageResourceRequest';
+import type {CreateImageResourceResponse} from 'contract/CreateImageResourceResponse';
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {CreateTextResourceResponse} from 'contract/CreateTextResourceResponse';
 import type {GetResourcesResponse} from 'contract/GetResourcesResponse';
@@ -17,6 +19,17 @@ export class HttpResourceGateway implements ResourceGateway {
     body.append(CreateTextResourceRequest.filePart, file);
 
     return fetchJson<CreateTextResourceResponse>('/resources/texts', {
+      method: 'POST',
+      body
+    });
+  }
+
+  public createImageResource(file: File): Promise<CreateImageResourceResponse> {
+    const body = new FormData();
+
+    body.append(CreateImageResourceRequest.filePart, file);
+
+    return fetchJson<CreateImageResourceResponse>('/resources/images', {
       method: 'POST',
       body
     });

@@ -1,12 +1,7 @@
 import {CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ErrorItem} from 'contract/ErrorItem';
 import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
-
-const extensionOf = (name: string): string => {
-  const dot = name.lastIndexOf('.');
-
-  return dot > 0 ? name.slice(dot).toLowerCase() : '';
-};
+import {extensionOf} from '@/library/extensionOf';
 
 export const refusalOfFiles = ([file, ...others]: File[]): ErrorItem | undefined => {
   if (others.length > 0) {
