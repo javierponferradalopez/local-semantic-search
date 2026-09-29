@@ -4,6 +4,7 @@ import {App} from '@/App';
 import {GatewaysProvider} from '@/config/GatewaysContext';
 import {HttpResourceGateway} from '@/gateways/http/HttpResourceGateway';
 import {HttpSearchGateway} from '@/gateways/http/HttpSearchGateway';
+import {ResourcesProvider} from '@/resources/ResourcesContext';
 import '@/index.css';
 
 const root = document.getElementById('root');
@@ -17,7 +18,9 @@ createRoot(root).render(
     <GatewaysProvider
       gateways={{resources: new HttpResourceGateway(), search: new HttpSearchGateway()}}
     >
-      <App />
+      <ResourcesProvider>
+        <App />
+      </ResourcesProvider>
     </GatewaysProvider>
   </StrictMode>
 );

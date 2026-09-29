@@ -73,6 +73,84 @@ describe('LibrarySection', () => {
     }
   );
 
+  it('should show the refusal when the gateway refuses the list', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockRejectedValue(
+      new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+    );
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    expect(
+      within(await screen.findByRole('alert')).getByText(
+        'The server refused the value of "q".'
+      )
+    ).toBeDefined();
+  });
+
+  it('should keep the refusal of the list when a later action of the owner is refused', async () => {
+    const resources = mock<ResourceGateway>();
+    resources.list.mockRejectedValue(
+      new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+    );
+    resources.createTextResource.mockRejectedValue(
+      new Refusal([
+        {
+          code: 'duplicate_resource',
+          params: {resourceId: 'an-id', name: 'notes.md', ingestState: 'ready'}
+        }
+      ])
+    );
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    await screen.findByRole('alert');
+    await userEvent.upload(theDropZone(), aFile('notes.md'));
+
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole('alert'))
+          .getAllByRole('listitem')
+          .map(item => item.textContent)
+      ).toEqual([
+        'The server refused the value of "q".',
+        'These bytes are already in the library as "notes.md", which is Ready.'
+      ])
+    );
+  });
+
+  it('should keep a Resource that the owner creates before the list arrives', async () => {
+    const resources = mock<ResourceGateway>();
+    let giveTheList: (rows: ResourceRow[]) => void = () => undefined;
+    resources.list.mockReturnValue(new Promise(resolve => (giveTheList = resolve)));
+    resources.createTextResource.mockResolvedValue(rowNamed('new.md'));
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    await userEvent.upload(theDropZone(), aFile('new.md'));
+    await screen.findByText('new.md');
+    giveTheList([rowNamed('old.md')]);
+
+    expect(await screen.findByText('old.md')).toBeDefined();
+    expect(screen.getByText('new.md')).toBeDefined();
+  });
+
+  it('should show once a Resource that the owner creates before the list arrives, when the list holds it', async () => {
+    const resources = mock<ResourceGateway>();
+    let giveTheList: (rows: ResourceRow[]) => void = () => undefined;
+    resources.list.mockReturnValue(new Promise(resolve => (giveTheList = resolve)));
+    resources.createTextResource.mockResolvedValue(rowNamed('new.md'));
+
+    renderWithGateways(<LibrarySection />, {resources});
+
+    await userEvent.upload(theDropZone(), aFile('new.md'));
+    await screen.findByText('new.md');
+    giveTheList([rowNamed('new.md'), rowNamed('old.md')]);
+
+    expect(await screen.findByText('old.md')).toBeDefined();
+    expect(screen.getAllByText('new.md')).toHaveLength(1);
+  });
+
   it('should show the text of a Refusal, and never the failure itself', async () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([]);
@@ -133,6 +211,23 @@ describe('LibrarySection', () => {
       expect(resources.deleteTextResource).not.toHaveBeenCalled();
       await waitFor(() => expect(screen.queryByText('the beach.png')).toBeNull());
       expect(screen.getByText('notes.md')).toBeDefined();
+    });
+
+    it('should remove the text of an earlier Refusal when a Delete succeeds', async () => {
+      resources.deleteTextResource
+        .mockRejectedValueOnce(
+          new Refusal([{code: 'resource_not_found', params: {resourceId: 'notes.md'}}])
+        )
+        .mockResolvedValueOnce();
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const remove = await screen.findByRole('button', {name: 'Delete notes.md'});
+      await userEvent.click(remove);
+      await screen.findByRole('alert');
+      await userEvent.click(remove);
+
+      await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
     });
 
     it('should keep the row and show the text of a Refusal', async () => {

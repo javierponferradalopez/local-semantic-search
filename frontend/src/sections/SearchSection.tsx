@@ -1,16 +1,9 @@
-import type {ResourceRow} from 'contract/ResourceRow';
 import type {SearchResponse} from 'contract/SearchResponse';
-import {
-  type ChangeEvent,
-  type FormEvent,
-  type JSX,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import {type ChangeEvent, type FormEvent, type JSX, useRef, useState} from 'react';
 import {RefusalAlert} from '@/components/RefusalAlert';
-import {useResourceGateway, useSearchGateway} from '@/config/GatewaysContext';
+import {useSearchGateway} from '@/config/GatewaysContext';
 import {textsOfFailure} from '@/errors/textsOfFailure';
+import {useResources} from '@/resources/ResourcesContext';
 import {ImageResultGrid} from '@/search/ImageResultGrid';
 import {RecentResourceList} from '@/search/RecentResourceList';
 import {TextResultList} from '@/search/TextResultList';
@@ -19,32 +12,13 @@ const RECENT_RESOURCES = 5;
 
 export const SearchSection = (): JSX.Element => {
   const gateway = useSearchGateway();
-  const resources = useResourceGateway();
+  const {rows} = useResources();
   const [query, setQuery] = useState('');
-  const [recent, setRecent] = useState<ResourceRow[]>([]);
   // The Query that gave the Results, which the box no longer holds once the owner types.
   const [searched, setSearched] = useState<{query: string; response: SearchResponse}>();
   const [refusal, setRefusal] = useState<string[]>([]);
   const latestSearch = useRef(0);
   const boxIsEmpty = query.trim().length === 0;
-
-  // Asked again each time the box is emptied, so a Resource created in the library shows.
-  useEffect(() => {
-    if (!boxIsEmpty) {
-      return;
-    }
-
-    let current = true;
-
-    resources
-      .list()
-      .then(rows => current && setRecent(rows.slice(0, RECENT_RESOURCES)))
-      .catch((failure: unknown) => current && setRefusal(textsOfFailure(failure)));
-
-    return (): void => {
-      current = false;
-    };
-  }, [resources, boxIsEmpty]);
 
   const search = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -91,7 +65,7 @@ export const SearchSection = (): JSX.Element => {
         </form>
       </search>
       <RefusalAlert texts={refusal} />
-      {boxIsEmpty && <RecentResourceList rows={recent} />}
+      {boxIsEmpty && <RecentResourceList rows={rows.slice(0, RECENT_RESOURCES)} />}
       {!boxIsEmpty && searched !== undefined && <Groups {...searched} />}
     </section>
   );

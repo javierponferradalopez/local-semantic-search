@@ -619,20 +619,18 @@ describe('SearchSection', () => {
       expect(await recentNames()).toEqual(['notes.md']);
     });
 
-    it('should ask the gateway again when the owner empties the box', async () => {
-      resources.list
-        .mockResolvedValueOnce([aResourceRow('old.md')])
-        .mockResolvedValueOnce([aResourceRow('new.md'), aResourceRow('old.md')]);
+    it('should not ask the gateway again when the owner empties the box', async () => {
+      resources.list.mockResolvedValue([aResourceRow('notes.md')]);
 
       renderWithGateways(<SearchSection />, {search, resources});
 
-      await screen.findByRole('link', {name: 'old.md'});
+      await screen.findByRole('link', {name: 'notes.md'});
       const box = screen.getByRole('searchbox', {name: 'Search'});
       await userEvent.type(box, 'a');
       await userEvent.clear(box);
 
-      expect(await screen.findByRole('link', {name: 'new.md'})).toBeDefined();
-      expect(resources.list).toHaveBeenCalledTimes(2);
+      expect(await recentNames()).toEqual(['notes.md']);
+      expect(resources.list).toHaveBeenCalledOnce();
     });
 
     it('should not ask the gateway again while the owner types a Query', async () => {
@@ -641,55 +639,6 @@ describe('SearchSection', () => {
       await userEvent.type(screen.getByRole('searchbox', {name: 'Search'}), 'the trip');
 
       expect(resources.list).toHaveBeenCalledOnce();
-    });
-
-    it('should keep the newest answer when an older one comes after it', async () => {
-      let giveTheOldAnswer: (rows: ResourceRow[]) => void = () => undefined;
-      resources.list
-        .mockReturnValueOnce(new Promise(resolve => (giveTheOldAnswer = resolve)))
-        .mockResolvedValueOnce([aResourceRow('new.md')]);
-
-      renderWithGateways(<SearchSection />, {search, resources});
-
-      const box = screen.getByRole('searchbox', {name: 'Search'});
-      await userEvent.type(box, 'a');
-      await userEvent.clear(box);
-      await screen.findByRole('link', {name: 'new.md'});
-      giveTheOldAnswer([aResourceRow('old.md')]);
-
-      await vi.waitFor(() =>
-        expect(screen.queryByRole('link', {name: 'old.md'})).toBeNull()
-      );
-      expect(await recentNames()).toEqual(['new.md']);
-    });
-
-    it('should show the refusal when the gateway refuses the list', async () => {
-      resources.list.mockRejectedValue(
-        new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
-      );
-
-      renderWithGateways(<SearchSection />, {search, resources});
-
-      expect(
-        within(await screen.findByRole('alert')).getByText(
-          'The server refused the value of "q".'
-        )
-      ).toBeDefined();
-    });
-
-    it('should show no refusal when a refusal of an older list comes after the box holds a Query', async () => {
-      let refuseTheList: (failure: unknown) => void = () => undefined;
-      resources.list.mockReturnValueOnce(
-        new Promise((_resolve, reject) => (refuseTheList = reject))
-      );
-
-      renderWithGateways(<SearchSection />, {search, resources});
-
-      await userEvent.type(screen.getByRole('searchbox', {name: 'Search'}), 'the trip');
-      refuseTheList(new Refusal([{code: 'invalid_input', params: {path: 'q'}}]));
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(screen.queryByRole('alert')).toBeNull();
     });
   });
 });

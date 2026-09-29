@@ -3,6 +3,7 @@ import type {ReactNode} from 'react';
 import {type Gateways, GatewaysProvider} from '@/config/GatewaysContext';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
 import type {SearchGateway} from '@/gateways/SearchGateway';
+import {ResourcesProvider} from '@/resources/ResourcesContext';
 import {mock} from './mock';
 
 export const renderWithGateways = (
@@ -17,6 +18,6 @@ export const renderWithGateways = (
         ...gateways
       }}
     >
-      {ui}
+      <ResourcesProvider>{ui}</ResourcesProvider>
     </GatewaysProvider>
   );
