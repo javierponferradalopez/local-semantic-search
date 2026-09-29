@@ -31,7 +31,7 @@ describe('CreateTextResource', () => {
     transactionRunner = mock<TransactionRunner>();
     contentTypeResolver = mock<ContentTypeResolver>();
 
-    resourceRepository.findByChecksum.mockResolvedValue(undefined);
+    resourceRepository.findTextResourceByChecksum.mockResolvedValue(undefined);
     resourceRepository.create.mockImplementation(async () => {
       steps.push('create');
     });
@@ -110,7 +110,7 @@ describe('CreateTextResource', () => {
     });
 
     it('should refuse the same bytes, and write nothing and copy nothing', async () => {
-      resourceRepository.findByChecksum.mockResolvedValue(
+      resourceRepository.findTextResourceByChecksum.mockResolvedValue(
         TextResourceBuilder.aTextResource().build()
       );
 
@@ -126,7 +126,7 @@ describe('CreateTextResource', () => {
         .withIngestState('failed')
         .withReason('ingest_error')
         .build();
-      resourceRepository.findByChecksum.mockResolvedValue(stored);
+      resourceRepository.findTextResourceByChecksum.mockResolvedValue(stored);
 
       const error = await createTextResource
         .run({name: 'the notes.md', bytes: someBytes()})
@@ -164,7 +164,7 @@ describe('CreateTextResource', () => {
       await createTextResource.run({name: 'the notes.md', bytes});
       await createTextResource.run({name: 'a copy.md', bytes});
 
-      const [first, second] = resourceRepository.findByChecksum.mock.calls;
+      const [first, second] = resourceRepository.findTextResourceByChecksum.mock.calls;
 
       expect(first?.[0].value).toBe(second?.[0].value);
     });

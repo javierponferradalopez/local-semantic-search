@@ -1,5 +1,6 @@
 import type {IngestState} from 'contract/IngestState';
 import {DomainError} from '../../../shared/domain/errors/DomainError';
+import type {ImageResource} from '../ImageResource';
 import type {TextResource} from '../TextResource';
 
 export type DuplicateResource = {
@@ -17,9 +18,9 @@ export class DuplicateResourceError extends DomainError {
   }
 
   public static causeTheBytesAreAlreadyStored(
-    textResource: TextResource
+    resource: ImageResource | TextResource
   ): DuplicateResourceError {
-    const {id, name, ingestState} = textResource.toPrimitives();
+    const {id, name, ingestState} = resource.toPrimitives();
 
     return new DuplicateResourceError({resourceId: id, name, ingestState});
   }

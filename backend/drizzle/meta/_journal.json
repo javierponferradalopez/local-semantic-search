@@ -15,6 +15,13 @@
       "when": 1790267621002,
       "tag": "0001_the_chunks_and_vectors_384_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790667081422,
+      "tag": "0002_the_image_resources_table",
+      "breakpoints": true
     }
   ]
 }

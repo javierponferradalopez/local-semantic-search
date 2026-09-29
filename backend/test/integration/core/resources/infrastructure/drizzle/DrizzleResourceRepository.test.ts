@@ -1,10 +1,14 @@
 import {drizzle} from 'drizzle-orm/node-postgres';
+import {ImageResource} from '../../../../../../src/core/resources/domain/ImageResource';
+import {TextResource} from '../../../../../../src/core/resources/domain/TextResource';
 import {Checksum} from '../../../../../../src/core/resources/domain/value-objects/Checksum';
 import {ResourceId} from '../../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {DrizzleResourceRepository} from '../../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {DrizzleConnection} from '../../../../../../src/core/shared/infrastructure/drizzle/DrizzleConnection';
 import {testDatabase, wipeTheData} from '../../../../../lib/testInfrastructure';
+import {ImageResourceBuilder} from '../../../../../utils/builders/image-resource/ImageResourceBuilder';
 import {TextResourceBuilder} from '../../../../../utils/builders/text-resource/TextResourceBuilder';
+import {StringMother} from '../../../../../utils/object-mother/StringMother';
 
 describe('DrizzleResourceRepository', () => {
   let connection: DrizzleConnection;
@@ -61,6 +65,59 @@ describe('DrizzleResourceRepository', () => {
         'ingesting'
       );
     });
+
+    it('should give back an ImageResource through #find', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource()
+        .withIngestState('failed')
+        .withReason('image_too_large')
+        .build();
+
+      await repository.create(imageResource);
+
+      const stored = await repository.find(imageResource.id);
+
+      expect(stored).toBeInstanceOf(ImageResource);
+      expect(stored?.toPrimitives()).toStrictEqual(imageResource.toPrimitives());
+    });
+
+    it('should keep no Reason key on an ImageResource that has none', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+
+      await repository.create(imageResource);
+
+      expect(
+        (await repository.find(imageResource.id))?.toPrimitives()
+      ).not.toHaveProperty('reason');
+    });
+
+    it('should fail for the bytes that an ImageResource already holds', async () => {
+      const checksum = StringMother.randomChecksum();
+      await repository.create(
+        ImageResourceBuilder.anImageResource().withChecksum(checksum).build()
+      );
+
+      await expect(
+        repository.create(
+          ImageResourceBuilder.anImageResource().withChecksum(checksum).build()
+        )
+      ).rejects.toThrow();
+    });
+
+    it('should keep the same bytes as a TextResource and as an ImageResource', async () => {
+      const checksum = StringMother.randomChecksum();
+      const textResource = TextResourceBuilder.aTextResource()
+        .withChecksum(checksum)
+        .build();
+      const imageResource = ImageResourceBuilder.anImageResource()
+        .withChecksum(checksum)
+        .build();
+
+      await repository.create(textResource);
+      await repository.create(imageResource);
+
+      expect(await repository.find(textResource.id)).toBeInstanceOf(TextResource);
+      expect(await repository.find(imageResource.id)).toBeInstanceOf(ImageResource);
+    });
   });
 
   describe('#update', () => {
@@ -94,8 +151,8 @@ describe('DrizzleResourceRepository', () => {
     });
   });
 
-  describe('#findByChecksum', () => {
-    it('should give the Resource that holds those bytes', async () => {
+  describe('#findTextResourceByChecksum', () => {
+    it('should give the TextResource that holds those bytes', async () => {
       const textResource = TextResourceBuilder.aTextResource().build();
       await repository.create(textResource);
 
@@ -103,7 +160,7 @@ describe('DrizzleResourceRepository', () => {
         value: textResource.toPrimitives().checksum
       });
 
-      expect((await repository.findByChecksum(checksum))?.id.value).toBe(
+      expect((await repository.findTextResourceByChecksum(checksum))?.id.value).toBe(
         textResource.id.value
       );
     });
@@ -111,7 +168,44 @@ describe('DrizzleResourceRepository', () => {
     it('should give nothing for bytes that no Resource holds', async () => {
       const checksum = Checksum.ofBytes({bytes: Buffer.from('nothing holds these')});
 
-      expect(await repository.findByChecksum(checksum)).toBeUndefined();
+      expect(await repository.findTextResourceByChecksum(checksum)).toBeUndefined();
+    });
+
+    it('should give nothing for bytes that only an ImageResource holds', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      await repository.create(imageResource);
+
+      const checksum = Checksum.fromPrimitive({
+        value: imageResource.toPrimitives().checksum
+      });
+
+      expect(await repository.findTextResourceByChecksum(checksum)).toBeUndefined();
+    });
+  });
+
+  describe('#findImageResourceByChecksum', () => {
+    it('should give the ImageResource that holds those bytes', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      await repository.create(imageResource);
+
+      const checksum = Checksum.fromPrimitive({
+        value: imageResource.toPrimitives().checksum
+      });
+      const stored = await repository.findImageResourceByChecksum(checksum);
+
+      expect(stored).toBeInstanceOf(ImageResource);
+      expect(stored?.id.value).toBe(imageResource.id.value);
+    });
+
+    it('should give nothing for bytes that only a TextResource holds', async () => {
+      const textResource = TextResourceBuilder.aTextResource().build();
+      await repository.create(textResource);
+
+      const checksum = Checksum.fromPrimitive({
+        value: textResource.toPrimitives().checksum
+      });
+
+      expect(await repository.findImageResourceByChecksum(checksum)).toBeUndefined();
     });
   });
 

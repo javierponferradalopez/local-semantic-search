@@ -53,7 +53,7 @@ export class CreateTextResource {
 
   private async land({name, bytes}: RunParams): Promise<TextResource> {
     const checksum = Checksum.ofBytes({bytes});
-    const stored = await this.resourceRepository.findByChecksum(checksum);
+    const stored = await this.resourceRepository.findTextResourceByChecksum(checksum);
 
     if (stored !== undefined) {
       throw DuplicateResourceError.causeTheBytesAreAlreadyStored(stored);
