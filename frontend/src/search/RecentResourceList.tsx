@@ -12,7 +12,9 @@ export const RecentResourceList = ({rows}: Props): JSX.Element | null => {
 
   return (
     <section aria-labelledby="recent-resources-heading">
-      <h3 id="recent-resources-heading">Recently created</h3>
+      <h3 id="recent-resources-heading" className="mt-6 mb-2 text-lg font-semibold">
+        Recently created
+      </h3>
       <ul className="recent-resources">
         {rows.map(row => (
           <li key={row.id} className="recent-resource">

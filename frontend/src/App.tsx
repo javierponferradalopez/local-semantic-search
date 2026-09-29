@@ -5,7 +5,7 @@ import {SearchSection} from '@/sections/SearchSection';
 
 export const App = (): JSX.Element => (
   <main>
-    <h1>{APP_NAME}</h1>
+    <h1 className="mb-6 text-3xl font-bold">{APP_NAME}</h1>
     <LibrarySection />
     <SearchSection />
   </main>
