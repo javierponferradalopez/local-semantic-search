@@ -10,6 +10,7 @@ import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/D
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
+import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
@@ -18,7 +19,10 @@ import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
 
 export const registerInfrastructureDependencies = async (): Promise<void> => {
-  const textEmbedder = await TransformersTextEmbedder.load();
+  const [textEmbedder, imageEmbedder] = await Promise.all([
+    TransformersTextEmbedder.load(),
+    TransformersImageEmbedder.load()
+  ]);
   const pool = new Pool({connectionString: env.database.url});
   const connection = new DrizzleConnection({database: drizzle(pool)});
 
@@ -42,6 +46,7 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     new ExtensionContentTypeResolver()
   );
   container.registerImplementation(TransformersTextEmbedder, textEmbedder);
+  container.registerImplementation(TransformersImageEmbedder, imageEmbedder);
   container.registerImplementation(
     DrizzleChunkRepository,
     new DrizzleChunkRepository({connection})

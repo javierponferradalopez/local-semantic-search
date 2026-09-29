@@ -27,20 +27,26 @@ pnpm dev
 - `pnpm install` installs the three packages of the workspace.
 - `pnpm run bootstrap` copies `backend/.env.example` to `backend/.env`, starts
   Postgres, waits until it is healthy, applies the migrations, and gets the weights
-  of the Text model into the model store, `backend/data/models/`.
+  of the Text model and of the Vision model into the model store,
+  `backend/data/models/`.
 - `pnpm dev` starts the backend on `http://localhost:3000` and the frontend on
   `http://localhost:5173`.
 
 ## The model store
 
-`backend/data/models/` holds the weights of `intfloat/multilingual-e5-small`, in
-`fp32`. `pnpm run models:fetch` gets them, and `bootstrap` runs it. It is the only
-command that uses the network: the application never downloads.
+`backend/data/models/` holds the weights of two models, both in `fp32`:
 
-The backend loads the model before it listens. This costs about 2 s at every start,
-`tsx watch` included, and about 1.6 GB stays resident. If the model store does
-not hold the model, the backend does not start, and it tells you to run
-`pnpm run bootstrap`. If a file of the model is damaged, the backend shows the error
+- The Text model, `intfloat/multilingual-e5-small`, about 0.5 GB.
+- The Vision model, `onnx-community/siglip2-base-patch16-224-ONNX`, about 1.5 GB:
+  its text tower and its vision tower.
+
+`pnpm run models:fetch` gets them, and `bootstrap` runs it. It is the only command
+that uses the network: the application never downloads.
+
+The backend loads the two models before it listens. This costs about 2 s at every
+start, `tsx watch` included, and about 3 GB stays resident. If the model
+store does not hold a model, the backend does not start, and it tells you to run
+`pnpm run bootstrap`. If a file of a model is damaged, the backend shows the error
 of the library: delete the folder of the model and run `pnpm run models:fetch` again.
 
 ## Start clean
@@ -71,8 +77,8 @@ backend/    Express, Drizzle and Postgres. Relative imports.
 
 | Command | What it does |
 |---|---|
-| `pnpm run bootstrap` | Starts the store, applies the migrations and gets the model |
-| `pnpm run models:fetch` | Gets the weights of the model into the model store |
+| `pnpm run bootstrap` | Starts the store, applies the migrations and gets the models |
+| `pnpm run models:fetch` | Gets the weights of the models into the model store |
 | `pnpm dev` | Starts the backend and the frontend together |
 | `pnpm run lint` | Runs Biome over the whole tree |
 | `pnpm run lint:ci` | Runs Biome the way CI runs it, and writes nothing |
