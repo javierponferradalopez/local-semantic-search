@@ -9,6 +9,8 @@ type ConstructorParams = {
   thumbnailKey: FileKey;
 };
 
+const THUMBNAIL_KEY_PREFIX = 'ingestion/thumbnails';
+
 export type PicturePrimitives = {
   resourceId: string;
   thumbnailKey: string;
@@ -24,14 +26,22 @@ export class Picture extends AggregateRoot<PicturePrimitives> {
     this._thumbnailKey = params.thumbnailKey;
   }
 
-  public static create(params: ConstructorParams): Picture {
-    const picture = new Picture(params);
+  // The key comes from the Resource, so the one the Picture stores is the one a delete finds.
+  public static create({resourceId}: {resourceId: ResourceId}): Picture {
+    const picture = new Picture({
+      resourceId,
+      thumbnailKey: Picture.thumbnailKeyOf(resourceId)
+    });
 
     picture.registerEvent(
       new PictureCreatedDomainEvent({aggregateId: picture._resourceId.value})
     );
 
     return picture;
+  }
+
+  public static thumbnailKeyOf(resourceId: ResourceId): FileKey {
+    return FileKey.of({value: `${THUMBNAIL_KEY_PREFIX}/${resourceId.value}.webp`});
   }
 
   public static fromPrimitives(primitives: PicturePrimitives): Picture {

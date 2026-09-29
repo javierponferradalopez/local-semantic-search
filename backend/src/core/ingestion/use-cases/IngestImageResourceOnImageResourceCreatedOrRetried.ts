@@ -30,11 +30,6 @@ type ConstructorParams = {
   eventBus: EventBus;
 };
 
-const THUMBNAIL_KEY_PREFIX = 'ingestion/thumbnails';
-
-const thumbnailKeyOf = (resourceId: ResourceId): FileKey =>
-  FileKey.of({value: `${THUMBNAIL_KEY_PREFIX}/${resourceId.value}.webp`});
-
 export class IngestImageResourceOnImageResourceCreatedOrRetried
   implements DomainEventHandler<ImageResourceCreatedOrRetried>
 {
@@ -83,14 +78,14 @@ export class IngestImageResourceOnImageResourceCreatedOrRetried
     resourceId: ResourceId,
     event: ImageResourceCreatedOrRetried
   ): Promise<DomainEvent[]> {
-    const thumbnailKey = thumbnailKeyOf(resourceId);
+    const thumbnailKey = Picture.thumbnailKeyOf(resourceId);
 
     await this.deleteTheOutput(resourceId, thumbnailKey);
 
     const bytes = await this.fileStore.read(FileKey.of({value: event.fileKey}));
     const {pixels, thumbnail} = await this.imageDecoder.decode(bytes, event.contentType);
     const vector = await this.imageEmbedder.embedPicture(pixels);
-    const picture = Picture.create({resourceId, thumbnailKey});
+    const picture = Picture.create({resourceId});
 
     await this.fileStore.store(thumbnailKey, thumbnail);
     await this.pictureRepository.create({picture, vector});

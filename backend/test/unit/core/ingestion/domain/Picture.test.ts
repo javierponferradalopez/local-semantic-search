@@ -1,14 +1,9 @@
 import {PictureCreatedDomainEvent} from '../../../../../src/core/ingestion/domain/events/PictureCreatedDomainEvent';
 import {Picture} from '../../../../../src/core/ingestion/domain/Picture';
 import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
-import {FileKey} from '../../../../../src/core/shared/domain/value-objects/FileKey';
 import {PictureBuilder} from '../../../../utils/builders/picture/PictureBuilder';
 
-const aCreatedPicture = (resourceId: ResourceId): Picture =>
-  Picture.create({
-    resourceId,
-    thumbnailKey: FileKey.of({value: `ingestion/thumbnails/${resourceId.value}.webp`})
-  });
+const aCreatedPicture = (resourceId: ResourceId): Picture => Picture.create({resourceId});
 
 describe('Picture', () => {
   describe('.create', () => {
@@ -31,6 +26,16 @@ describe('Picture', () => {
         .filter(pulled => pulled instanceof PictureCreatedDomainEvent);
 
       expect(event?.aggregateId).toBe(resourceId.value);
+    });
+  });
+
+  describe('.thumbnailKeyOf', () => {
+    it('should give the key of the thumbnail of the Resource under a prefix of ingestion', () => {
+      const resourceId = ResourceId.random();
+
+      expect(Picture.thumbnailKeyOf(resourceId).value).toBe(
+        `ingestion/thumbnails/${resourceId.value}.webp`
+      );
     });
   });
 
