@@ -116,6 +116,25 @@ describe('LibrarySection', () => {
       expect(screen.getByText('manual.pdf')).toBeDefined();
     });
 
+    it('should send the deletion of an image to the route of the images', async () => {
+      resources.list.mockResolvedValue([
+        {...rowNamed('the beach.png'), contentType: 'png'},
+        rowNamed('notes.md')
+      ]);
+      resources.deleteImageResource.mockResolvedValue();
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(
+        await screen.findByRole('button', {name: 'Delete the beach.png'})
+      );
+
+      expect(resources.deleteImageResource).toHaveBeenCalledWith('the beach.png');
+      expect(resources.deleteTextResource).not.toHaveBeenCalled();
+      await waitFor(() => expect(screen.queryByText('the beach.png')).toBeNull());
+      expect(screen.getByText('notes.md')).toBeDefined();
+    });
+
     it('should keep the row and show the text of a Refusal', async () => {
       resources.deleteTextResource.mockRejectedValue(
         new Refusal([{code: 'resource_not_found', params: {resourceId: 'notes.md'}}])

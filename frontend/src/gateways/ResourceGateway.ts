@@ -8,5 +8,6 @@ export interface ResourceGateway {
   createTextResource(file: File): Promise<CreateTextResourceResponse>;
   createImageResource(file: File): Promise<CreateImageResourceResponse>;
   deleteTextResource(id: string): Promise<void>;
+  deleteImageResource(id: string): Promise<void>;
   retryTextResource(id: string): Promise<RetryTextResourceResponse>;
 }

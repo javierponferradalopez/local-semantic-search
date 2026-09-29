@@ -1,3 +1,4 @@
+import {IMAGE_CONTENT_TYPES} from 'contract/ContentType';
 import {IMAGE_CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ErrorItem} from 'contract/ErrorItem';
 import type {ResourceRow} from 'contract/ResourceRow';
@@ -49,11 +50,14 @@ export const LibrarySection = (): JSX.Element => {
       );
   };
 
-  const remove = ({id}: ResourceRow): void => {
+  const remove = ({id, contentType}: ResourceRow): void => {
     setRefusal([]);
 
-    resources
-      .deleteTextResource(id)
+    const deleted = IMAGE_CONTENT_TYPES.some(imageType => imageType === contentType)
+      ? resources.deleteImageResource(id)
+      : resources.deleteTextResource(id);
+
+    deleted
       .then(() => setRows(listed => listed.filter(row => row.id !== id)))
       .catch((failure: unknown) => setRefusal(textsOfFailure(failure)));
   };

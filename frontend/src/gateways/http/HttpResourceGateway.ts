@@ -39,6 +39,12 @@ export class HttpResourceGateway implements ResourceGateway {
     await fetchOrRefuse(`/resources/texts/${encodeURIComponent(id)}`, {method: 'DELETE'});
   }
 
+  public async deleteImageResource(id: string): Promise<void> {
+    await fetchOrRefuse(`/resources/images/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+  }
+
   public retryTextResource(id: string): Promise<RetryTextResourceResponse> {
     return fetchJson<RetryTextResourceResponse>(
       `/resources/texts/${encodeURIComponent(id)}/retry`,
