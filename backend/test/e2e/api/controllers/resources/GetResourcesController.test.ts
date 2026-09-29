@@ -33,6 +33,22 @@ describe('GET /resources', () => {
     ]);
   });
 
+  it('should give the images and the texts in one list, newest first', async () => {
+    await api.createTextResource('the oldest.md', 'the oldest');
+    await api.createImageResource('the middle.png', 'the middle');
+    await api.createTextResource('the newer.txt', 'the newer');
+    await api.createImageResource('the newest.svg', 'the newest');
+
+    expect(
+      (await api.getResources()).map(({name, contentType}) => ({name, contentType}))
+    ).toStrictEqual([
+      {name: 'the newest.svg', contentType: 'svg'},
+      {name: 'the newer.txt', contentType: 'plain_text'},
+      {name: 'the middle.png', contentType: 'png'},
+      {name: 'the oldest.md', contentType: 'markdown'}
+    ]);
+  });
+
   it('should give nothing when no Resource is stored', async () => {
     expect(await api.getResources()).toStrictEqual([]);
   });

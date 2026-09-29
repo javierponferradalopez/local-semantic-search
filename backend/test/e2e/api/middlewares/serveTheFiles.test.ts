@@ -29,6 +29,38 @@ describe('GET the fileUrl of a row', () => {
     expect(Buffer.from(await response.arrayBuffer())).toStrictEqual(bytes);
   });
 
+  it.each([
+    ['the beach.jpg', 'image/jpeg'],
+    ['the beach.jpeg', 'image/jpeg'],
+    ['the screenshot.png', 'image/png'],
+    ['the beach.webp', 'image/webp'],
+    ['the loop.gif', 'image/gif'],
+    ['the beach.avif', 'image/avif'],
+    ['the diagram.svg', 'image/svg+xml']
+  ])('should serve the image %s inline, as %s', async (name, contentType) => {
+    const bytes = Buffer.from(`the bytes of ${name}`);
+    const row = await api.createAnImageResourceRow(name, bytes);
+
+    const response = await fetch(`${api.origin()}${row.fileUrl}`);
+
+    expect(response.status).toBe(OK);
+    expect(response.headers.get('content-type')).toBe(contentType);
+    expect(response.headers.get('content-disposition')).toBe('inline');
+    expect(Buffer.from(await response.arrayBuffer())).toStrictEqual(bytes);
+  });
+
+  it('should serve an SVG with no sandbox and as it is, script and all (ADR-0004)', async () => {
+    const bytes = Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+    );
+    const row = await api.createAnImageResourceRow('the diagram.svg', bytes);
+
+    const response = await fetch(`${api.origin()}${row.fileUrl}`);
+
+    expect(response.headers.get('content-security-policy')).toBeNull();
+    expect(Buffer.from(await response.arrayBuffer())).toStrictEqual(bytes);
+  });
+
   describe('a path that tries to leave the folder the application owns', () => {
     const secret = join(
       dirname(testFilesDirectory()),

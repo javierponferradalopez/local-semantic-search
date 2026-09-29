@@ -1,6 +1,7 @@
 import {readdir} from 'node:fs/promises';
 import type {Server} from 'node:http';
 import type {AddressInfo} from 'node:net';
+import {CreateImageResourceRequest} from 'contract/CreateImageResourceRequest';
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {Pool} from 'pg';
@@ -16,6 +17,11 @@ export type TestApi = {
     type?: string
   ) => Promise<Response>;
   createATextResourceRow: (
+    name: string,
+    content: string | Buffer
+  ) => Promise<ResourceRow>;
+  createImageResource: (name: string, content: string | Buffer) => Promise<Response>;
+  createAnImageResourceRow: (
     name: string,
     content: string | Buffer
   ) => Promise<ResourceRow>;
@@ -69,6 +75,23 @@ export const useTheTestApi = (): TestApi => {
   ): Promise<ResourceRow> =>
     (await (await createTextResource(name, content)).json()) as ResourceRow;
 
+  const createImageResource = (
+    name: string,
+    content: string | Buffer
+  ): Promise<Response> => {
+    const body = new FormData();
+
+    body.append(CreateImageResourceRequest.filePart, new File([content], name));
+
+    return fetch(`${origin}/resources/images`, {method: 'POST', body});
+  };
+
+  const createAnImageResourceRow = async (
+    name: string,
+    content: string | Buffer
+  ): Promise<ResourceRow> =>
+    (await (await createImageResource(name, content)).json()) as ResourceRow;
+
   const getResources = async (): Promise<ResourceRow[]> =>
     (await (await fetch(`${origin}/resources`)).json()) as ResourceRow[];
 
@@ -115,6 +138,8 @@ export const useTheTestApi = (): TestApi => {
     origin: () => origin,
     createTextResource,
     createATextResourceRow,
+    createImageResource,
+    createAnImageResourceRow,
     getResources,
     deleteTextResource,
     retryTextResource,

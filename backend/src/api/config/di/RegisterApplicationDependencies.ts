@@ -1,6 +1,7 @@
 import {DrizzleResourceReader} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceReader';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
+import {CreateImageResource} from '../../../core/resources/use-cases/CreateImageResource';
 import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextResource';
 import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
@@ -22,6 +23,7 @@ export const registerApplicationDependencies = (): void => {
   const transactionRunner = container.getDependency(DrizzleConnection);
   const textEmbedder = container.getDependency(TransformersTextEmbedder);
   const resultReader = container.getDependency(DrizzleResultReader);
+  const contentTypeResolver = container.getDependency(ExtensionContentTypeResolver);
 
   container.registerImplementation(
     CreateTextResource,
@@ -30,7 +32,18 @@ export const registerApplicationDependencies = (): void => {
       fileStore,
       eventBus,
       transactionRunner,
-      contentTypeResolver: container.getDependency(ExtensionContentTypeResolver)
+      contentTypeResolver
+    })
+  );
+
+  container.registerImplementation(
+    CreateImageResource,
+    new CreateImageResource({
+      resourceRepository,
+      fileStore,
+      eventBus,
+      transactionRunner,
+      contentTypeResolver
     })
   );
 

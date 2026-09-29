@@ -1,6 +1,9 @@
+import {CreateImageResourceRequest} from 'contract/CreateImageResourceRequest';
+import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {Express} from 'express';
 import {container} from '../config/di/Container';
 import {FILES_URL_PREFIX} from '../config/FilesUrlPrefix';
+import {CreateImageResourceController} from '../controllers/resources/CreateImageResourceController';
 import {CreateTextResourceController} from '../controllers/resources/CreateTextResourceController';
 import {DeleteTextResourceController} from '../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../controllers/resources/GetResourcesController';
@@ -16,6 +19,7 @@ import {takeTheFiles} from '../middlewares/takeTheFiles';
 
 export const configureRoutes = (app: Express): void => {
   const createTextResource = container.getDependency(CreateTextResourceController);
+  const createImageResource = container.getDependency(CreateImageResourceController);
   const getResources = container.getDependency(GetResourcesController);
   const deleteTextResource = container.getDependency(DeleteTextResourceController);
   const retryTextResource = container.getDependency(RetryTextResourceController);
@@ -25,9 +29,17 @@ export const configureRoutes = (app: Express): void => {
   app.post(
     '/resources/texts',
     refuseAFileTooLarge,
-    takeTheFiles,
+    takeTheFiles(CreateTextResourceRequest.filePart),
     takeOneFile,
     (request, response) => createTextResource.run(request, response)
+  );
+
+  app.post(
+    '/resources/images',
+    refuseAFileTooLarge,
+    takeTheFiles(CreateImageResourceRequest.filePart),
+    takeOneFile,
+    (request, response) => createImageResource.run(request, response)
   );
 
   app.get('/resources', (request, response) => getResources.run(request, response));

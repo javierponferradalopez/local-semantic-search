@@ -1,9 +1,11 @@
+import {CreateImageResource} from '../../../core/resources/use-cases/CreateImageResource';
 import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextResource';
 import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
 import {GetMatches} from '../../../core/search/use-cases/GetMatches';
 import {Search} from '../../../core/search/use-cases/Search';
+import {CreateImageResourceController} from '../../controllers/resources/CreateImageResourceController';
 import {CreateTextResourceController} from '../../controllers/resources/CreateTextResourceController';
 import {DeleteTextResourceController} from '../../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../../controllers/resources/GetResourcesController';
@@ -17,6 +19,13 @@ export const registerControllersDependencies = (): void => {
     CreateTextResourceController,
     new CreateTextResourceController({
       createTextResource: container.getDependency(CreateTextResource)
+    })
+  );
+
+  container.registerImplementation(
+    CreateImageResourceController,
+    new CreateImageResourceController({
+      createImageResource: container.getDependency(CreateImageResource)
     })
   );
 
