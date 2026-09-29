@@ -5,10 +5,10 @@ import {
 import {TEXT_MODEL} from '../../../src/core/shared/infrastructure/transformers/TextModel';
 
 export const VectorMother = {
-  random(): Vector {
+  random(model: ModelIdentity = TEXT_MODEL): Vector {
     return Vector.of({
-      values: Array.from({length: TEXT_MODEL.width}, () => Math.random()),
-      model: TEXT_MODEL
+      values: Array.from({length: model.width}, () => Math.random()),
+      model
     });
   },
 

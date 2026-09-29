@@ -1,12 +1,23 @@
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import type {ApiError} from 'contract/ApiError';
 import {IMAGE_CONTENT_TYPES} from 'contract/ContentType';
 import {CreateImageResourceRequest} from 'contract/CreateImageResourceRequest';
 import type {ResourceRow} from 'contract/ResourceRow';
+import sharp from 'sharp';
+import {container} from '../../../../../src/api/config/di/Container';
+import type {ImageResource} from '../../../../../src/core/resources/domain/ImageResource';
+import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
+import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {useTheTestApi} from '../../../../lib/testApi';
+import {testFilesDirectory} from '../../../../lib/testInfrastructure';
+import {ImageResourceBuilder} from '../../../../utils/builders/image-resource/ImageResourceBuilder';
 
 const CREATED = 201;
 const BAD_REQUEST = 400;
 const CONFLICT = 409;
+
+const FIXTURES = join(import.meta.dirname, '../../../../fixtures');
 
 const FIELDS_OF_A_ROW = [
   'contentType',
@@ -42,7 +53,10 @@ describe('POST /resources/images', () => {
   it('should give the row through GET /resources', async () => {
     const created = await api.createAnImageResourceRow('the beach.png', 'the beach');
 
-    expect(await api.getResources()).toStrictEqual([created]);
+    // The Ingest runs after the response, so the state can have moved on.
+    expect(await api.getResources()).toStrictEqual([
+      expect.objectContaining({...created, ingestState: expect.any(String)})
+    ]);
   });
 
   it.each([
@@ -60,7 +74,7 @@ describe('POST /resources/images', () => {
   });
 
   it('should give 409 and duplicate_resource for the same bytes', async () => {
-    const stored = await api.createAnImageResourceRow('the beach.png', 'the same');
+    const stored = await storeAnIngestingImageResource('the beach.png', 'the same');
 
     const response = await api.createImageResource('another name.png', 'the same');
 
@@ -69,7 +83,11 @@ describe('POST /resources/images', () => {
       errors: [
         {
           code: 'duplicate_resource',
-          params: {resourceId: stored.id, name: 'the beach.png', ingestState: 'ingesting'}
+          params: {
+            resourceId: stored.id.value,
+            name: 'the beach.png',
+            ingestState: 'ingesting'
+          }
         }
       ]
     } satisfies ApiError);
@@ -83,6 +101,37 @@ describe('POST /resources/images', () => {
     expect(
       (await api.getResources()).map(row => row.contentType).toSorted()
     ).toStrictEqual(['plain_text', 'png']);
+  });
+
+  describe('the Ingest, after the response', () => {
+    it.each([
+      ['a-small-picture.png', 'png'],
+      ['a-diagram-with-only-a-viewbox.svg', 'svg']
+    ])('should make the image %s Ready', async (name, contentType) => {
+      const created = await api.createAnImageResourceRow(
+        name,
+        await readFile(join(FIXTURES, name))
+      );
+
+      const row = await api.rowOnceIngested(created.id);
+
+      expect(row).toMatchObject({ingestState: 'ready', contentType});
+    });
+
+    it('should have the thumbnail on the disk when the row says Ready', async () => {
+      const created = await api.createAnImageResourceRow(
+        'a-small-picture.png',
+        await readFile(join(FIXTURES, 'a-small-picture.png'))
+      );
+
+      await api.rowOnceIngested(created.id);
+
+      const thumbnail = await readFile(
+        join(testFilesDirectory(), 'ingestion/thumbnails', `${created.id}.webp`)
+      );
+
+      expect((await sharp(thumbnail).metadata()).format).toBe('webp');
+    });
   });
 
   describe('the Gate', () => {
@@ -127,6 +176,20 @@ describe('POST /resources/images', () => {
       await api.expectNothingStored();
     });
   });
+
+  const storeAnIngestingImageResource = async (
+    name: string,
+    content: string
+  ): Promise<ImageResource> => {
+    const imageResource = ImageResourceBuilder.anImageResource()
+      .withName(name)
+      .withChecksum(Checksum.ofBytes({bytes: Buffer.from(content)}).value)
+      .build();
+
+    await container.getDependency(DrizzleResourceRepository).create(imageResource);
+
+    return imageResource;
+  };
 
   const expectAnImageResourceRow = (value: unknown): void => {
     const row = value as ResourceRow;

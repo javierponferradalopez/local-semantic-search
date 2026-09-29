@@ -3,6 +3,8 @@ import {Pool} from 'pg';
 import {CodePointCutter} from '../../../core/ingestion/infrastructure/CodePointCutter';
 import {ContentTypeTextExtractor} from '../../../core/ingestion/infrastructure/ContentTypeTextExtractor';
 import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzleChunkRepository';
+import {DrizzlePictureRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzlePictureRepository';
+import {SharpImageDecoder} from '../../../core/ingestion/infrastructure/sharp/SharpImageDecoder';
 import {DrizzleResourceReader} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceReader';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
@@ -56,6 +58,11 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     new ContentTypeTextExtractor()
   );
   container.registerImplementation(CodePointCutter, new CodePointCutter());
+  container.registerImplementation(
+    DrizzlePictureRepository,
+    new DrizzlePictureRepository({connection})
+  );
+  container.registerImplementation(SharpImageDecoder, new SharpImageDecoder());
   container.registerImplementation(
     DrizzleResultReader,
     new DrizzleResultReader({
