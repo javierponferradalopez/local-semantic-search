@@ -1,7 +1,7 @@
 import {ValueObjectError} from '../../../shared/domain/errors/ValueObjectError';
 import {ValueObject} from '../../../shared/domain/value-objects/ValueObject';
 import type {Match} from '../Match';
-import type {PictureResult} from '../PictureResult';
+import type {PictureMatch} from '../PictureMatch';
 
 type ConstructorParams = {value: number};
 
@@ -30,7 +30,7 @@ export class Floor extends ValueObject<number> {
   // A gate, not a filter: only the best Match is compared (ADR-0021).
   // One overload for each model, so a list that mixes the two does not compile.
   public isReachedBy(results: readonly {bestMatch: Match}[]): boolean;
-  public isReachedBy(results: readonly PictureResult[]): boolean;
+  public isReachedBy(results: readonly {bestMatch: PictureMatch}[]): boolean;
   public isReachedBy([best]: readonly {bestMatch: {score: number}}[]): boolean {
     return best !== undefined && best.bestMatch.score >= this.value;
   }
