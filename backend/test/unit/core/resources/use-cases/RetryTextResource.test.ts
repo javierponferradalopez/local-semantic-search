@@ -8,6 +8,7 @@ import {RetryTextResource} from '../../../../../src/core/resources/use-cases/Ret
 import type {EventBus} from '../../../../../src/core/shared/domain/services/EventBus';
 import type {FileStore} from '../../../../../src/core/shared/domain/services/FileStore';
 import type {TransactionRunner} from '../../../../../src/core/shared/domain/services/TransactionRunner';
+import {ImageResourceBuilder} from '../../../../utils/builders/image-resource/ImageResourceBuilder';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 import {type MockProxy, mock} from '../../../../utils/mock';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
@@ -128,6 +129,20 @@ describe('RetryTextResource', () => {
       await expect(
         retryTextResource.run({id: StringMother.randomUuid()})
       ).rejects.toThrow(ResourceNotFoundError);
+
+      expect(steps).toStrictEqual([]);
+    });
+
+    it('should refuse an identifier that an Image Resource holds, and change nothing', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource()
+        .withIngestState('failed')
+        .withReason('ingest_error')
+        .build();
+      resourceRepository.find.mockResolvedValue(imageResource);
+
+      await expect(retryTextResource.run({id: imageResource.id.value})).rejects.toThrow(
+        ResourceNotFoundError
+      );
 
       expect(steps).toStrictEqual([]);
     });

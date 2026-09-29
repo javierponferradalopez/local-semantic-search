@@ -2,6 +2,7 @@ import {TextResourceIngestedDomainEvent} from '../../../../../src/core/ingestion
 import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import {MarkTextResourceAsReadyOnTextResourceIngested} from '../../../../../src/core/resources/use-cases/MarkTextResourceAsReadyOnTextResourceIngested';
 import type {TransactionRunner} from '../../../../../src/core/shared/domain/services/TransactionRunner';
+import {ImageResourceBuilder} from '../../../../utils/builders/image-resource/ImageResourceBuilder';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 import {type MockProxy, mock} from '../../../../utils/mock';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
@@ -64,6 +65,18 @@ describe('MarkTextResourceAsReadyOnTextResourceIngested', () => {
       ).resolves.toBeUndefined();
 
       expect(resourceRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('should ignore an identifier that an Image Resource holds', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      resourceRepository.find.mockResolvedValue(imageResource);
+
+      await handler.handle(
+        new TextResourceIngestedDomainEvent({aggregateId: imageResource.id.value})
+      );
+
+      expect(resourceRepository.update).not.toHaveBeenCalled();
+      expect(imageResource.toPrimitives().ingestState).toBe('ingesting');
     });
   });
 });

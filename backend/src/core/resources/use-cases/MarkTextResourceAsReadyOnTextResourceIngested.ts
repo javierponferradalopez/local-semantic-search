@@ -2,6 +2,7 @@ import {TextResourceIngestedDomainEvent} from '../../ingestion/domain/events/Tex
 import type {DomainEventHandler} from '../../shared/domain/DomainEventHandler';
 import type {TransactionRunner} from '../../shared/domain/services/TransactionRunner';
 import type {ResourceRepository} from '../domain/ResourceRepository';
+import {TextResource} from '../domain/TextResource';
 import {ResourceId} from '../domain/value-objects/ResourceId';
 
 type ConstructorParams = {
@@ -34,7 +35,7 @@ export class MarkTextResourceAsReadyOnTextResourceIngested
     const textResource = await this.resourceRepository.find(id);
 
     // Delete is allowed in every Ingest state, so the Resource can be gone (ADR-0018).
-    if (textResource === undefined) {
+    if (!(textResource instanceof TextResource)) {
       return;
     }
 

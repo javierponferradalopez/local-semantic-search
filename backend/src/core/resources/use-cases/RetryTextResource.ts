@@ -4,7 +4,7 @@ import type {FileStore} from '../../shared/domain/services/FileStore';
 import type {TransactionRunner} from '../../shared/domain/services/TransactionRunner';
 import {ResourceNotFoundError} from '../domain/errors/ResourceNotFoundError';
 import type {ResourceRepository} from '../domain/ResourceRepository';
-import type {TextResource} from '../domain/TextResource';
+import {TextResource} from '../domain/TextResource';
 import {ResourceId} from '../domain/value-objects/ResourceId';
 import {resourceRowOf} from './resourceRowOf';
 
@@ -46,7 +46,7 @@ export class RetryTextResource {
   private async retry(id: ResourceId): Promise<TextResource> {
     const textResource = await this.resourceRepository.find(id);
 
-    if (textResource === undefined) {
+    if (!(textResource instanceof TextResource)) {
       throw ResourceNotFoundError.causeNoResourceHoldsTheIdentifier(id);
     }
 

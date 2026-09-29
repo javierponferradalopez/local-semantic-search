@@ -2,6 +2,7 @@ import {TextResourceIngestFailedDomainEvent} from '../../ingestion/domain/events
 import type {DomainEventHandler} from '../../shared/domain/DomainEventHandler';
 import type {TransactionRunner} from '../../shared/domain/services/TransactionRunner';
 import type {ResourceRepository} from '../domain/ResourceRepository';
+import {TextResource} from '../domain/TextResource';
 import {Reason} from '../domain/value-objects/Reason';
 import {ResourceId} from '../domain/value-objects/ResourceId';
 
@@ -38,7 +39,7 @@ export class MarkTextResourceAsFailedOnTextResourceIngestFailed
     const textResource = await this.resourceRepository.find(id);
 
     // Delete is allowed in every Ingest state, so the Resource can be gone (ADR-0018).
-    if (textResource === undefined) {
+    if (!(textResource instanceof TextResource)) {
       return;
     }
 

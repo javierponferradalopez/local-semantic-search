@@ -3,7 +3,7 @@ import type {FileStore} from '../../shared/domain/services/FileStore';
 import type {TransactionRunner} from '../../shared/domain/services/TransactionRunner';
 import {ResourceNotFoundError} from '../domain/errors/ResourceNotFoundError';
 import type {ResourceRepository} from '../domain/ResourceRepository';
-import type {TextResource} from '../domain/TextResource';
+import {TextResource} from '../domain/TextResource';
 import {ResourceId} from '../domain/value-objects/ResourceId';
 
 type ConstructorParams = {
@@ -39,7 +39,7 @@ export class DeleteResource {
   private async remove(id: ResourceId): Promise<TextResource> {
     const resource = await this.resourceRepository.find(id);
 
-    if (resource === undefined) {
+    if (!(resource instanceof TextResource)) {
       throw ResourceNotFoundError.causeNoResourceHoldsTheIdentifier(id);
     }
 
