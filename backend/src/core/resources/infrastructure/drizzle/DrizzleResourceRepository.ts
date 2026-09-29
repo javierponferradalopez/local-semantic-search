@@ -83,12 +83,22 @@ export class DrizzleResourceRepository implements ResourceRepository {
       .values(TextResourceMapper.toRow(resource));
   }
 
-  public async update(textResource: TextResource): Promise<void> {
+  public async update(resource: ImageResource | TextResource): Promise<void> {
+    if (resource instanceof ImageResource) {
+      await this.connection
+        .database()
+        .update(imageResources)
+        .set(ImageResourceMapper.toRow(resource))
+        .where(eq(imageResources.id, resource.id.value));
+
+      return;
+    }
+
     await this.connection
       .database()
       .update(textResources)
-      .set(TextResourceMapper.toRow(textResource))
-      .where(eq(textResources.id, textResource.id.value));
+      .set(TextResourceMapper.toRow(resource))
+      .where(eq(textResources.id, resource.id.value));
   }
 
   public async delete(resource: ImageResource | TextResource): Promise<void> {

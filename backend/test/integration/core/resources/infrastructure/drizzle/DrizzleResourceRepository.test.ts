@@ -2,6 +2,7 @@ import {drizzle} from 'drizzle-orm/node-postgres';
 import {ImageResource} from '../../../../../../src/core/resources/domain/ImageResource';
 import {TextResource} from '../../../../../../src/core/resources/domain/TextResource';
 import {Checksum} from '../../../../../../src/core/resources/domain/value-objects/Checksum';
+import {Reason} from '../../../../../../src/core/resources/domain/value-objects/Reason';
 import {ResourceId} from '../../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {DrizzleResourceRepository} from '../../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {DrizzleConnection} from '../../../../../../src/core/shared/infrastructure/drizzle/DrizzleConnection';
@@ -131,6 +132,19 @@ describe('DrizzleResourceRepository', () => {
       expect((await repository.find(textResource.id))?.toPrimitives().ingestState).toBe(
         'ready'
       );
+    });
+
+    it('should write the state that an ImageResource carries, in its own table', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      await repository.create(imageResource);
+
+      imageResource.markAsFailed({reason: Reason.of({value: 'ingest_error'})});
+      await repository.update(imageResource);
+
+      expect((await repository.find(imageResource.id))?.toPrimitives()).toMatchObject({
+        ingestState: 'failed',
+        reason: 'ingest_error'
+      });
     });
 
     it('should leave no row when the Resource is gone', async () => {

@@ -9,6 +9,6 @@ export interface ResourceRepository {
   findTextResourceByChecksum(checksum: Checksum): Promise<TextResource | undefined>;
   findImageResourceByChecksum(checksum: Checksum): Promise<ImageResource | undefined>;
   create(resource: ImageResource | TextResource): Promise<void>;
-  update(resource: TextResource): Promise<void>;
+  update(resource: ImageResource | TextResource): Promise<void>;
   delete(resource: ImageResource | TextResource): Promise<void>;
 }
