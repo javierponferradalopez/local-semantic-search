@@ -4,6 +4,7 @@ import {DrizzleChunkRepository} from '../../../core/ingestion/infrastructure/dri
 import {DrizzlePictureRepository} from '../../../core/ingestion/infrastructure/drizzle/DrizzlePictureRepository';
 import {SharpImageDecoder} from '../../../core/ingestion/infrastructure/sharp/SharpImageDecoder';
 import {DeleteChunksOnTextResourceDeleted} from '../../../core/ingestion/use-cases/DeleteChunksOnTextResourceDeleted';
+import {DeletePictureOnImageResourceDeleted} from '../../../core/ingestion/use-cases/DeletePictureOnImageResourceDeleted';
 import {IngestImageResourceOnImageResourceCreatedOrRetried} from '../../../core/ingestion/use-cases/IngestImageResourceOnImageResourceCreatedOrRetried';
 import {IngestTextResourceOnTextResourceCreatedOrRetried} from '../../../core/ingestion/use-cases/IngestTextResourceOnTextResourceCreatedOrRetried';
 import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/drizzle/DrizzleResourceRepository';
@@ -23,6 +24,7 @@ export const registerDomainEventHandlers = (): void => {
   const chunkRepository = container.getDependency(DrizzleChunkRepository);
   const resourceRepository = container.getDependency(DrizzleResourceRepository);
   const fileStore = container.getDependency(FilesystemFileStore);
+  const pictureRepository = container.getDependency(DrizzlePictureRepository);
   const transactionRunner = container.getDependency(DrizzleConnection);
 
   eventBus.subscribe(
@@ -58,10 +60,14 @@ export const registerDomainEventHandlers = (): void => {
       fileStore,
       imageDecoder: container.getDependency(SharpImageDecoder),
       imageEmbedder: container.getDependency(TransformersImageEmbedder),
-      pictureRepository: container.getDependency(DrizzlePictureRepository),
+      pictureRepository,
       resourceRepository,
       eventBus
     })
+  );
+
+  eventBus.subscribe(
+    new DeletePictureOnImageResourceDeleted({pictureRepository, fileStore})
   );
 
   eventBus.subscribe(
