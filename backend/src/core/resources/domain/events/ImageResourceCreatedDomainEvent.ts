@@ -1,16 +1,16 @@
-import type {ContentType} from 'contract/ContentType';
+import type {ImageContentType} from 'contract/ContentType';
 import {DomainEvent} from '../../../shared/domain/DomainEvent';
 
 type ConstructorParams = {
   aggregateId: string;
-  contentType: ContentType;
+  contentType: ImageContentType;
   fileKey: string;
 };
 
 export class ImageResourceCreatedDomainEvent extends DomainEvent {
   public static readonly EVENT_NAME = 'resources.image_resource.created';
 
-  private readonly _contentType: ContentType;
+  private readonly _contentType: ImageContentType;
   private readonly _fileKey: string;
 
   public constructor({aggregateId, contentType, fileKey}: ConstructorParams) {
@@ -19,7 +19,7 @@ export class ImageResourceCreatedDomainEvent extends DomainEvent {
     this._fileKey = fileKey;
   }
 
-  public get contentType(): ContentType {
+  public get contentType(): ImageContentType {
     return this._contentType;
   }
 

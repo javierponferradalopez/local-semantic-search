@@ -1,4 +1,4 @@
-import type {ContentType as ContentTypeValue} from 'contract/ContentType';
+import type {TextContentType as TextContentTypeValue} from 'contract/ContentType';
 import type {IngestState as IngestStateValue} from 'contract/IngestState';
 import type {ReasonCode} from 'contract/ReasonCode';
 import {AggregateRoot} from '../../shared/domain/AggregateRoot';
@@ -9,17 +9,17 @@ import {TextResourceCreatedDomainEvent} from './events/TextResourceCreatedDomain
 import {TextResourceDeletedDomainEvent} from './events/TextResourceDeletedDomainEvent';
 import {TextResourceRetriedDomainEvent} from './events/TextResourceRetriedDomainEvent';
 import {Checksum} from './value-objects/Checksum';
-import {ContentType} from './value-objects/ContentType';
 import {CreatedAt} from './value-objects/CreatedAt';
 import {IngestState} from './value-objects/IngestState';
 import {Reason} from './value-objects/Reason';
 import {ResourceId} from './value-objects/ResourceId';
 import {ResourceName} from './value-objects/ResourceName';
+import {TextContentType} from './value-objects/TextContentType';
 
 type ConstructorParams = {
   id: ResourceId;
   name: ResourceName;
-  contentType: ContentType;
+  contentType: TextContentType;
   fileKey: FileKey;
   checksum: Checksum;
   createdAt: CreatedAt;
@@ -32,7 +32,7 @@ type CreateParams = Omit<ConstructorParams, 'ingestState' | 'reason'>;
 export type TextResourcePrimitives = {
   id: string;
   name: string;
-  contentType: ContentTypeValue;
+  contentType: TextContentTypeValue;
   fileKey: string;
   checksum: string;
   createdAt: string;
@@ -43,7 +43,7 @@ export type TextResourcePrimitives = {
 export class TextResource extends AggregateRoot<TextResourcePrimitives> {
   private readonly _id: ResourceId;
   private readonly _name: ResourceName;
-  private readonly _contentType: ContentType;
+  private readonly _contentType: TextContentType;
   private readonly _fileKey: FileKey;
   private readonly _checksum: Checksum;
   private readonly _createdAt: CreatedAt;
@@ -84,7 +84,7 @@ export class TextResource extends AggregateRoot<TextResourcePrimitives> {
     return new TextResource({
       id: ResourceId.fromPrimitive({value: primitives.id}),
       name: ResourceName.fromPrimitive({value: primitives.name}),
-      contentType: ContentType.fromPrimitive({value: primitives.contentType}),
+      contentType: TextContentType.fromPrimitive({value: primitives.contentType}),
       fileKey: FileKey.fromPrimitive({value: primitives.fileKey}),
       checksum: Checksum.fromPrimitive({value: primitives.checksum}),
       createdAt: CreatedAt.fromPrimitive({value: primitives.createdAt}),

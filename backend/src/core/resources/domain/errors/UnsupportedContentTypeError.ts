@@ -4,11 +4,11 @@ export class UnsupportedContentTypeError extends DomainError {
   private readonly _fileName: string;
 
   private constructor(fileName: string) {
-    super(`The name ${fileName} names no Content type`);
+    super(`The name ${fileName} holds no extension that the Gate admits`);
     this._fileName = fileName;
   }
 
-  public static causeTheNameHoldsNoKnownExtension(
+  public static causeTheNameHoldsNoAdmittedExtension(
     fileName: string
   ): UnsupportedContentTypeError {
     return new UnsupportedContentTypeError(fileName);

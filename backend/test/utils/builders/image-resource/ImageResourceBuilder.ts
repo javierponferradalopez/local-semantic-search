@@ -11,13 +11,12 @@ export class ImageResourceBuilder {
 
   public static anImageResource(): ImageResourceBuilder {
     const id = StringMother.randomUuid();
-    const name = StringMother.randomFileName('.pdf');
+    const name = StringMother.randomFileName('.png');
 
     return new ImageResourceBuilder({
       id,
       name,
-      // No image Content type exists yet (#62), and the aggregate reads none, so a text one is sufficient.
-      contentType: 'pdf',
+      contentType: 'png',
       fileKey: `resources/${id}/${name}`,
       checksum: StringMother.randomChecksum(),
       createdAt: new Date().toISOString(),
@@ -25,8 +24,20 @@ export class ImageResourceBuilder {
     });
   }
 
+  public withName(name: string): ImageResourceBuilder {
+    return new ImageResourceBuilder({...this.primitives, name});
+  }
+
+  public withChecksum(checksum: string): ImageResourceBuilder {
+    return new ImageResourceBuilder({...this.primitives, checksum});
+  }
+
   public withIngestState(ingestState: IngestState): ImageResourceBuilder {
     return new ImageResourceBuilder({...this.primitives, ingestState});
+  }
+
+  public withCreatedAt(createdAt: string): ImageResourceBuilder {
+    return new ImageResourceBuilder({...this.primitives, createdAt});
   }
 
   public withReason(reason: ReasonCode): ImageResourceBuilder {

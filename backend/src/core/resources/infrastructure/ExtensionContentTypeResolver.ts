@@ -1,17 +1,33 @@
 import {extname} from 'node:path';
-import {CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
+import {
+  IMAGE_CONTENT_TYPE_BY_EXTENSION,
+  TEXT_CONTENT_TYPE_BY_EXTENSION
+} from 'contract/ContentTypeByExtension';
 import {UnsupportedContentTypeError} from '../domain/errors/UnsupportedContentTypeError';
 import type {ContentTypeResolver} from '../domain/services/ContentTypeResolver';
-import {ContentType} from '../domain/value-objects/ContentType';
+import {ImageContentType} from '../domain/value-objects/ImageContentType';
+import {TextContentType} from '../domain/value-objects/TextContentType';
+
+const contentTypeIn = <T>(table: ReadonlyMap<string, T>, name: string): T => {
+  const contentType = table.get(extname(name).toLowerCase());
+
+  if (contentType === undefined) {
+    throw UnsupportedContentTypeError.causeTheNameHoldsNoAdmittedExtension(name);
+  }
+
+  return contentType;
+};
 
 export class ExtensionContentTypeResolver implements ContentTypeResolver {
-  public resolve(name: string): ContentType {
-    const contentType = CONTENT_TYPE_BY_EXTENSION.get(extname(name).toLowerCase());
+  public resolveText(name: string): TextContentType {
+    return TextContentType.of({
+      value: contentTypeIn(TEXT_CONTENT_TYPE_BY_EXTENSION, name)
+    });
+  }
 
-    if (contentType === undefined) {
-      throw UnsupportedContentTypeError.causeTheNameHoldsNoKnownExtension(name);
-    }
-
-    return ContentType.of({value: contentType});
+  public resolveImage(name: string): ImageContentType {
+    return ImageContentType.of({
+      value: contentTypeIn(IMAGE_CONTENT_TYPE_BY_EXTENSION, name)
+    });
   }
 }

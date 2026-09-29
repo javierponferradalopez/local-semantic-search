@@ -1,16 +1,16 @@
-import type {ContentType} from 'contract/ContentType';
+import type {TextContentType} from 'contract/ContentType';
 import {DomainEvent} from '../../../shared/domain/DomainEvent';
 
 type ConstructorParams = {
   aggregateId: string;
-  contentType: ContentType;
+  contentType: TextContentType;
   fileKey: string;
 };
 
 export class TextResourceRetriedDomainEvent extends DomainEvent {
   public static readonly EVENT_NAME = 'resources.text_resource.retried';
 
-  private readonly _contentType: ContentType;
+  private readonly _contentType: TextContentType;
   private readonly _fileKey: string;
 
   public constructor({aggregateId, contentType, fileKey}: ConstructorParams) {
@@ -19,7 +19,7 @@ export class TextResourceRetriedDomainEvent extends DomainEvent {
     this._fileKey = fileKey;
   }
 
-  public get contentType(): ContentType {
+  public get contentType(): TextContentType {
     return this._contentType;
   }
 

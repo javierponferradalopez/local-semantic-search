@@ -2,7 +2,7 @@ import {DuplicateResourceError} from '../../../../../src/core/resources/domain/e
 import {TextResourceCreatedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceCreatedDomainEvent';
 import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import type {ContentTypeResolver} from '../../../../../src/core/resources/domain/services/ContentTypeResolver';
-import {ContentType} from '../../../../../src/core/resources/domain/value-objects/ContentType';
+import {TextContentType} from '../../../../../src/core/resources/domain/value-objects/TextContentType';
 import {CreateTextResource} from '../../../../../src/core/resources/use-cases/CreateTextResource';
 import {ValueObjectError} from '../../../../../src/core/shared/domain/errors/ValueObjectError';
 import type {EventBus} from '../../../../../src/core/shared/domain/services/EventBus';
@@ -48,7 +48,9 @@ describe('CreateTextResource', () => {
 
       return result;
     });
-    contentTypeResolver.resolve.mockReturnValue(ContentType.of({value: 'markdown'}));
+    contentTypeResolver.resolveText.mockReturnValue(
+      TextContentType.of({value: 'markdown'})
+    );
 
     createTextResource = new CreateTextResource({
       resourceRepository,

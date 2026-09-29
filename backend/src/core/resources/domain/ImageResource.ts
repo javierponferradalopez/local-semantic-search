@@ -1,4 +1,4 @@
-import type {ContentType as ContentTypeValue} from 'contract/ContentType';
+import type {ImageContentType as ImageContentTypeValue} from 'contract/ContentType';
 import type {IngestState as IngestStateValue} from 'contract/IngestState';
 import type {ReasonCode} from 'contract/ReasonCode';
 import {AggregateRoot} from '../../shared/domain/AggregateRoot';
@@ -9,8 +9,8 @@ import {ImageResourceCreatedDomainEvent} from './events/ImageResourceCreatedDoma
 import {ImageResourceDeletedDomainEvent} from './events/ImageResourceDeletedDomainEvent';
 import {ImageResourceRetriedDomainEvent} from './events/ImageResourceRetriedDomainEvent';
 import {Checksum} from './value-objects/Checksum';
-import {ContentType} from './value-objects/ContentType';
 import {CreatedAt} from './value-objects/CreatedAt';
+import {ImageContentType} from './value-objects/ImageContentType';
 import {IngestState} from './value-objects/IngestState';
 import {Reason} from './value-objects/Reason';
 import {ResourceId} from './value-objects/ResourceId';
@@ -19,7 +19,7 @@ import {ResourceName} from './value-objects/ResourceName';
 type ConstructorParams = {
   id: ResourceId;
   name: ResourceName;
-  contentType: ContentType;
+  contentType: ImageContentType;
   fileKey: FileKey;
   checksum: Checksum;
   createdAt: CreatedAt;
@@ -32,7 +32,7 @@ type CreateParams = Omit<ConstructorParams, 'ingestState' | 'reason'>;
 export type ImageResourcePrimitives = {
   id: string;
   name: string;
-  contentType: ContentTypeValue;
+  contentType: ImageContentTypeValue;
   fileKey: string;
   checksum: string;
   createdAt: string;
@@ -43,7 +43,7 @@ export type ImageResourcePrimitives = {
 export class ImageResource extends AggregateRoot<ImageResourcePrimitives> {
   private readonly _id: ResourceId;
   private readonly _name: ResourceName;
-  private readonly _contentType: ContentType;
+  private readonly _contentType: ImageContentType;
   private readonly _fileKey: FileKey;
   private readonly _checksum: Checksum;
   private readonly _createdAt: CreatedAt;
@@ -84,7 +84,7 @@ export class ImageResource extends AggregateRoot<ImageResourcePrimitives> {
     return new ImageResource({
       id: ResourceId.fromPrimitive({value: primitives.id}),
       name: ResourceName.fromPrimitive({value: primitives.name}),
-      contentType: ContentType.fromPrimitive({value: primitives.contentType}),
+      contentType: ImageContentType.fromPrimitive({value: primitives.contentType}),
       fileKey: FileKey.fromPrimitive({value: primitives.fileKey}),
       checksum: Checksum.fromPrimitive({value: primitives.checksum}),
       createdAt: CreatedAt.fromPrimitive({value: primitives.createdAt}),

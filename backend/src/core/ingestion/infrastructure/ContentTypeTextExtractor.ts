@@ -1,4 +1,4 @@
-import type {ContentType} from 'contract/ContentType';
+import type {TextContentType} from 'contract/ContentType';
 import {extractText} from 'unpdf';
 import {UnreadableFileError} from '../domain/errors/UnreadableFileError';
 import type {TextExtractor} from '../domain/TextExtractor';
@@ -19,14 +19,14 @@ const pagesOf: Extract = async (bytes: Buffer) => {
   }
 };
 
-const EXTRACT: Record<ContentType, Extract> = {
+const EXTRACT: Record<TextContentType, Extract> = {
   pdf: pagesOf,
   plain_text: textOf,
   markdown: textOf
 };
 
 export class ContentTypeTextExtractor implements TextExtractor {
-  public extract(bytes: Buffer, contentType: ContentType): Promise<string[]> {
+  public extract(bytes: Buffer, contentType: TextContentType): Promise<string[]> {
     return EXTRACT[contentType](bytes);
   }
 }

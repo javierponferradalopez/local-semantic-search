@@ -6,11 +6,11 @@ import {TextResourceDeletedDomainEvent} from '../../../../../src/core/resources/
 import {TextResourceRetriedDomainEvent} from '../../../../../src/core/resources/domain/events/TextResourceRetriedDomainEvent';
 import {TextResource} from '../../../../../src/core/resources/domain/TextResource';
 import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
-import {ContentType} from '../../../../../src/core/resources/domain/value-objects/ContentType';
 import {CreatedAt} from '../../../../../src/core/resources/domain/value-objects/CreatedAt';
 import {Reason} from '../../../../../src/core/resources/domain/value-objects/Reason';
 import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {ResourceName} from '../../../../../src/core/resources/domain/value-objects/ResourceName';
+import {TextContentType} from '../../../../../src/core/resources/domain/value-objects/TextContentType';
 import {FileKey} from '../../../../../src/core/shared/domain/value-objects/FileKey';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
@@ -22,7 +22,7 @@ const aCreatedTextResource = (): TextResource => {
   return TextResource.create({
     id,
     name,
-    contentType: ContentType.of({value: 'markdown'}),
+    contentType: TextContentType.of({value: 'markdown'}),
     fileKey: FileKey.of({value: `resources/${id.value}/${name.value}`}),
     checksum: Checksum.of({value: StringMother.randomChecksum()}),
     createdAt: CreatedAt.of({value: new Date()})

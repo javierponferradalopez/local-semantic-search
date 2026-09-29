@@ -8,7 +8,14 @@ const MEDIA_TYPE_BY_CONTENT_TYPE: Record<ContentType, string> = {
   pdf: 'application/pdf',
   plain_text: 'text/plain; charset=utf-8',
   // text/markdown makes most browsers download the File instead of painting it.
-  markdown: 'text/plain; charset=utf-8'
+  markdown: 'text/plain; charset=utf-8',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  avif: 'image/avif',
+  // With no sandbox, so a script in the SVG runs when Open navigates to it (ADR-0004).
+  svg: 'image/svg+xml'
 };
 
 const UNKNOWN_MEDIA_TYPE = 'application/octet-stream';

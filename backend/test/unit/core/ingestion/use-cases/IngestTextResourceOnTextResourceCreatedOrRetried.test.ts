@@ -1,4 +1,4 @@
-import {CONTENT_TYPES, type ContentType} from 'contract/ContentType';
+import {TEXT_CONTENT_TYPES, type TextContentType} from 'contract/ContentType';
 import type {MockInstance} from 'vitest';
 import type {Chunk} from '../../../../../src/core/ingestion/domain/Chunk';
 import type {ChunkRepository} from '../../../../../src/core/ingestion/domain/ChunkRepository';
@@ -109,7 +109,7 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
       ['TextResourceRetriedDomainEvent', TextResourceRetriedDomainEvent]
     ])('of %s', (_, EventClass) => {
       const anEventOfAResource = (
-        contentType: ContentType = 'plain_text'
+        contentType: TextContentType = 'plain_text'
       ): TextResourceCreatedDomainEvent | TextResourceRetriedDomainEvent => {
         const aggregateId = StringMother.randomUuid();
 
@@ -194,7 +194,7 @@ describe('IngestTextResourceOnTextResourceCreatedOrRetried', () => {
         expect(eventBus.publish.mock.calls[0]?.[0]).toStrictEqual([]);
       });
 
-      it.each(CONTENT_TYPES)(
+      it.each(TEXT_CONTENT_TYPES)(
         'should raise TextResourceIngestFailedDomainEvent with no_text_found when the cut of a %s gives no Chunk',
         async contentType => {
           cutter.cut.mockReturnValue([]);

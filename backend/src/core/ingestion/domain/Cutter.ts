@@ -1,10 +1,10 @@
-import type {ContentType} from 'contract/ContentType';
+import type {TextContentType} from 'contract/ContentType';
 import type {ResourceId} from '../../resources/domain/value-objects/ResourceId';
 import type {Chunk} from './Chunk';
 
 type CutParams = {
   resourceId: ResourceId;
-  contentType: ContentType;
+  contentType: TextContentType;
   texts: readonly string[];
 };
 

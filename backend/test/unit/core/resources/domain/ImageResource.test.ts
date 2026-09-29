@@ -6,8 +6,8 @@ import {ImageResourceDeletedDomainEvent} from '../../../../../src/core/resources
 import {ImageResourceRetriedDomainEvent} from '../../../../../src/core/resources/domain/events/ImageResourceRetriedDomainEvent';
 import {ImageResource} from '../../../../../src/core/resources/domain/ImageResource';
 import {Checksum} from '../../../../../src/core/resources/domain/value-objects/Checksum';
-import {ContentType} from '../../../../../src/core/resources/domain/value-objects/ContentType';
 import {CreatedAt} from '../../../../../src/core/resources/domain/value-objects/CreatedAt';
+import {ImageContentType} from '../../../../../src/core/resources/domain/value-objects/ImageContentType';
 import {Reason} from '../../../../../src/core/resources/domain/value-objects/Reason';
 import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {ResourceName} from '../../../../../src/core/resources/domain/value-objects/ResourceName';
@@ -17,12 +17,12 @@ import {StringMother} from '../../../../utils/object-mother/StringMother';
 
 const aCreatedImageResource = (): ImageResource => {
   const id = ResourceId.random();
-  const name = ResourceName.of({value: StringMother.randomFileName('.pdf')});
+  const name = ResourceName.of({value: StringMother.randomFileName('.png')});
 
   return ImageResource.create({
     id,
     name,
-    contentType: ContentType.of({value: 'pdf'}),
+    contentType: ImageContentType.of({value: 'png'}),
     fileKey: FileKey.of({value: `resources/${id.value}/${name.value}`}),
     checksum: Checksum.of({value: StringMother.randomChecksum()}),
     createdAt: CreatedAt.of({value: new Date()})
@@ -54,7 +54,7 @@ describe('ImageResource', () => {
         .pullEvents()
         .filter(pulled => pulled instanceof ImageResourceCreatedDomainEvent);
 
-      expect(event?.contentType).toBe('pdf');
+      expect(event?.contentType).toBe('png');
       expect(event?.fileKey).toBe(imageResource.fileKey.value);
     });
 
@@ -193,7 +193,7 @@ describe('ImageResource', () => {
         .pullEvents()
         .filter(pulled => pulled instanceof ImageResourceRetriedDomainEvent);
 
-      expect(event?.contentType).toBe('pdf');
+      expect(event?.contentType).toBe('png');
       expect(event?.fileKey).toBe(imageResource.fileKey.value);
     });
 
@@ -275,9 +275,9 @@ describe('ImageResource', () => {
     it('should give back what .fromPrimitives read, Reason and all', () => {
       const primitives = {
         id: StringMother.randomUuid(),
-        name: 'the scan.pdf',
-        contentType: 'pdf',
-        fileKey: 'resources/the scan.pdf',
+        name: 'the beach.png',
+        contentType: 'png',
+        fileKey: 'resources/the beach.png',
         checksum: StringMother.randomChecksum(),
         createdAt: '2026-09-22T10:00:00.000Z',
         ingestState: 'failed',

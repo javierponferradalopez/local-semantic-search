@@ -121,7 +121,7 @@ const namesInTheCorpus = async (): Promise<string[]> =>
 
 const chunksOf = async (name: string): Promise<EmbeddedChunk[]> => {
   const textEmbedder = await theEmbedder();
-  const {value: contentType} = RESOLVER.resolve(name);
+  const {value: contentType} = RESOLVER.resolveText(name);
   const texts = await EXTRACTOR.extract(
     await readFile(join(CORPUS_FOLDER, name)),
     contentType

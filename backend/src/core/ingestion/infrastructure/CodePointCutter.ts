@@ -1,4 +1,4 @@
-import type {ContentType} from 'contract/ContentType';
+import type {TextContentType} from 'contract/ContentType';
 import type {ResourceId} from '../../resources/domain/value-objects/ResourceId';
 import {Chunk} from '../domain/Chunk';
 import {CUT} from '../domain/Cut';
@@ -7,7 +7,7 @@ import {ChunkText} from '../domain/value-objects/ChunkText';
 
 type CutParams = {
   resourceId: ResourceId;
-  contentType: ContentType;
+  contentType: TextContentType;
   texts: readonly string[];
 };
 
@@ -218,7 +218,7 @@ const markdownPiecesOf = (text: string): string[] => {
 type CutOfAContentType = {piecesOf: (text: string) => string[]; hasPages: boolean};
 
 // A PDF has no paragraph to trust, so its ladder starts at the sentence (ADR-0014).
-const CUT_OF: Record<ContentType, CutOfAContentType> = {
+const CUT_OF: Record<TextContentType, CutOfAContentType> = {
   pdf: {piecesOf: (text: string) => piecesOf(text, LOWER_RUNGS), hasPages: true},
   plain_text: {
     piecesOf: (text: string) => piecesOf(text, PLAIN_TEXT_LADDER),

@@ -4,7 +4,13 @@ import type {JSX} from 'react';
 const ICON_OF: Record<ContentType, {symbol: string; label: string}> = {
   pdf: {symbol: '📕', label: 'PDF'},
   plain_text: {symbol: '📄', label: 'Plain text'},
-  markdown: {symbol: '📝', label: 'Markdown'}
+  markdown: {symbol: '📝', label: 'Markdown'},
+  jpeg: {symbol: '🖼️', label: 'JPEG'},
+  png: {symbol: '🖼️', label: 'PNG'},
+  webp: {symbol: '🖼️', label: 'WebP'},
+  gif: {symbol: '🖼️', label: 'GIF'},
+  avif: {symbol: '🖼️', label: 'AVIF'},
+  svg: {symbol: '📐', label: 'SVG'}
 };
 
 type Props = {contentType: ContentType};

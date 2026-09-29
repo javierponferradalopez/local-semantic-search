@@ -180,6 +180,19 @@ describe('POST /resources/texts', () => {
       await api.expectNothingStored();
     });
 
+    it.each(['the beach.png', 'the beach.jpg', 'the diagram.svg'])(
+      'should give 400 and unsupported_content_type for the image %j',
+      async name => {
+        const response = await api.createTextResource(name, 'the picture');
+
+        expect(response.status).toBe(BAD_REQUEST);
+        expect(await response.json()).toStrictEqual({
+          errors: [{code: 'unsupported_content_type', params: {name}}]
+        } satisfies ApiError);
+        await api.expectNothingStored();
+      }
+    );
+
     it('should judge the Content type by the name, and never by the declared MIME type', async () => {
       const refused = await api.createTextResource(
         'the notes.docx',

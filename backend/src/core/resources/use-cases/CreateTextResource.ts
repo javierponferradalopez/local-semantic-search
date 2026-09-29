@@ -80,7 +80,7 @@ export class CreateTextResource {
     return TextResource.create({
       id,
       name: resourceName,
-      contentType: this.contentTypeResolver.resolve(resourceName.value),
+      contentType: this.contentTypeResolver.resolveText(resourceName.value),
       fileKey: FileKey.of({value: `${KEY_PREFIX}/${id.value}/${resourceName.value}`}),
       checksum,
       createdAt: CreatedAt.of({value: new Date()})
