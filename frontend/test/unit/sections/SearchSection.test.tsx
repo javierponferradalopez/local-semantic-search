@@ -450,6 +450,23 @@ describe('SearchSection', () => {
       expect(search.matches).toHaveBeenCalledTimes(1);
     });
 
+    it('should show the text of a Refusal of the Matches in the alert', async () => {
+      search.matches.mockRejectedValue(
+        new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+      );
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      expect(
+        within(await screen.findByRole('alert')).getByText(
+          'The server refused the value of "q".'
+        )
+      ).toBeDefined();
+    });
+
     it('should show every Match, also two with the same text', async () => {
       search.matches.mockResolvedValue([
         {text: 'The same text.'},
@@ -653,7 +670,11 @@ describe('SearchSection', () => {
 
       renderWithGateways(<SearchSection />, {search, resources});
 
-      expect(await screen.findByRole('alert')).toBeDefined();
+      expect(
+        within(await screen.findByRole('alert')).getByText(
+          'The server refused the value of "q".'
+        )
+      ).toBeDefined();
     });
 
     it('should show no refusal when a refusal of an older list comes after the box holds a Query', async () => {

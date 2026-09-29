@@ -3,6 +3,7 @@ import {IMAGE_CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ErrorItem} from 'contract/ErrorItem';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {type JSX, useEffect, useState} from 'react';
+import {RefusalAlert} from '@/components/RefusalAlert';
 import {useResourceGateway} from '@/config/GatewaysContext';
 import {textsOfErrorItems} from '@/errors/textsOfErrorItems';
 import {textsOfFailure} from '@/errors/textsOfFailure';
@@ -70,18 +71,14 @@ export const LibrarySection = (): JSX.Element => {
 
   return (
     <section aria-labelledby="library-heading">
-      <h2 id="library-heading">Library</h2>
+      <h2 id="library-heading" className="mt-8 mb-4 text-2xl font-semibold">
+        Library
+      </h2>
       <DropZone
         onFile={create}
         onRefusal={(item: ErrorItem): void => setRefusal(textsOfErrorItems([item]))}
       />
-      {refusal.length > 0 && (
-        <ul className="refusal" role="alert">
-          {refusal.map(text => (
-            <li key={text}>{text}</li>
-          ))}
-        </ul>
-      )}
+      <RefusalAlert texts={refusal} />
       <ResourceList rows={rows} busyIds={busyIds} onRetry={retry} onDelete={remove} />
     </section>
   );

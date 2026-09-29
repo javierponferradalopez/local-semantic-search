@@ -1,4 +1,4 @@
-import {fireEvent, screen, waitFor} from '@testing-library/react';
+import {fireEvent, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import type {ResourceRow} from 'contract/ResourceRow';
@@ -300,6 +300,53 @@ describe('LibrarySection', () => {
         );
       }
     );
+
+    it('should show each text of the Refusal as one item of the alert, in order', async () => {
+      resources.retryTextResource.mockRejectedValue(
+        new Refusal([
+          {
+            code: 'resource_not_failed',
+            params: {resourceId: 'scan.pdf', ingestState: 'ingesting'}
+          },
+          {code: 'resource_not_found', params: {resourceId: 'scan.pdf'}}
+        ])
+      );
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
+
+      const alert = await screen.findByRole('alert');
+
+      expect(
+        within(alert)
+          .getAllByRole('listitem')
+          .map(item => item.textContent)
+      ).toEqual([
+        'This Resource is Ingesting. Only a Failed Resource can be ingested again. Reload the page.',
+        'The library no longer holds this Resource. Reload the page.'
+      ]);
+    });
+
+    it('should show every text of the Refusal, also two that are the same', async () => {
+      resources.retryTextResource.mockRejectedValue(
+        new Refusal([
+          {code: 'resource_not_found', params: {resourceId: 'scan.pdf'}},
+          {code: 'resource_not_found', params: {resourceId: 'notes.md'}}
+        ])
+      );
+      const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
+
+      const alert = await screen.findByRole('alert');
+
+      expect(within(alert).getAllByRole('listitem')).toHaveLength(2);
+      expect(error).not.toHaveBeenCalled();
+      error.mockRestore();
+    });
   });
 
   describe('the Gate', () => {

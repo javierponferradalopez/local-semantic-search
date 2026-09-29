@@ -1,6 +1,7 @@
 import type {MatchRow} from 'contract/MatchRow';
 import type {TextResult} from 'contract/TextResult';
 import {type JSX, useState} from 'react';
+import {RefusalAlert} from '@/components/RefusalAlert';
 import {useSearchGateway} from '@/config/GatewaysContext';
 import {textsOfFailure} from '@/errors/textsOfFailure';
 import {hrefOf} from '@/search/hrefOf';
@@ -36,13 +37,7 @@ export const MoreInThisResource = ({result, query}: Props): JSX.Element => {
           More in this file
         </button>
       )}
-      {refusal.length > 0 && (
-        <ul className="refusal" role="alert">
-          {refusal.map(text => (
-            <li key={text}>{text}</li>
-          ))}
-        </ul>
-      )}
+      <RefusalAlert texts={refusal} />
       {matches !== undefined && (
         <ol className="matches" aria-label={`More in ${result.name}`}>
           {matches.map(({text, page}, index) => (

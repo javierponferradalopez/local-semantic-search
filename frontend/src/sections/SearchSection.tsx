@@ -8,6 +8,7 @@ import {
   useRef,
   useState
 } from 'react';
+import {RefusalAlert} from '@/components/RefusalAlert';
 import {useResourceGateway, useSearchGateway} from '@/config/GatewaysContext';
 import {textsOfFailure} from '@/errors/textsOfFailure';
 import {ImageResultGrid} from '@/search/ImageResultGrid';
@@ -72,7 +73,9 @@ export const SearchSection = (): JSX.Element => {
 
   return (
     <section aria-labelledby="search-heading">
-      <h2 id="search-heading">Search</h2>
+      <h2 id="search-heading" className="mt-8 mb-4 text-2xl font-semibold">
+        Search
+      </h2>
       <search>
         <form onSubmit={search}>
           <input
@@ -87,13 +90,7 @@ export const SearchSection = (): JSX.Element => {
           />
         </form>
       </search>
-      {refusal.length > 0 && (
-        <ul className="refusal" role="alert">
-          {refusal.map(text => (
-            <li key={text}>{text}</li>
-          ))}
-        </ul>
-      )}
+      <RefusalAlert texts={refusal} />
       {boxIsEmpty && <RecentResourceList rows={recent} />}
       {!boxIsEmpty && searched !== undefined && <Groups {...searched} />}
     </section>
@@ -115,11 +112,15 @@ const Groups = ({
   return (
     <>
       <section aria-labelledby="text-results-heading">
-        <h3 id="text-results-heading">Text</h3>
+        <h3 id="text-results-heading" className="mt-6 mb-2 text-lg font-semibold">
+          Text
+        </h3>
         <TextResultList key={query} results={text} query={query} />
       </section>
       <section aria-labelledby="image-results-heading">
-        <h3 id="image-results-heading">Images</h3>
+        <h3 id="image-results-heading" className="mt-6 mb-2 text-lg font-semibold">
+          Images
+        </h3>
         <ImageResultGrid results={images} />
       </section>
     </>
