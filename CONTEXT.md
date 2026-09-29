@@ -102,7 +102,7 @@ _Avoid_: Error, Message, Trace, Cause
 ### Search
 
 **Query**:
-The text that the user typed.
+The text that a Search looks for. A person or an agent can write it.
 
 **Search**:
 The act that takes a Query and gives back Results. It is one operation, and it
