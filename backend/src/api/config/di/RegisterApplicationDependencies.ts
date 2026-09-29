@@ -5,6 +5,7 @@ import {CreateImageResource} from '../../../core/resources/use-cases/CreateImage
 import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextResource';
 import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
+import {RetryImageResource} from '../../../core/resources/use-cases/RetryImageResource';
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {GetMatches} from '../../../core/search/use-cases/GetMatches';
@@ -63,6 +64,11 @@ export const registerApplicationDependencies = (): void => {
   container.registerImplementation(
     RetryTextResource,
     new RetryTextResource({resourceRepository, fileStore, eventBus, transactionRunner})
+  );
+
+  container.registerImplementation(
+    RetryImageResource,
+    new RetryImageResource({resourceRepository, fileStore, eventBus, transactionRunner})
   );
 
   container.registerImplementation(

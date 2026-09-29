@@ -188,6 +188,33 @@ describe('LibrarySection', () => {
       expect(screen.getAllByLabelText('Ingesting')).toHaveLength(2);
     });
 
+    it('should send the Retry of an image to the route of the images', async () => {
+      resources.list.mockResolvedValue([
+        {
+          ...rowNamed('the beach.png'),
+          contentType: 'png',
+          ingestState: 'failed',
+          reason: 'image_too_large'
+        }
+      ]);
+      resources.retryImageResource.mockResolvedValue({
+        ...rowNamed('the beach.png'),
+        contentType: 'png'
+      });
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      expect(await screen.findByText('The image is too large.')).toBeDefined();
+
+      await userEvent.click(screen.getByRole('button', {name: 'Retry the beach.png'}));
+
+      expect(resources.retryImageResource).toHaveBeenCalledWith('the beach.png');
+      expect(resources.retryTextResource).not.toHaveBeenCalled();
+      await waitFor(() =>
+        expect(screen.queryByRole('button', {name: 'Retry the beach.png'})).toBeNull()
+      );
+    });
+
     it('should block the actions of the row until the gateway answers', async () => {
       let answer: (row: ResourceRow) => void = () => {};
       resources.retryTextResource.mockReturnValue(

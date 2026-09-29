@@ -3,6 +3,7 @@ import type {CreateImageResourceResponse} from 'contract/CreateImageResourceResp
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {CreateTextResourceResponse} from 'contract/CreateTextResourceResponse';
 import type {GetResourcesResponse} from 'contract/GetResourcesResponse';
+import type {RetryImageResourceResponse} from 'contract/RetryImageResourceResponse';
 import type {RetryTextResourceResponse} from 'contract/RetryTextResourceResponse';
 import {fetchJson} from '@/gateways/http/fetchJson';
 import {fetchOrRefuse} from '@/gateways/http/fetchOrRefuse';
@@ -48,6 +49,13 @@ export class HttpResourceGateway implements ResourceGateway {
   public retryTextResource(id: string): Promise<RetryTextResourceResponse> {
     return fetchJson<RetryTextResourceResponse>(
       `/resources/texts/${encodeURIComponent(id)}/retry`,
+      {method: 'POST'}
+    );
+  }
+
+  public retryImageResource(id: string): Promise<RetryImageResourceResponse> {
+    return fetchJson<RetryImageResourceResponse>(
+      `/resources/images/${encodeURIComponent(id)}/retry`,
       {method: 'POST'}
     );
   }

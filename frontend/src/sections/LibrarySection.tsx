@@ -1,4 +1,4 @@
-import {IMAGE_CONTENT_TYPES} from 'contract/ContentType';
+import {type ContentType, IMAGE_CONTENT_TYPES} from 'contract/ContentType';
 import {IMAGE_CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ErrorItem} from 'contract/ErrorItem';
 import type {ResourceRow} from 'contract/ResourceRow';
@@ -9,6 +9,9 @@ import {textsOfFailure} from '@/errors/textsOfFailure';
 import {DropZone} from '@/library/DropZone';
 import {extensionOf} from '@/library/extensionOf';
 import {ResourceList} from '@/library/ResourceList';
+
+const isAnImage = (contentType: ContentType): boolean =>
+  IMAGE_CONTENT_TYPES.some(imageType => imageType === contentType);
 
 export const LibrarySection = (): JSX.Element => {
   const resources = useResourceGateway();
@@ -35,12 +38,15 @@ export const LibrarySection = (): JSX.Element => {
       .catch((failure: unknown) => setRefusal(textsOfFailure(failure)));
   };
 
-  const retry = ({id}: ResourceRow): void => {
+  const retry = ({id, contentType}: ResourceRow): void => {
     setRefusal([]);
     setBusyIds(busy => new Set(busy).add(id));
 
-    resources
-      .retryTextResource(id)
+    const retried = isAnImage(contentType)
+      ? resources.retryImageResource(id)
+      : resources.retryTextResource(id);
+
+    retried
       .then(retried =>
         setRows(listed => listed.map(row => (row.id === id ? retried : row)))
       )
@@ -53,7 +59,7 @@ export const LibrarySection = (): JSX.Element => {
   const remove = ({id, contentType}: ResourceRow): void => {
     setRefusal([]);
 
-    const deleted = IMAGE_CONTENT_TYPES.some(imageType => imageType === contentType)
+    const deleted = isAnImage(contentType)
       ? resources.deleteImageResource(id)
       : resources.deleteTextResource(id);
 

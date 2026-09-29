@@ -1,6 +1,7 @@
 import type {CreateImageResourceResponse} from 'contract/CreateImageResourceResponse';
 import type {CreateTextResourceResponse} from 'contract/CreateTextResourceResponse';
 import type {GetResourcesResponse} from 'contract/GetResourcesResponse';
+import type {RetryImageResourceResponse} from 'contract/RetryImageResourceResponse';
 import type {RetryTextResourceResponse} from 'contract/RetryTextResourceResponse';
 
 export interface ResourceGateway {
@@ -10,4 +11,5 @@ export interface ResourceGateway {
   deleteTextResource(id: string): Promise<void>;
   deleteImageResource(id: string): Promise<void>;
   retryTextResource(id: string): Promise<RetryTextResourceResponse>;
+  retryImageResource(id: string): Promise<RetryImageResourceResponse>;
 }

@@ -2,6 +2,7 @@ import {CreateImageResource} from '../../../core/resources/use-cases/CreateImage
 import {CreateTextResource} from '../../../core/resources/use-cases/CreateTextResource';
 import {DeleteResource} from '../../../core/resources/use-cases/DeleteResource';
 import {GetResources} from '../../../core/resources/use-cases/GetResources';
+import {RetryImageResource} from '../../../core/resources/use-cases/RetryImageResource';
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
 import {GetMatches} from '../../../core/search/use-cases/GetMatches';
 import {Search} from '../../../core/search/use-cases/Search';
@@ -10,6 +11,7 @@ import {CreateTextResourceController} from '../../controllers/resources/CreateTe
 import {DeleteImageResourceController} from '../../controllers/resources/DeleteImageResourceController';
 import {DeleteTextResourceController} from '../../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../../controllers/resources/GetResourcesController';
+import {RetryImageResourceController} from '../../controllers/resources/RetryImageResourceController';
 import {RetryTextResourceController} from '../../controllers/resources/RetryTextResourceController';
 import {GetMatchesController} from '../../controllers/search/GetMatchesController';
 import {SearchController} from '../../controllers/search/SearchController';
@@ -53,6 +55,13 @@ export const registerControllersDependencies = (): void => {
     RetryTextResourceController,
     new RetryTextResourceController({
       retryTextResource: container.getDependency(RetryTextResource)
+    })
+  );
+
+  container.registerImplementation(
+    RetryImageResourceController,
+    new RetryImageResourceController({
+      retryImageResource: container.getDependency(RetryImageResource)
     })
   );
 

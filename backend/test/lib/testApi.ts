@@ -29,6 +29,7 @@ export type TestApi = {
   deleteTextResource: (id: string) => Promise<Response>;
   deleteImageResource: (id: string) => Promise<Response>;
   retryTextResource: (id: string) => Promise<Response>;
+  retryImageResource: (id: string) => Promise<Response>;
   search: (query: string) => Promise<Response>;
   matches: (id: string, query: string) => Promise<Response>;
   rowOnceIngested: (id: string) => Promise<ResourceRow>;
@@ -115,6 +116,9 @@ export const useTheTestApi = (): TestApi => {
   const retryTextResource = (id: string): Promise<Response> =>
     fetch(`${origin}/resources/texts/${id}/retry`, {method: 'POST'});
 
+  const retryImageResource = (id: string): Promise<Response> =>
+    fetch(`${origin}/resources/images/${id}/retry`, {method: 'POST'});
+
   const search = (query: string): Promise<Response> =>
     fetch(`${origin}/search?${new URLSearchParams({q: query})}`);
 
@@ -148,6 +152,7 @@ export const useTheTestApi = (): TestApi => {
     deleteTextResource,
     deleteImageResource,
     retryTextResource,
+    retryImageResource,
     search,
     matches,
     rowOnceIngested,

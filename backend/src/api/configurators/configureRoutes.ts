@@ -8,6 +8,7 @@ import {CreateTextResourceController} from '../controllers/resources/CreateTextR
 import {DeleteImageResourceController} from '../controllers/resources/DeleteImageResourceController';
 import {DeleteTextResourceController} from '../controllers/resources/DeleteTextResourceController';
 import {GetResourcesController} from '../controllers/resources/GetResourcesController';
+import {RetryImageResourceController} from '../controllers/resources/RetryImageResourceController';
 import {RetryTextResourceController} from '../controllers/resources/RetryTextResourceController';
 import {GetMatchesController} from '../controllers/search/GetMatchesController';
 import {SearchController} from '../controllers/search/SearchController';
@@ -25,6 +26,7 @@ export const configureRoutes = (app: Express): void => {
   const deleteTextResource = container.getDependency(DeleteTextResourceController);
   const deleteImageResource = container.getDependency(DeleteImageResourceController);
   const retryTextResource = container.getDependency(RetryTextResourceController);
+  const retryImageResource = container.getDependency(RetryImageResourceController);
   const search = container.getDependency(SearchController);
   const getMatches = container.getDependency(GetMatchesController);
 
@@ -56,6 +58,10 @@ export const configureRoutes = (app: Express): void => {
 
   app.post('/resources/texts/:id/retry', (request, response) =>
     retryTextResource.run(request, response)
+  );
+
+  app.post('/resources/images/:id/retry', (request, response) =>
+    retryImageResource.run(request, response)
   );
 
   app.get('/search', (request, response) => search.run(request, response));
