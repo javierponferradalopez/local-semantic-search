@@ -70,6 +70,30 @@ describe('GetResources', () => {
       expect(row?.reason).toBe('unreadable_file');
     });
 
+    it('should give the URL of the thumbnail of a Ready Image Resource', async () => {
+      const resource = aListedResource({contentType: 'png', ingestState: 'ready'});
+      resourceReader.getNewestFirst.mockResolvedValue([resource]);
+
+      const [row] = await getResources.run();
+
+      expect(row?.thumbnailUrl).toBe(`/files/ingestion/thumbnails/${resource.id}.webp`);
+    });
+
+    it.each([
+      {contentType: 'png', ingestState: 'ingesting'},
+      {contentType: 'png', ingestState: 'failed', reason: 'unreadable_file'},
+      {contentType: 'markdown', ingestState: 'ready'}
+    ] as const)(
+      'should keep no thumbnailUrl key on a $contentType row that is $ingestState',
+      async overrides => {
+        resourceReader.getNewestFirst.mockResolvedValue([aListedResource(overrides)]);
+
+        const [row] = await getResources.run();
+
+        expect(row).not.toHaveProperty('thumbnailUrl');
+      }
+    );
+
     it('should give nothing when no Resource is stored', async () => {
       resourceReader.getNewestFirst.mockResolvedValue([]);
 

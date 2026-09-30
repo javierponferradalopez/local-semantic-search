@@ -10,4 +10,5 @@ export type ResourceRow = {
   reason?: ReasonCode;
   createdAt: string;
   fileUrl: string;
+  thumbnailUrl?: string;
 };

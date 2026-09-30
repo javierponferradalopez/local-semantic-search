@@ -1,10 +1,13 @@
-import {CONTENT_TYPES} from 'contract/ContentType';
+import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {CONTENT_TYPES, isAnImageContentType} from 'contract/ContentType';
 import {INGEST_STATES} from 'contract/IngestState';
 import {REASON_CODES} from 'contract/ReasonCode';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {container} from '../../../../../src/api/config/di/Container';
 import {DrizzleResourceRepository} from '../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
 import {useTheTestApi} from '../../../../lib/testApi';
+import {ImageResourceBuilder} from '../../../../utils/builders/image-resource/ImageResourceBuilder';
 import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 
 const OK = 200;
@@ -18,8 +21,13 @@ const FIELDS_OF_A_ROW = [
   'name'
 ];
 
+const fixture = (name: string): Promise<Buffer> =>
+  readFile(join(import.meta.dirname, '../../../../fixtures', name));
+
 describe('GET /resources', () => {
   const api = useTheTestApi();
+  const repository = (): DrizzleResourceRepository =>
+    container.getDependency(DrizzleResourceRepository);
 
   it('should give the whole list, newest first', async () => {
     await api.createTextResource('the oldest.md', 'the oldest');
@@ -71,14 +79,12 @@ describe('GET /resources', () => {
 
   it('should give the reason of a Failed row, and no reason on the other rows', async () => {
     await api.createTextResource('the notes.md', 'the notes');
-    await container
-      .getDependency(DrizzleResourceRepository)
-      .create(
-        TextResourceBuilder.aTextResource()
-          .withIngestState('failed')
-          .withReason('no_text_found')
-          .build()
-      );
+    await repository().create(
+      TextResourceBuilder.aTextResource()
+        .withIngestState('failed')
+        .withReason('no_text_found')
+        .build()
+    );
 
     const rows = await api.getResources();
 
@@ -90,6 +96,44 @@ describe('GET /resources', () => {
     );
 
     for (const row of rows) {
+      expectAResourceRow(row);
+    }
+  });
+
+  it('should give a thumbnailUrl that resolves to a WebP on a Ready Image Resource', async () => {
+    const {id} = await api.createAnImageResourceRow(
+      'a-small-picture.png',
+      await fixture('a-small-picture.png')
+    );
+    await api.rowOnceIngested(id);
+
+    const [row] = await api.getResources();
+    const thumbnail = await fetch(`${api.origin()}${row?.thumbnailUrl}`);
+
+    expect(row?.ingestState).toBe('ready');
+    expect(thumbnail.status).toBe(OK);
+    expect(thumbnail.headers.get('content-type')).toBe('image/webp');
+    expectAResourceRow(row);
+  });
+
+  it('should give no thumbnailUrl on an Ingesting or a Failed Image Resource, or on a Text Resource', async () => {
+    await repository().create(ImageResourceBuilder.anImageResource().build());
+    await repository().create(
+      ImageResourceBuilder.anImageResource()
+        .withIngestState('failed')
+        .withReason('unreadable_file')
+        .build()
+    );
+    await repository().create(
+      TextResourceBuilder.aTextResource().withIngestState('ready').build()
+    );
+
+    const rows = await api.getResources();
+
+    expect(rows).toHaveLength(3);
+
+    for (const row of rows) {
+      expect(row).not.toHaveProperty('thumbnailUrl');
       expectAResourceRow(row);
     }
   });
@@ -108,6 +152,13 @@ describe('GET /resources', () => {
     if (row.ingestState === 'failed') {
       expect(REASON_CODES).toContain(row.reason);
       expect(fields).toStrictEqual([...FIELDS_OF_A_ROW, 'reason'].toSorted());
+
+      return;
+    }
+
+    if (row.ingestState === 'ready' && isAnImageContentType(row.contentType)) {
+      expect(typeof row.thumbnailUrl).toBe('string');
+      expect(fields).toStrictEqual([...FIELDS_OF_A_ROW, 'thumbnailUrl'].toSorted());
 
       return;
     }
