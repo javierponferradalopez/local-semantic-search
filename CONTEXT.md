@@ -109,8 +109,8 @@ The act that takes a Query and gives back Results. It is one operation, and it
 looks for Chunks and for Pictures.
 
 **Match**:
-One Chunk or one Picture that a Query found, with its score. It exists only for
-that Query.
+One Chunk or one Picture that a Query found, with its score. In the text group of
+a Search the score comes from the Reranker. It exists only for that Query.
 _Avoid_: Hit, Candidate, Neighbour
 
 **Result**:
@@ -125,9 +125,10 @@ system composes it to show it, and does not store it.
 _Avoid_: Reference, Source
 
 **Floor**:
-The least similarity that the best Match must reach, for a group to say that it
-found something. Each model has its own Floor, and a Floor never crosses from one
-model to the other. It decides only the empty answer, and it does not remove
+The least score that the best Match must reach, for a group to say that it found
+something. The score is the one of the model that judges the group: the Reranker
+for text, the Vision model for images. A Floor never crosses from one model to
+the other. It decides only the empty answer, and it does not remove
 Results from the list.
 _Avoid_: Threshold, Cutoff, Minimum score
 
@@ -139,3 +140,9 @@ The model that embeds Chunks and the Query for the search of Chunks.
 **Vision model**:
 The model that embeds Pictures and the Query for the search of Pictures. Its
 space is not the space of the Text model, and the two are never compared.
+
+**Reranker**:
+The model that reads a Query and a Chunk together and gives one score for the
+pair. It orders the text Results, and the text Floor is its score. It makes no
+Vector.
+_Avoid_: Cross-encoder, Rescorer
