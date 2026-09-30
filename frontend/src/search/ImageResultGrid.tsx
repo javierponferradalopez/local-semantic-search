@@ -1,6 +1,7 @@
 import type {ImageResult} from 'contract/ImageResult';
 import type {JSX} from 'react';
 import {ResourceCard} from '@/search/ResourceCard';
+import {ResourceCardGrid} from '@/search/ResourceCardGrid';
 
 type Props = {results: ImageResult[]};
 
@@ -11,7 +12,7 @@ export const ImageResultGrid = ({results}: Props): JSX.Element => {
   }
 
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-4">
+    <ResourceCardGrid>
       {results.map(result => (
         <li key={result.resourceId}>
           <ResourceCard
@@ -21,6 +22,6 @@ export const ImageResultGrid = ({results}: Props): JSX.Element => {
           />
         </li>
       ))}
-    </ul>
+    </ResourceCardGrid>
   );
 };
