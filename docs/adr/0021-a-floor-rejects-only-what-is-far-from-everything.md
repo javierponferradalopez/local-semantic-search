@@ -5,6 +5,12 @@ status: accepted
 
 # A Floor rejects only what is far from everything
 
+> **Amended by [ADR-0040](0040-a-reranker-gates-and-orders-the-text-group.md).**
+> The text `Floor` is a score of the Reranker `gte-multilingual-reranker-base`
+> `q8`, −0.58, not a cosine of `multilingual-e5-small`, and the Reranker orders
+> the text `Results`. The image `Floor`, the gate in `Search` and the rule on
+> the text of a `Chunk` stand.
+
 **Each `Floor` is a low constant. It keeps every real answer that the probes
 found, and it rejects only a `Query` whose best `Match` is far from the whole
 corpus. The image `Floor` is cosine 0.05 on SigLIP2 base/16 `fp32`. The text

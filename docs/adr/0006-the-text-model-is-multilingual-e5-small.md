@@ -5,6 +5,9 @@ status: accepted
 
 # The text model is multilingual-e5-small, 384 dimensions, fp32
 
+> **Amended by [ADR-0040](0040-a-reranker-gates-and-orders-the-text-group.md).**
+> The text `Floor` no longer belongs to this model: it belongs to the Reranker.
+
 The search needs one model to embed a `Chunk` and a `Query`. Twenty-one
 repositories ran on this machine, and the measured quality of the two finalists
 was equal. **The choice is `intfloat/multilingual-e5-small`, at its native 384

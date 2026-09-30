@@ -9,6 +9,10 @@ status: accepted
 > Each eval has two scorers, not one: the reciprocal rank, and the verdict of
 > the `Floor`. The golden set also holds queries whose answer is not in the
 > corpus. Everything else stands.
+>
+> **Amended by [ADR-0040](0040-a-reranker-gates-and-orders-the-text-group.md).**
+> The text eval ranks with the two stages of the text group: the cosine of the
+> Text model, then the score of the Reranker.
 
 **No automated test loads a model. What a model does — the prefix its adapter
 writes, the width of its `Vector`, and above all whether the right `Resource`

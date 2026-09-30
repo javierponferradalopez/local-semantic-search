@@ -5,6 +5,9 @@ status: accepted
 
 # The embedders load before the server listens
 
+> **Amended by [ADR-0040](0040-a-reranker-gates-and-orders-the-text-group.md).**
+> The Reranker is a fourth model, and it loads the same way.
+
 The three encoder towers — the Text model, and the text and vision towers of
 the Vision model — load at start-up, and `main.ts` waits for them before the
 HTTP server listens. The adapter **is** the loaded model: a private
