@@ -2,10 +2,13 @@
   "name": "the-image-search-of-the-golden-set",
   "means": {
     "reciprocal rank": 0.9659090909090909,
-    "verdict of the Floor": 0.9285714285714286
+    "verdict of the Floor": 0.9285714285714286,
+    "best score of a real Query": 0.10693028020569034,
+    "best score of an absent Query": 0.020761242469562482
   },
   "counts": {
-    "real Query the Floor rejects": 1
+    "real Query the Floor rejects": 1,
+    "absent Query the Floor lets in": 1
   },
   "cases": [
     {
@@ -13,7 +16,8 @@
       "expected": "tranvia-en-lisboa.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.15062354940746436
       }
     },
     {
@@ -21,7 +25,8 @@
       "expected": "bicicleta-de-carretera.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.12786683553932715
       }
     },
     {
@@ -29,7 +34,8 @@
       "expected": "guiso-de-lentejas-con-salchicha.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.11679888126374172
       }
     },
     {
@@ -37,7 +43,8 @@
       "expected": "hojas-de-monstera.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.12319474287271004
       }
     },
     {
@@ -45,7 +52,8 @@
       "expected": "pan-de-masa-madre.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.10735647307624029
       }
     },
     {
@@ -53,7 +61,8 @@
       "expected": "router-wifi.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.13680278215550848
       }
     },
     {
@@ -61,7 +70,8 @@
       "expected": "corredores-de-maraton.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.06287701195223053
       }
     },
     {
@@ -69,7 +79,8 @@
       "expected": "golden-retriever-con-un-palo.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.12655837799277758
       }
     },
     {
@@ -77,7 +88,8 @@
       "expected": "montana-nevada.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.12117817041125464
       }
     },
     {
@@ -85,7 +97,8 @@
       "expected": "atardecer-en-la-playa.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.11107955920365993
       }
     },
     {
@@ -93,7 +106,8 @@
       "expected": "cocina-moderna.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.08323365446193702
       }
     },
     {
@@ -101,7 +115,8 @@
       "expected": "golden-retriever-con-un-palo.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.1528812985017053
       }
     },
     {
@@ -109,7 +124,8 @@
       "expected": "montana-nevada.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.13731145242448894
       }
     },
     {
@@ -117,7 +133,8 @@
       "expected": "pan-de-masa-madre.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.15145755085870494
       }
     },
     {
@@ -125,7 +142,8 @@
       "expected": "tranvia-en-lisboa.jpg",
       "scores": {
         "reciprocal rank": 0.25,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.09572767651262572
       }
     },
     {
@@ -133,7 +151,8 @@
       "expected": "golden-retriever-con-un-palo.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.07959869679027588
       }
     },
     {
@@ -141,7 +160,8 @@
       "expected": "router-wifi.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.09435188524149318
       }
     },
     {
@@ -149,7 +169,8 @@
       "expected": "corredores-de-maraton.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 0
+        "verdict of the Floor": 0,
+        "best score of a real Query": 0.04138462799249162
       }
     },
     {
@@ -157,7 +178,8 @@
       "expected": "montana-nevada.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.06989583027186362
       }
     },
     {
@@ -165,7 +187,8 @@
       "expected": "hojas-de-monstera.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.07912760569012549
       }
     },
     {
@@ -173,7 +196,8 @@
       "expected": "guiso-de-lentejas-con-salchicha.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.08779545496776678
       }
     },
     {
@@ -181,49 +205,56 @@
       "expected": "cocina-moderna.jpg",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.09536404693679397
       }
     },
     {
       "input": "un gato durmiendo en el sofá",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -0.03508335118778728
       }
     },
     {
       "input": "una bicicleta de montaña en el barro",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of an absent Query": 0.025757306941055304
       }
     },
     {
       "input": "un tren de alta velocidad",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of an absent Query": 0.034993354690246004
       }
     },
     {
       "input": "coches de Fórmula 1 en un circuito",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 0
+        "verdict of the Floor": 0,
+        "best score of an absent Query": 0.05161745506217696
       }
     },
     {
       "input": "partitura de piano",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of an absent Query": 0.020086136736331802
       }
     },
     {
       "input": "a birthday cake with candles",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of an absent Query": 0.027196552575352088
       }
     }
   ]

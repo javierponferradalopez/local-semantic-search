@@ -1,11 +1,14 @@
 {
   "name": "the-text-search-of-the-golden-set",
   "means": {
-    "reciprocal rank": 0.8983333333333333,
-    "verdict of the Floor": 0.8571428571428571
+    "reciprocal rank": 1,
+    "verdict of the Floor": 0.9130434782608695,
+    "best score of a real Query": 0.5472349910065532,
+    "best score of an absent Query": -1.236978386577807
   },
   "counts": {
-    "real Query the Floor rejects": 0
+    "real Query the Floor rejects": 1,
+    "absent Query the Floor lets in": 5
   },
   "cases": [
     {
@@ -13,7 +16,8 @@
       "expected": "receta-de-lentejas.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.1348721981048584
       }
     },
     {
@@ -21,7 +25,8 @@
       "expected": "receta-de-lentejas.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.5431686639785767
       }
     },
     {
@@ -29,7 +34,8 @@
       "expected": "receta-de-lentejas.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.1390967071056366
       }
     },
     {
@@ -37,7 +43,8 @@
       "expected": "mantenimiento-de-la-bicicleta.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.23944413661956787
       }
     },
     {
@@ -45,7 +52,8 @@
       "expected": "mantenimiento-de-la-bicicleta.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.6374905705451965
       }
     },
     {
@@ -53,7 +61,8 @@
       "expected": "mantenimiento-de-la-bicicleta.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.10340560227632523
       }
     },
     {
@@ -61,7 +70,8 @@
       "expected": "notas-del-viaje-a-lisboa.txt",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.22826896607875824
       }
     },
     {
@@ -69,15 +79,17 @@
       "expected": "notas-del-viaje-a-lisboa.txt",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.3126329183578491
       }
     },
     {
       "input": "dulces típicos con canela",
       "expected": "notas-del-viaje-a-lisboa.txt",
       "scores": {
-        "reciprocal rank": 0.25,
-        "verdict of the Floor": 1
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.32206594944000244
       }
     },
     {
@@ -85,7 +97,8 @@
       "expected": "cuidado-de-las-plantas-de-interior.txt",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.7604537010192871
       }
     },
     {
@@ -93,7 +106,8 @@
       "expected": "cuidado-de-las-plantas-de-interior.txt",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.49728038907051086
       }
     },
     {
@@ -101,23 +115,26 @@
       "expected": "cuidado-de-las-plantas-de-interior.txt",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.2767977714538574
       }
     },
     {
       "input": "alimentar la masa madre",
       "expected": "sourdough-starter.md",
       "scores": {
-        "reciprocal rank": 0.5,
-        "verdict of the Floor": 1
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.3818793296813965
       }
     },
     {
       "input": "la masa madre tiene un líquido gris encima",
       "expected": "sourdough-starter.md",
       "scores": {
-        "reciprocal rank": 0.5,
-        "verdict of the Floor": 1
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.22395844757556915
       }
     },
     {
@@ -125,23 +142,26 @@
       "expected": "sourdough-starter.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.36828380823135376
       }
     },
     {
       "input": "contraseña del wifi de invitados",
       "expected": "home-network-setup.txt",
       "scores": {
-        "reciprocal rank": 0.5,
-        "verdict of the Floor": 1
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.2177657037973404
       }
     },
     {
       "input": "se ha caído internet, qué reinicio primero",
       "expected": "home-network-setup.txt",
       "scores": {
-        "reciprocal rank": 0.2,
-        "verdict of the Floor": 1
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.3525943458080292
       }
     },
     {
@@ -149,7 +169,8 @@
       "expected": "home-network-setup.txt",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.38179144263267517
       }
     },
     {
@@ -157,7 +178,8 @@
       "expected": "entrenamiento-media-maraton.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.6276866793632507
       }
     },
     {
@@ -165,7 +187,8 @@
       "expected": "entrenamiento-media-maraton.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.0155482292175293
       }
     },
     {
@@ -173,7 +196,8 @@
       "expected": "entrenamiento-media-maraton.md",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.5351967215538025
       }
     },
     {
@@ -181,7 +205,8 @@
       "expected": "contrato-de-alquiler.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.22986705601215363
       }
     },
     {
@@ -189,7 +214,8 @@
       "expected": "contrato-de-alquiler.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.38809600472450256
       }
     },
     {
@@ -197,7 +223,8 @@
       "expected": "contrato-de-alquiler.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.43406811356544495
       }
     },
     {
@@ -205,7 +232,8 @@
       "expected": "informe-de-la-rodilla.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.26349684596061707
       }
     },
     {
@@ -213,7 +241,8 @@
       "expected": "informe-de-la-rodilla.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.311535358428955
       }
     },
     {
@@ -221,7 +250,8 @@
       "expected": "informe-de-la-rodilla.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.03245959058403969
       }
     },
     {
@@ -229,7 +259,8 @@
       "expected": "presupuesto-de-la-cocina.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.6118387579917908
       }
     },
     {
@@ -237,7 +268,8 @@
       "expected": "presupuesto-de-la-cocina.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.3904176950454712
       }
     },
     {
@@ -245,42 +277,340 @@
       "expected": "presupuesto-de-la-cocina.pdf",
       "scores": {
         "reciprocal rank": 1,
-        "verdict of the Floor": 1
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.9596723914146423
+      }
+    },
+    {
+      "input": "por qué no se fondea sobre la posidonia",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.8935320973396301
+      }
+    },
+    {
+      "input": "qué es el blanqueamiento del coral",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.0394082069396973
+      }
+    },
+    {
+      "input": "a qué temperatura del agua muere un coral",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.7360800504684448
+      }
+    },
+    {
+      "input": "cuándo ponen los huevos las tortugas",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.126110315322876
+      }
+    },
+    {
+      "input": "qué hago si me pica una medusa",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.091986894607544
+      }
+    },
+    {
+      "input": "bandera morada en la playa",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": -0.2592507600784302
+      }
+    },
+    {
+      "input": "por qué el mar sube más con luna llena",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.1405853033065796
+      }
+    },
+    {
+      "input": "dónde avistar ballenas en el sur",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 0,
+        "best score of a real Query": -0.5913864970207214
+      }
+    },
+    {
+      "input": "animal que cambia de color para esconderse en las rocas",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.442452311515808
+      }
+    },
+    {
+      "input": "consejos para hacer snorkel",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.6741026639938354
+      }
+    },
+    {
+      "input": "delfines",
+      "expected": "guia-de-la-vida-marina.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.029725702479481697
+      }
+    },
+    {
+      "input": "cómo cancelo una petición si el componente se desmonta",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.3345848321914673
+      }
+    },
+    {
+      "input": "reintentar una petición que falla",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 2.969694137573242
+      }
+    },
+    {
+      "input": "qué hago con un error 401",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.3453238606452942
+      }
+    },
+    {
+      "input": "invalidar la caché después de guardar",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.42908576130867004
+      }
+    },
+    {
+      "input": "actualización optimista con useMutation",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.6130126714706421
+      }
+    },
+    {
+      "input": "paginación con cursor en una lista larga",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 1.0576775074005127
+      }
+    },
+    {
+      "input": "mostrar el progreso de la subida de un archivo",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.6672205328941345
+      }
+    },
+    {
+      "input": "cómo mockear el servidor en los tests de un hook",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 2.856247663497925
+      }
+    },
+    {
+      "input": "staleTime",
+      "expected": "patrones-de-peticiones-al-servidor.md",
+      "scores": {
+        "reciprocal rank": 1,
+        "verdict of the Floor": 1,
+        "best score of a real Query": 0.691752552986145
       }
     },
     {
       "input": "gatos",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 0
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -0.904208242893219
       }
     },
     {
       "input": "cómo declarar la renta como autónomo",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 0
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -0.6182156205177307
       }
     },
     {
       "input": "reglas del ajedrez para principiantes",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 0
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -1.7698981761932373
       }
     },
     {
       "input": "the history of the Roman Empire",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 0
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -3.244318962097168
       }
     },
     {
       "input": "aprender a tocar la guitarra",
       "expected": null,
       "scores": {
-        "verdict of the Floor": 0
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -1.0942286252975464
+      }
+    },
+    {
+      "input": "el tiempo mañana en Madrid",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -1.6311663389205933
+      }
+    },
+    {
+      "input": "feature flags",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -1.243686318397522
+      }
+    },
+    {
+      "input": "cómo abro un modal",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 0,
+        "best score of an absent Query": -0.5743235945701599
+      }
+    },
+    {
+      "input": "componentes del design system",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 0,
+        "best score of an absent Query": -0.3639571964740753
+      }
+    },
+    {
+      "input": "traducciones con react-polyglot",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -0.6746209859848022
+      }
+    },
+    {
+      "input": "migrar el brand kit antiguo al resources center",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -3.103080987930298
+      }
+    },
+    {
+      "input": "asdkjh qwe",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 0,
+        "best score of an absent Query": -0.3912505805492401
+      }
+    },
+    {
+      "input": "qwerty",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -0.6774373054504395
+      }
+    },
+    {
+      "input": "zzzz",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -1.279639482498169
+      }
+    },
+    {
+      "input": "jkl ñlk",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -0.6288437843322754
+      }
+    },
+    {
+      "input": "aaaa bbbb",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -1.3387792110443115
+      }
+    },
+    {
+      "input": "xkcd lol",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 1,
+        "best score of an absent Query": -3.270979881286621
+      }
+    },
+    {
+      "input": "123 456",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 0,
+        "best score of an absent Query": -0.264657586812973
+      }
+    },
+    {
+      "input": "fdsfsd",
+      "expected": null,
+      "scores": {
+        "verdict of the Floor": 0,
+        "best score of an absent Query": -0.42929646372795105
       }
     }
   ]

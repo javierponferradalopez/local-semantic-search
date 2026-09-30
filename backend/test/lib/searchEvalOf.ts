@@ -69,6 +69,15 @@ const reciprocalRank = <Match extends {score: number}>({
   return index === -1 ? 0 : 1 / (index + 1);
 };
 
+// The score the Floor compares, so the report gives the numbers that set the Floor.
+const bestScoreWhen =
+  (answered: boolean) =>
+  <Match extends {score: number}>({
+    output,
+    expected
+  }: Judged<Match>): number | undefined =>
+    (expected !== null) === answered ? output[0]?.bestMatch.score : undefined;
+
 // ADR-0016 and ADR-0021: the ranking and the gate, on the owner's corpus and in the owner's words.
 export const searchEvalOf = <Match extends {score: number}>({
   corpusFolder,
@@ -96,13 +105,20 @@ export const searchEvalOf = <Match extends {score: number}>({
       name: 'verdict of the Floor',
       score: ({output, expected}: Judged<Match>): number =>
         passesTheFloor(output) === (expected !== null) ? 1 : 0
-    }
+    },
+    {name: 'best score of a real Query', score: bestScoreWhen(true)},
+    {name: 'best score of an absent Query', score: bestScoreWhen(false)}
   ],
   counts: [
     {
       name: 'real Query the Floor rejects',
       holds: ({output, expected}: Judged<Match>): boolean =>
         expected !== null && !passesTheFloor(output)
+    },
+    {
+      name: 'absent Query the Floor lets in',
+      holds: ({output, expected}: Judged<Match>): boolean =>
+        expected === null && passesTheFloor(output)
     }
   ]
 });

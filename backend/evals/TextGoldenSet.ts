@@ -73,9 +73,79 @@ export const TEXT_GOLDEN_SET: readonly GoldenCase[] = [
     query: 'kitchen renovation payment schedule',
     expected: 'presupuesto-de-la-cocina.pdf'
   },
+  // A long Markdown with lists and tables.
+  {
+    query: 'por qué no se fondea sobre la posidonia',
+    expected: 'guia-de-la-vida-marina.md'
+  },
+  {query: 'qué es el blanqueamiento del coral', expected: 'guia-de-la-vida-marina.md'},
+  {
+    query: 'a qué temperatura del agua muere un coral',
+    expected: 'guia-de-la-vida-marina.md'
+  },
+  {query: 'cuándo ponen los huevos las tortugas', expected: 'guia-de-la-vida-marina.md'},
+  {query: 'qué hago si me pica una medusa', expected: 'guia-de-la-vida-marina.md'},
+  {query: 'bandera morada en la playa', expected: 'guia-de-la-vida-marina.md'},
+  {
+    query: 'por qué el mar sube más con luna llena',
+    expected: 'guia-de-la-vida-marina.md'
+  },
+  {query: 'dónde avistar ballenas en el sur', expected: 'guia-de-la-vida-marina.md'},
+  {
+    query: 'animal que cambia de color para esconderse en las rocas',
+    expected: 'guia-de-la-vida-marina.md'
+  },
+  {query: 'consejos para hacer snorkel', expected: 'guia-de-la-vida-marina.md'},
+  {query: 'delfines', expected: 'guia-de-la-vida-marina.md'},
+  // A technical Markdown with code blocks, as the owner's are (#88).
+  {
+    query: 'cómo cancelo una petición si el componente se desmonta',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {
+    query: 'reintentar una petición que falla',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {query: 'qué hago con un error 401', expected: 'patrones-de-peticiones-al-servidor.md'},
+  {
+    query: 'invalidar la caché después de guardar',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {
+    query: 'actualización optimista con useMutation',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {
+    query: 'paginación con cursor en una lista larga',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {
+    query: 'mostrar el progreso de la subida de un archivo',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {
+    query: 'cómo mockear el servidor en los tests de un hook',
+    expected: 'patrones-de-peticiones-al-servidor.md'
+  },
+  {query: 'staleTime', expected: 'patrones-de-peticiones-al-servidor.md'},
   {query: 'gatos', expected: null},
   {query: 'cómo declarar la renta como autónomo', expected: null},
   {query: 'reglas del ajedrez para principiantes', expected: null},
   {query: 'the history of the Roman Empire', expected: null},
-  {query: 'aprender a tocar la guitarra', expected: null}
+  {query: 'aprender a tocar la guitarra', expected: null},
+  {query: 'el tiempo mañana en Madrid', expected: null},
+  // The owner's words on their technical Markdown (#89). No Resource of the corpus answers them.
+  {query: 'feature flags', expected: null},
+  {query: 'cómo abro un modal', expected: null},
+  {query: 'componentes del design system', expected: null},
+  {query: 'traducciones con react-polyglot', expected: null},
+  {query: 'migrar el brand kit antiguo al resources center', expected: null},
+  {query: 'asdkjh qwe', expected: null},
+  {query: 'qwerty', expected: null},
+  {query: 'zzzz', expected: null},
+  {query: 'jkl ñlk', expected: null},
+  {query: 'aaaa bbbb', expected: null},
+  {query: 'xkcd lol', expected: null},
+  {query: '123 456', expected: null},
+  {query: 'fdsfsd', expected: null}
 ];
