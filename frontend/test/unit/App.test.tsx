@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {App} from '@/App';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
+import {letTimePass} from '../utils/letTimePass';
 import {type MockProxy, mock} from '../utils/mock';
 import {renderWithGateways} from '../utils/renderWithGateways';
 
@@ -67,5 +68,51 @@ describe('App', () => {
     );
     expect(await recentNames()).toEqual(['old.md']);
     expect(resources.list).toHaveBeenCalledOnce();
+  });
+
+  describe('the poll', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should show a Resource that the poll makes Ready the same in the Library and in Recently created', async () => {
+      const thumbnailUrl = '/files/thumbnails/the beach.webp';
+      const theBeach: ResourceRow = {
+        ...rowNamed('the beach.png'),
+        contentType: 'png',
+        ingestState: 'ingesting'
+      };
+      resources.list
+        .mockResolvedValueOnce([theBeach])
+        .mockResolvedValue([{...theBeach, ingestState: 'ready', thumbnailUrl}]);
+
+      renderWithGateways(<App />, {resources});
+
+      await letTimePass(0);
+
+      expect(within(theLibrary()).getByRole('status', {name: 'Ingesting'})).toBeDefined();
+
+      await letTimePass(2000);
+
+      const thumbnailOf = (element: HTMLElement): string | null | undefined =>
+        element.querySelector('img')?.getAttribute('src');
+
+      expect(within(theLibrary()).getByText('Ready')).toBeDefined();
+      expect(
+        thumbnailOf(within(theLibrary()).getByRole('row', {name: /the beach\.png/}))
+      ).toBe(thumbnailUrl);
+      expect(
+        thumbnailOf(
+          within(screen.getByRole('region', {name: 'Recently created'})).getByRole(
+            'link',
+            {name: 'the beach.png'}
+          )
+        )
+      ).toBe(thumbnailUrl);
+    });
   });
 });

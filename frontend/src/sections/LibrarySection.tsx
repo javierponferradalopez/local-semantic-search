@@ -16,7 +16,7 @@ export const LibrarySection = (): JSX.Element => {
   const [toDelete, setToDelete] = useState<ResourceRow>();
   const deleting = toDelete !== undefined && busyIds.has(toDelete.id);
 
-  // It stays until a reload, because until then the Library does not hold the whole list.
+  // It stays until a list succeeds, because until then the Library does not hold the whole list.
   const refusalOfTheList =
     resources.listFailure === undefined ? [] : textsOfFailure(resources.listFailure);
 

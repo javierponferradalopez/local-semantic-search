@@ -1,10 +1,11 @@
-import {fireEvent, screen, waitFor, within} from '@testing-library/react';
+import {act, fireEvent, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {Refusal} from '@/gateways/Refusal';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
 import {LibrarySection} from '@/sections/LibrarySection';
+import {letTimePass} from '../../utils/letTimePass';
 import {type MockProxy, mock} from '../../utils/mock';
 import {renderWithGateways} from '../../utils/renderWithGateways';
 
@@ -755,6 +756,322 @@ describe('LibrarySection', () => {
       expect(within(alert).getAllByRole('listitem')).toHaveLength(2);
       expect(error).not.toHaveBeenCalled();
       error.mockRestore();
+    });
+  });
+
+  describe('the poll', () => {
+    const POLL_INTERVAL = 2000;
+
+    let resources: MockProxy<ResourceGateway>;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      resources = mock<ResourceGateway>();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      theTabIs('visible');
+    });
+
+    // The async wrapper of Testing Library waits on a timer that it advances only for the fake timers of Jest, so findBy and user-event hang here.
+
+    const theTabIs = (visibilityState: DocumentVisibilityState): void => {
+      Object.defineProperty(document, 'visibilityState', {
+        configurable: true,
+        value: visibilityState
+      });
+      act(() => {
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+    };
+
+    const aListThatWaits = (): {
+      list: Promise<ResourceRow[]>;
+      give: (rows: ResourceRow[]) => void;
+    } => {
+      let give: (rows: ResourceRow[]) => void = () => undefined;
+      const list = new Promise<ResourceRow[]>(resolve => {
+        give = resolve;
+      });
+
+      return {list, give};
+    };
+
+    const ready = (name: string): ResourceRow => ({
+      ...rowNamed(name),
+      ingestState: 'ready'
+    });
+
+    it('should ask for the list every 2 s while a Resource is Ingesting, and stop when none is', async () => {
+      resources.list
+        .mockResolvedValueOnce([rowNamed('notes.md')])
+        .mockResolvedValueOnce([rowNamed('notes.md')])
+        .mockResolvedValue([ready('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL - 1);
+
+      expect(resources.list).toHaveBeenCalledOnce();
+
+      await letTimePass(1);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(3);
+      expect(screen.getByText('Ready')).toBeDefined();
+      expect(screen.queryByRole('status', {name: 'Ingesting'})).toBeNull();
+
+      await letTimePass(POLL_INTERVAL * 5);
+
+      expect(resources.list).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not ask for the list when no Resource is Ingesting', async () => {
+      resources.list.mockResolvedValue([ready('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL * 5);
+
+      expect(resources.list).toHaveBeenCalledOnce();
+    });
+
+    it('should not ask for the list when the only Resource that is not Ready is Failed', async () => {
+      resources.list.mockResolvedValue([
+        {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'},
+        ready('notes.md')
+      ]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL * 5);
+
+      expect(resources.list).toHaveBeenCalledOnce();
+    });
+
+    it('should ask for the list while one Resource of several is Ingesting', async () => {
+      resources.list.mockResolvedValue([ready('manual.pdf'), rowNamed('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+    });
+
+    it('should start again when a create makes a Resource Ingesting', async () => {
+      resources.list.mockResolvedValue([]);
+      resources.createTextResource.mockResolvedValue(rowNamed('notes.md'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+      dropOnTheDropZone(aFile('notes.md'));
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+    });
+
+    it('should start again when a Retry makes a Resource Ingesting', async () => {
+      resources.list.mockResolvedValue([
+        {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'}
+      ]);
+      resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+      fireEvent.click(screen.getByRole('button', {name: 'Retry scan.pdf'}));
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+    });
+
+    it('should stop while the tab is hidden, and start again when it is visible', async () => {
+      resources.list.mockResolvedValue([rowNamed('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(0);
+      theTabIs('hidden');
+      await letTimePass(POLL_INTERVAL * 5);
+
+      expect(resources.list).toHaveBeenCalledOnce();
+
+      theTabIs('visible');
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not start again when the tab is visible and no Resource is Ingesting', async () => {
+      const tick = aListThatWaits();
+      resources.list
+        .mockResolvedValueOnce([rowNamed('notes.md')])
+        .mockReturnValueOnce(tick.list);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+      theTabIs('hidden');
+      tick.give([ready('notes.md')]);
+      await letTimePass(0);
+      theTabIs('visible');
+      await letTimePass(POLL_INTERVAL * 5);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+    });
+
+    it('should show nothing when a tick fails, keep the list, and ask again at the next tick', async () => {
+      resources.list
+        .mockResolvedValueOnce([rowNamed('notes.md')])
+        .mockRejectedValueOnce(
+          new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+        )
+        .mockResolvedValue([rowNamed('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole('alert')).toBeNull();
+      expect(screen.getByText('notes.md')).toBeDefined();
+
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(3);
+    });
+
+    it('should wait for the response of a tick before it schedules the next', async () => {
+      const tick = aListThatWaits();
+      resources.list
+        .mockResolvedValueOnce([rowNamed('notes.md')])
+        .mockReturnValueOnce(tick.list)
+        .mockResolvedValue([rowNamed('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL * 5);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+
+      tick.give([rowNamed('notes.md')]);
+      await letTimePass(POLL_INTERVAL - 1);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
+
+      await letTimePass(1);
+
+      expect(resources.list).toHaveBeenCalledTimes(3);
+    });
+
+    it('should keep a Resource that the owner creates while a tick is in flight', async () => {
+      const tick = aListThatWaits();
+      resources.list
+        .mockResolvedValueOnce([rowNamed('old.md')])
+        .mockReturnValueOnce(tick.list);
+      resources.createTextResource.mockResolvedValue(rowNamed('new.md'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+      dropOnTheDropZone(aFile('new.md'));
+      await letTimePass(0);
+      tick.give([ready('old.md')]);
+      await letTimePass(0);
+
+      expect(screen.getByText('old.md')).toBeDefined();
+      expect(screen.getByText('new.md')).toBeDefined();
+    });
+
+    it('should show once a Resource that a tick holds before its create ends', async () => {
+      let endTheCreate: (row: ResourceRow) => void = () => undefined;
+      resources.list
+        .mockResolvedValueOnce([rowNamed('old.md')])
+        .mockResolvedValue([rowNamed('new.md'), rowNamed('old.md')]);
+      resources.createTextResource.mockReturnValue(
+        new Promise(resolve => (endTheCreate = resolve))
+      );
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(0);
+      dropOnTheDropZone(aFile('new.md'));
+      await letTimePass(POLL_INTERVAL);
+
+      expect(screen.getByText('new.md')).toBeDefined();
+
+      endTheCreate(rowNamed('new.md'));
+      await letTimePass(0);
+
+      expect(screen.getAllByText('new.md')).toHaveLength(1);
+    });
+
+    it('should keep a Resource that the owner retries while a tick is in flight Ingesting', async () => {
+      const tick = aListThatWaits();
+      const failed: ResourceRow = {
+        ...rowNamed('scan.pdf'),
+        ingestState: 'failed',
+        reason: 'ingest_error'
+      };
+      resources.list
+        .mockResolvedValueOnce([failed, rowNamed('notes.md')])
+        .mockReturnValueOnce(tick.list)
+        .mockResolvedValue([rowNamed('scan.pdf')]);
+      resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+      fireEvent.click(screen.getByRole('button', {name: 'Retry scan.pdf'}));
+      await letTimePass(0);
+      tick.give([failed]);
+      await letTimePass(0);
+
+      expect(screen.queryByRole('button', {name: 'Retry scan.pdf'})).toBeNull();
+
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(3);
+    });
+
+    it('should take out a Resource that the list no longer holds, when the owner did not create it during the tick', async () => {
+      resources.list
+        .mockResolvedValueOnce([rowNamed('notes.md'), rowNamed('manual.pdf')])
+        .mockResolvedValue([rowNamed('manual.pdf')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(POLL_INTERVAL);
+
+      expect(screen.queryByText('notes.md')).toBeNull();
+      expect(screen.getByText('manual.pdf')).toBeDefined();
+    });
+
+    it('should remove the refusal of the list when a tick succeeds', async () => {
+      resources.list
+        .mockRejectedValueOnce(
+          new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+        )
+        .mockResolvedValue([rowNamed('notes.md'), rowNamed('old.md')]);
+      resources.createTextResource.mockResolvedValue(rowNamed('notes.md'));
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await letTimePass(0);
+
+      expect(screen.getByRole('alert')).toBeDefined();
+
+      dropOnTheDropZone(aFile('notes.md'));
+      await letTimePass(POLL_INTERVAL);
+
+      expect(screen.getByText('old.md')).toBeDefined();
+      expect(screen.queryByRole('alert')).toBeNull();
     });
   });
 

@@ -10,6 +10,7 @@ import type {ResourceGateway} from '@/gateways/ResourceGateway';
 import type {SearchGateway} from '@/gateways/SearchGateway';
 import {textOfIngestState} from '@/library/textOfIngestState';
 import {SearchSection} from '@/sections/SearchSection';
+import {letTimePass} from '../../utils/letTimePass';
 import {type MockProxy, mock} from '../../utils/mock';
 import {renderWithGateways} from '../../utils/renderWithGateways';
 
@@ -526,6 +527,7 @@ describe('SearchSection', () => {
 
   describe('as the owner types', () => {
     const SEARCH_DELAY = 300;
+    const POLL_INTERVAL = 2000;
 
     type PendingSearch = {
       promise: Promise<SearchResponse>;
@@ -617,6 +619,21 @@ describe('SearchSection', () => {
 
       await wait(SEARCH_DELAY);
 
+      expect(search.search).toHaveBeenCalledOnce();
+    });
+
+    it('should not search again when the poll changes the list of Resources', async () => {
+      resources.list
+        .mockResolvedValueOnce([aResourceRow('notes.md', {ingestState: 'ingesting'})])
+        .mockResolvedValue([aResourceRow('notes.md')]);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      pushEnter();
+      await letTimePass(POLL_INTERVAL);
+
+      expect(resources.list).toHaveBeenCalledTimes(2);
       expect(search.search).toHaveBeenCalledOnce();
     });
 
