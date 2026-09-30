@@ -1,5 +1,6 @@
 import type {ResourceRow} from 'contract/ResourceRow';
 import type {JSX} from 'react';
+import {ContentTypeIcon} from '@/components/ContentTypeIcon';
 import {Button} from '@/components/ui/button';
 import {
   Table,
@@ -28,6 +29,9 @@ export const ResourceList = ({rows, busyIds, onRetry, onDelete}: Props): JSX.Ele
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead scope="col" className="w-14">
+            <span className="sr-only">Preview</span>
+          </TableHead>
           <TableHead scope="col">Name</TableHead>
           <TableHead scope="col">Content type</TableHead>
           <TableHead scope="col">Ingest state</TableHead>
@@ -41,6 +45,19 @@ export const ResourceList = ({rows, busyIds, onRetry, onDelete}: Props): JSX.Ele
 
           return (
             <TableRow key={row.id} aria-busy={busy}>
+              <TableCell>
+                {row.thumbnailUrl === undefined ? (
+                  <div className="flex size-10 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                    <ContentTypeIcon contentType={row.contentType} className="size-5" />
+                  </div>
+                ) : (
+                  <img
+                    src={row.thumbnailUrl}
+                    alt=""
+                    className="size-10 rounded-md bg-muted object-cover"
+                  />
+                )}
+              </TableCell>
               <TableCell>
                 <a
                   href={row.fileUrl}

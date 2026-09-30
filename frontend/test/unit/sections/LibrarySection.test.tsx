@@ -67,6 +67,79 @@ describe('LibrarySection', () => {
     );
   });
 
+  describe('the column at the left of the name', () => {
+    const firstCellOf = async (name: string): Promise<HTMLElement> => {
+      const row = await screen.findByRole('row', {name: new RegExp(name)});
+
+      return within(row).getAllByRole('cell')[0] as HTMLElement;
+    };
+
+    it('should come before the name, and keep the Content type column', async () => {
+      const resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([rowNamed('notes.md')]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      await screen.findByText('notes.md');
+
+      expect(
+        screen.getAllByRole('columnheader').map(header => header.textContent)
+      ).toStrictEqual([
+        'Preview',
+        'Name',
+        'Content type',
+        'Ingest state',
+        'Created',
+        'Actions'
+      ]);
+    });
+
+    it('should show the thumbnail of an Image Resource that has one', async () => {
+      const resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([
+        {
+          ...rowNamed('the beach.png'),
+          contentType: 'png',
+          ingestState: 'ready',
+          thumbnailUrl: '/files/thumbnails/the beach.webp'
+        }
+      ]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const thumbnail = (await firstCellOf('the beach.png')).querySelector('img');
+
+      expect(thumbnail?.getAttribute('src')).toBe('/files/thumbnails/the beach.webp');
+      expect(thumbnail?.getAttribute('alt')).toBe('');
+    });
+
+    it('should show the icon of the Content type of a Text Resource', async () => {
+      const resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([{...rowNamed('manual.pdf'), contentType: 'pdf'}]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const cell = await firstCellOf('manual.pdf');
+
+      expect(within(cell).getByRole('img', {name: 'PDF'})).toBeDefined();
+      expect(cell.querySelector('img')).toBeNull();
+    });
+
+    it('should show the image icon for an Image Resource that has no thumbnail yet', async () => {
+      const resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue([
+        {...rowNamed('the beach.png'), contentType: 'png'}
+      ]);
+
+      renderWithGateways(<LibrarySection />, {resources});
+
+      const cell = await firstCellOf('the beach.png');
+
+      expect(within(cell).getByRole('img', {name: 'PNG'})).toBeDefined();
+      expect(cell.querySelector('img')).toBeNull();
+    });
+  });
+
   it('should show the Ingest state of each row as a badge', async () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([

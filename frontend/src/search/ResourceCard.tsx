@@ -1,12 +1,11 @@
 import type {ContentType} from 'contract/ContentType';
 import type {JSX} from 'react';
-import {Card, CardContent} from '@/components/ui/card';
 import {ContentTypeIcon} from '@/components/ContentTypeIcon';
+import {Card, CardContent} from '@/components/ui/card';
 
-type Props = {name: string; fileUrl: string} & (
-  | {thumbnailUrl: string}
-  | {contentType: ContentType}
-);
+export type Preview = {thumbnailUrl: string} | {contentType: ContentType};
+
+type Props = {name: string; fileUrl: string} & Preview;
 
 export const ResourceCard = ({name, fileUrl, ...preview}: Props): JSX.Element => (
   <a

@@ -129,16 +129,3 @@
     @apply font-sans;
   }
 }
-
-.recent-resource a {
-  text-decoration: underline;
-}
-
-.recent-resources {
-  list-style: none;
-  padding: 0;
-}
-
-.recent-resource {
-  padding: 0.25rem 0;
-}

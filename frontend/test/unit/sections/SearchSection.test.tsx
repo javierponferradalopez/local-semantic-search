@@ -539,14 +539,13 @@ describe('SearchSection', () => {
       expect(await recentNames()).toEqual(['6.md', '5.md', '4.md', '3.md', '2.md']);
     });
 
-    it('should show each Resource as a file: its icon, a link to its fileUrl in a new tab and its createdAt', async () => {
+    it('should show each Resource as a card: a link to its fileUrl in a new tab, with no Ingest state and no action', async () => {
       const fileUrl = 'https://store.example/resources/an%20id/manual.pdf?signature=a';
       resources.list.mockResolvedValue([
         aResourceRow('manual.pdf', {
           contentType: 'pdf',
           ingestState: 'failed',
           reason: 'unreadable_file',
-          createdAt: '2026-09-24T08:30:00.000Z',
           fileUrl
         })
       ]);
@@ -559,18 +558,46 @@ describe('SearchSection', () => {
       expect(link.getAttribute('href')).toBe(fileUrl);
       expect(link.getAttribute('target')).toBe('_blank');
       expect(link.getAttribute('rel')).toBe('noopener noreferrer');
-      expect(item.getByRole('img', {name: 'PDF'})).toBeDefined();
-      expect(
-        (link.closest('li') as HTMLElement)
-          .querySelector('time')
-          ?.getAttribute('dateTime')
-      ).toBe('2026-09-24T08:30:00.000Z');
       expect(item.queryByRole('button')).toBeNull();
       expect(item.queryByText(textOfIngestState('failed'), {exact: false})).toBeNull();
       expect(
         item.queryByText(textOfReason('unreadable_file'), {exact: false})
       ).toBeNull();
     });
+
+    it('should show the thumbnail of an Image Resource that has one', async () => {
+      resources.list.mockResolvedValue([
+        aResourceRow('the beach.png', {
+          contentType: 'png',
+          thumbnailUrl: '/files/thumbnails/the beach.webp'
+        })
+      ]);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      const link = await screen.findByRole('link', {name: 'the beach.png'});
+
+      expect(link.querySelector('img')?.getAttribute('src')).toBe(
+        '/files/thumbnails/the beach.webp'
+      );
+    });
+
+    it.each([
+      ['a Text Resource', 'manual.pdf', 'pdf', 'PDF'],
+      ['an Image Resource with no thumbnail yet', 'the beach.png', 'png', 'PNG']
+    ] as const)(
+      'should show a large icon of the Content type in place of the thumbnail, for %s',
+      async (_, name, contentType, label) => {
+        resources.list.mockResolvedValue([aResourceRow(name, {contentType})]);
+
+        renderWithGateways(<SearchSection />, {search, resources});
+
+        const link = await screen.findByRole('link', {name});
+
+        expect(link.querySelector('img')).toBeNull();
+        expect(within(link).getByRole('img', {name: label, hidden: true})).toBeDefined();
+      }
+    );
 
     it('should show no recent heading when the gateway gives no Resource', async () => {
       renderWithGateways(<SearchSection />, {search, resources});

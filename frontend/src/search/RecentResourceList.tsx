@@ -1,8 +1,12 @@
 import type {ResourceRow} from 'contract/ResourceRow';
 import type {JSX} from 'react';
-import {ContentTypeIcon} from '@/search/ContentTypeIcon';
+import {type Preview, ResourceCard} from '@/search/ResourceCard';
+import {ResourceCardGrid} from '@/search/ResourceCardGrid';
 
 type Props = {rows: ResourceRow[]};
+
+const previewOf = ({thumbnailUrl, contentType}: ResourceRow): Preview =>
+  thumbnailUrl === undefined ? {contentType} : {thumbnailUrl};
 
 // Before a Query there is no Result, so these are Resources: no Match, no Citation.
 export const RecentResourceList = ({rows}: Props): JSX.Element | null => {
@@ -15,19 +19,13 @@ export const RecentResourceList = ({rows}: Props): JSX.Element | null => {
       <h3 id="recent-resources-heading" className="mt-6 mb-2 text-lg font-semibold">
         Recently created
       </h3>
-      <ul className="recent-resources">
+      <ResourceCardGrid>
         {rows.map(row => (
-          <li key={row.id} className="recent-resource">
-            <ContentTypeIcon contentType={row.contentType} />{' '}
-            <a href={row.fileUrl} target="_blank" rel="noopener noreferrer">
-              {row.name}
-            </a>{' '}
-            <time dateTime={row.createdAt}>
-              {new Date(row.createdAt).toLocaleString('en-GB')}
-            </time>
+          <li key={row.id}>
+            <ResourceCard name={row.name} fileUrl={row.fileUrl} {...previewOf(row)} />
           </li>
         ))}
-      </ul>
+      </ResourceCardGrid>
     </section>
   );
 };
