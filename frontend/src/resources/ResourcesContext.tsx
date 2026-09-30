@@ -1,4 +1,4 @@
-import {type ContentType, IMAGE_CONTENT_TYPES} from 'contract/ContentType';
+import {isAnImageContentType} from 'contract/ContentType';
 import {IMAGE_CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {
@@ -22,9 +22,6 @@ export type Resources = {
 };
 
 const ResourcesContext = createContext<Resources | undefined>(undefined);
-
-const isAnImage = (contentType: ContentType): boolean =>
-  IMAGE_CONTENT_TYPES.some(imageType => imageType === contentType);
 
 type Props = {children: ReactNode};
 
@@ -55,7 +52,7 @@ export const ResourcesProvider = ({children}: Props): JSX.Element => {
   };
 
   const retry = async ({id, contentType}: ResourceRow): Promise<void> => {
-    const retried = await (isAnImage(contentType)
+    const retried = await (isAnImageContentType(contentType)
       ? gateway.retryImageResource(id)
       : gateway.retryTextResource(id));
 
@@ -63,7 +60,7 @@ export const ResourcesProvider = ({children}: Props): JSX.Element => {
   };
 
   const deleteResource = async ({id, contentType}: ResourceRow): Promise<void> => {
-    await (isAnImage(contentType)
+    await (isAnImageContentType(contentType)
       ? gateway.deleteImageResource(id)
       : gateway.deleteTextResource(id));
 

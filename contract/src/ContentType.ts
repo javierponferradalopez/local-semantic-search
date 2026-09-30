@@ -9,3 +9,6 @@ export type TextContentType = (typeof TEXT_CONTENT_TYPES)[number];
 export type ImageContentType = (typeof IMAGE_CONTENT_TYPES)[number];
 
 export type ContentType = TextContentType | ImageContentType;
+
+export const isAnImageContentType = (value: string): value is ImageContentType =>
+  IMAGE_CONTENT_TYPES.some(contentType => contentType === value);
