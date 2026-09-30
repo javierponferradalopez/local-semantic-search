@@ -6,8 +6,6 @@ import type {PictureMatch} from '../PictureMatch';
 type ConstructorParams = {value: number};
 
 const VALUE_OBJECT_NAME = 'Floor';
-const LEAST_COSINE = -1;
-const MOST_COSINE = 1;
 
 export class Floor extends ValueObject<number> {
   private constructor(params: ConstructorParams) {
@@ -15,13 +13,9 @@ export class Floor extends ValueObject<number> {
   }
 
   public static of({value}: ConstructorParams): Floor {
-    if (!(value >= LEAST_COSINE && value <= MOST_COSINE)) {
-      throw ValueObjectError.causeItIsNotBetween(
-        VALUE_OBJECT_NAME,
-        value,
-        LEAST_COSINE,
-        MOST_COSINE
-      );
+    // A score of the model that judges the group: a logit has no bound (ADR-0040).
+    if (!Number.isFinite(value)) {
+      throw ValueObjectError.causeItHoldsANumberThatIsNotFinite(VALUE_OBJECT_NAME);
     }
 
     return new Floor({value});

@@ -19,12 +19,15 @@ const aPictureResult = (score: number): PictureResult => ({
 
 describe('Floor', () => {
   describe('.of', () => {
-    it.each([0.78, 0.05, 0, -0.1, 1, -1])('should keep %j', value => {
-      expect(Floor.of({value}).value).toBe(value);
-    });
+    it.each([0.78, 0.05, 0, -0.1, 1, -1, -0.58, 78, 1.01, -1.01])(
+      'should keep %j',
+      value => {
+        expect(Floor.of({value}).value).toBe(value);
+      }
+    );
 
-    it.each([78, 1.01, -1.01, Number.NaN, Number.POSITIVE_INFINITY])(
-      'should refuse %j, which is not a cosine similarity',
+    it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])(
+      'should refuse %j, which is not a finite score',
       value => {
         expect(() => Floor.of({value})).toThrow(ValueObjectError);
       }
@@ -52,6 +55,14 @@ describe('Floor', () => {
 
     it('should not be reached by an empty list', () => {
       expect(floor.isReachedBy([])).toBe(false);
+    });
+
+    it('should gate on a negative Floor as on a positive one', () => {
+      const negative = Floor.of({value: -0.58});
+
+      expect(negative.isReachedBy([aRanked(-0.57)])).toBe(true);
+      expect(negative.isReachedBy([aRanked(-0.58)])).toBe(true);
+      expect(negative.isReachedBy([aRanked(-0.59)])).toBe(false);
     });
 
     it('should gate the Results of the search of Pictures, which have no text', () => {

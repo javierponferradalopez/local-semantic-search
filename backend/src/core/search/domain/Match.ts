@@ -1,6 +1,6 @@
 export type Match = {
   text: string;
   page?: number;
-  // A cosine similarity, as the Floor is: higher is nearer.
+  // The score of the model that judges the group: higher is nearer.
   score: number;
 };

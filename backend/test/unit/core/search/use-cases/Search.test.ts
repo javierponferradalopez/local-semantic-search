@@ -80,9 +80,9 @@ describe('Search', () => {
 
   describe('#constructor', () => {
     it.each([
-      ['text', {textFloor: 78}],
-      ['image', {imageFloor: -1.5}]
-    ])('should refuse a %s Floor that is not a cosine similarity', (_, floors) => {
+      ['text', {textFloor: Number.NaN}],
+      ['image', {imageFloor: Number.POSITIVE_INFINITY}]
+    ])('should refuse a %s Floor that is not a finite score', (_, floors) => {
       expect(() => aSearch(floors)).toThrow(ValueObjectError);
     });
   });
