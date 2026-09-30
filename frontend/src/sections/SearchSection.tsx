@@ -1,5 +1,13 @@
 import type {SearchResponse} from 'contract/SearchResponse';
-import {type ChangeEvent, type FormEvent, type JSX, useRef, useState} from 'react';
+import {LoaderCircle} from 'lucide-react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  type JSX,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import {RefusalAlert} from '@/components/RefusalAlert';
 import {Input} from '@/components/ui/input';
 import {useSearchGateway} from '@/config/GatewaysContext';
@@ -10,6 +18,10 @@ import {RecentResourceList} from '@/search/RecentResourceList';
 import {TextResultList} from '@/search/TextResultList';
 
 const RECENT_RESOURCES = 5;
+const MINIMUM_QUERY_LENGTH = 3;
+const SEARCH_DELAY = 300;
+
+const lengthOf = (value: string): number => value.trim().length;
 
 export const SearchSection = (): JSX.Element => {
   const gateway = useSearchGateway();
@@ -18,32 +30,69 @@ export const SearchSection = (): JSX.Element => {
   // The Query that gave the Results, which the box no longer holds once the owner types.
   const [searched, setSearched] = useState<{query: string; response: SearchResponse}>();
   const [refusal, setRefusal] = useState<string[]>([]);
+  const [searching, setSearching] = useState(false);
   const latestSearch = useRef(0);
-  const boxIsEmpty = query.trim().length === 0;
+  // Trimmed, so that one Query never searches twice.
+  const latestQuery = useRef<string>(undefined);
+  const scheduledSearch = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const boxIsEmpty = lengthOf(query) === 0;
 
-  const search = (event: FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
+  useEffect(() => (): void => clearTimeout(scheduledSearch.current), []);
 
-    if (boxIsEmpty) {
+  const search = (value: string): void => {
+    clearTimeout(scheduledSearch.current);
+
+    if (lengthOf(value) < MINIMUM_QUERY_LENGTH || value.trim() === latestQuery.current) {
       return;
     }
 
     const thisSearch = ++latestSearch.current;
+    latestQuery.current = value.trim();
     setRefusal([]);
+    setSearching(true);
 
     gateway
-      .search(query)
+      .search(value)
       .then(response => {
         if (thisSearch === latestSearch.current) {
-          setSearched({query, response});
+          setSearched({query: value, response});
         }
       })
       .catch((failure: unknown) => {
         if (thisSearch === latestSearch.current) {
+          // A refused Query can search again.
+          latestQuery.current = undefined;
           setSearched(undefined);
           setRefusal(textsOfFailure(failure));
         }
+      })
+      .finally(() => {
+        if (thisSearch === latestSearch.current) {
+          setSearching(false);
+        }
       });
+  };
+
+  const change = (value: string): void => {
+    setQuery(value);
+    clearTimeout(scheduledSearch.current);
+
+    if (lengthOf(value) === 0) {
+      // A late answer to a Query of the empty box must not bring its Results back.
+      latestSearch.current++;
+      latestQuery.current = undefined;
+      setSearched(undefined);
+      setRefusal([]);
+      setSearching(false);
+      return;
+    }
+
+    scheduledSearch.current = setTimeout(() => search(value), SEARCH_DELAY);
+  };
+
+  const submit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    search(query);
   };
 
   return (
@@ -52,17 +101,24 @@ export const SearchSection = (): JSX.Element => {
         Search
       </h2>
       <search>
-        <form onSubmit={search}>
+        <form onSubmit={submit} className="relative">
           <Input
             type="search"
             aria-label="Search"
             placeholder="Describe what you remember, like “the lighthouse on the Galician coast”"
-            className="h-10"
+            className="h-10 pr-10"
             value={query}
             onChange={(event: ChangeEvent<HTMLInputElement>): void =>
-              setQuery(event.target.value)
+              change(event.target.value)
             }
           />
+          {searching && (
+            <LoaderCircle
+              role="status"
+              aria-label="Searching"
+              className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground"
+            />
+          )}
         </form>
       </search>
       <RefusalAlert texts={refusal} />

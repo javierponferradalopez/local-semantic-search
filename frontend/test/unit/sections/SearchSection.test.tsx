@@ -1,7 +1,8 @@
-import {screen, within} from '@testing-library/react';
+import {act, fireEvent, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {ImageResult} from 'contract/ImageResult';
 import type {ResourceRow} from 'contract/ResourceRow';
+import type {SearchResponse} from 'contract/SearchResponse';
 import type {TextResult} from 'contract/TextResult';
 import {textOfReason} from '@/errors/textOfReason';
 import {Refusal} from '@/gateways/Refusal';
@@ -365,6 +366,8 @@ describe('SearchSection', () => {
       renderWithGateways(<SearchSection />, {search, resources});
 
       await searchFor('the trip');
+      // The scheduled search of the new Query never answers, so the Results stay those of the old one.
+      search.search.mockReturnValue(new Promise(() => undefined));
       await userEvent.type(screen.getByRole('searchbox', {name: 'Search'}), ' later');
       await openMoreInThisFile();
 
@@ -518,6 +521,340 @@ describe('SearchSection', () => {
         await screen.findByRole('button', {name: 'More in this file'})
       ).toBeDefined();
       expect(screen.queryByText('The best text.')).toBeNull();
+    });
+  });
+
+  describe('as the owner types', () => {
+    const SEARCH_DELAY = 300;
+
+    type PendingSearch = {
+      promise: Promise<SearchResponse>;
+      resolve: (response: SearchResponse) => void;
+      reject: (failure: unknown) => void;
+    };
+
+    const aPendingSearch = (): PendingSearch => {
+      let resolve: PendingSearch['resolve'] = () => undefined;
+      let reject: PendingSearch['reject'] = () => undefined;
+      const promise = new Promise<SearchResponse>((onResolve, onReject) => {
+        resolve = onResolve;
+        reject = onReject;
+      });
+
+      return {promise, resolve, reject};
+    };
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    const box = (): HTMLElement => screen.getByRole('searchbox', {name: 'Search'});
+
+    // The async wrapper of Testing Library waits on a timer that it advances only for the fake timers of Jest, so user-event hangs here.
+    const typeInTheBox = (value: string): void => {
+      fireEvent.change(box(), {target: {value}});
+    };
+
+    const pushEnter = (): void => {
+      fireEvent.submit(box());
+    };
+
+    const wait = async (milliseconds: number): Promise<void> => {
+      await act(() => vi.advanceTimersByTimeAsync(milliseconds));
+    };
+
+    it('should search nothing while the Query, without its spaces at the ends, has fewer than 3 characters', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('  ab ');
+      pushEnter();
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).not.toHaveBeenCalled();
+    });
+
+    it('should search once, 300 ms after the last keystroke, with the Query as the owner typed it', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox(' the trip');
+      await wait(SEARCH_DELAY - 1);
+
+      expect(search.search).not.toHaveBeenCalled();
+
+      await wait(1);
+
+      expect(search.search).toHaveBeenCalledOnce();
+      expect(search.search).toHaveBeenCalledWith(' the trip');
+    });
+
+    it('should cancel the scheduled search when the owner types again', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the');
+      await wait(SEARCH_DELAY - 100);
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY - 1);
+
+      expect(search.search).not.toHaveBeenCalled();
+
+      await wait(1);
+
+      expect(search.search).toHaveBeenCalledOnce();
+      expect(search.search).toHaveBeenCalledWith('the trip');
+    });
+
+    it('should search at once on Enter, and cancel the scheduled search', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      pushEnter();
+
+      expect(search.search).toHaveBeenCalledOnce();
+
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).toHaveBeenCalledOnce();
+    });
+
+    it('should not search again on Enter for the Query that the scheduled search searched', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      pushEnter();
+
+      expect(search.search).toHaveBeenCalledOnce();
+    });
+
+    it('should not search again for the same Query with other spaces at its ends', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox(' the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('the trip ');
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).toHaveBeenCalledOnce();
+    });
+
+    it('should search again on Enter for a Query that was refused', async () => {
+      search.search.mockRejectedValueOnce(
+        new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+      );
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      pushEnter();
+
+      expect(search.search).toHaveBeenCalledTimes(2);
+    });
+
+    it('should keep the last Results while the Query has 1 or 2 characters', async () => {
+      search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('th');
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).toHaveBeenCalledOnce();
+      expect(screen.getByRole('link', {name: 'the notes.md'})).toBeDefined();
+    });
+
+    it('should remove the Results and show the recent Resources when the owner empties the box', async () => {
+      resources.list.mockResolvedValue([aResourceRow('recent.md')]);
+      search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('');
+
+      expect(screen.getByRole('heading', {name: 'Recently created'})).toBeDefined();
+
+      typeInTheBox('th');
+
+      expect(screen.queryByRole('link', {name: 'the notes.md'})).toBeNull();
+    });
+
+    it('should show no late answer of a search when the owner empties the box before it arrives', async () => {
+      const pending = aPendingSearch();
+      search.search.mockReturnValue(pending.promise);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('');
+      typeInTheBox('th');
+      await act(async () =>
+        pending.resolve({text: [aTextResult('the notes.md')], images: []})
+      );
+
+      expect(screen.queryByRole('link', {name: 'the notes.md'})).toBeNull();
+      expect(screen.queryByRole('status', {name: 'Searching'})).toBeNull();
+    });
+
+    it('should show a spinner in the box while a search is in progress, and remove it when its answer arrives', async () => {
+      const pending = aPendingSearch();
+      search.search.mockReturnValue(pending.promise);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      expect(screen.queryByRole('status', {name: 'Searching'})).toBeNull();
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+
+      expect(screen.getByRole('status', {name: 'Searching'})).toBeDefined();
+
+      await act(async () => pending.resolve({text: [], images: []}));
+
+      expect(screen.queryByRole('status', {name: 'Searching'})).toBeNull();
+    });
+
+    it('should remove the spinner when the search is refused', async () => {
+      const pending = aPendingSearch();
+      search.search.mockReturnValue(pending.promise);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      await act(async () =>
+        pending.reject(new Refusal([{code: 'invalid_input', params: {path: 'q'}}]))
+      );
+
+      expect(screen.queryByRole('status', {name: 'Searching'})).toBeNull();
+    });
+
+    it('should keep the answer to the newest Query when the answer to an older Query arrives later', async () => {
+      const older = aPendingSearch();
+      const newer = aPendingSearch();
+      search.search.mockReturnValueOnce(older.promise).mockReturnValueOnce(newer.promise);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('the trip later');
+      await wait(SEARCH_DELAY);
+      await act(async () =>
+        newer.resolve({text: [aTextResult('the newer.md')], images: []})
+      );
+      await act(async () =>
+        older.resolve({text: [aTextResult('the older.md')], images: []})
+      );
+
+      expect(screen.getByRole('link', {name: 'the newer.md'})).toBeDefined();
+      expect(screen.queryByRole('link', {name: 'the older.md'})).toBeNull();
+    });
+
+    it('should keep the spinner while the newest search is in progress, also when an older answer arrives', async () => {
+      const older = aPendingSearch();
+      const newer = aPendingSearch();
+      search.search.mockReturnValueOnce(older.promise).mockReturnValueOnce(newer.promise);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('the trip later');
+      await wait(SEARCH_DELAY);
+      await act(async () => older.resolve({text: [], images: []}));
+
+      expect(screen.getByRole('status', {name: 'Searching'})).toBeDefined();
+    });
+
+    it('should show the text of a Refusal of a scheduled search in the alert', async () => {
+      search.search.mockRejectedValue(
+        new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+      );
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+
+      expect(
+        within(screen.getByRole('alert')).getByText(
+          'The server refused the value of "q".'
+        )
+      ).toBeDefined();
+    });
+
+    it('should search a Query of exactly 3 characters without its spaces at the ends', async () => {
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('  abc ');
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).toHaveBeenCalledWith('  abc ');
+    });
+
+    it('should search the same Query again after the owner empties the box, and show its Results', async () => {
+      search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('');
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).toHaveBeenCalledTimes(2);
+      expect(screen.getByRole('link', {name: 'the notes.md'})).toBeDefined();
+    });
+
+    it('should remove the Refusal when the owner empties the box', async () => {
+      search.search.mockRejectedValue(
+        new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
+      );
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('');
+
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('should show no late answer of a search when the owner fills the box with only spaces before it arrives', async () => {
+      const pending = aPendingSearch();
+      search.search.mockReturnValue(pending.promise);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      await wait(SEARCH_DELAY);
+      typeInTheBox('   ');
+      typeInTheBox('th');
+      await act(async () =>
+        pending.resolve({text: [aTextResult('the notes.md')], images: []})
+      );
+
+      expect(screen.queryByRole('link', {name: 'the notes.md'})).toBeNull();
+    });
+
+    it('should search nothing when the section goes before the scheduled search', async () => {
+      const {unmount} = renderWithGateways(<SearchSection />, {search, resources});
+
+      typeInTheBox('the trip');
+      unmount();
+      await wait(SEARCH_DELAY);
+
+      expect(search.search).not.toHaveBeenCalled();
     });
   });
 
