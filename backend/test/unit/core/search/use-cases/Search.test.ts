@@ -3,6 +3,7 @@ import type {PictureResult} from '../../../../../src/core/search/domain/PictureR
 import type {PictureResultReader} from '../../../../../src/core/search/domain/PictureResultReader';
 import type {Result} from '../../../../../src/core/search/domain/Result';
 import type {ResultReader} from '../../../../../src/core/search/domain/ResultReader';
+import type {Reranker} from '../../../../../src/core/search/domain/services/Reranker';
 import {Search} from '../../../../../src/core/search/use-cases/Search';
 import {ValueObjectError} from '../../../../../src/core/shared/domain/errors/ValueObjectError';
 import type {FileStore} from '../../../../../src/core/shared/domain/services/FileStore';
@@ -46,6 +47,7 @@ describe('Search', () => {
   let textEmbedder: MockProxy<TextEmbedder>;
   let imageEmbedder: MockProxy<ImageEmbedder>;
   let resultReader: MockProxy<ResultReader>;
+  let reranker: MockProxy<Reranker>;
   let pictureResultReader: MockProxy<PictureResultReader>;
   let fileStore: MockProxy<FileStore>;
   let consoleError: MockInstance<typeof console.error>;
@@ -56,6 +58,7 @@ describe('Search', () => {
       textEmbedder,
       imageEmbedder,
       resultReader,
+      reranker,
       pictureResultReader,
       fileStore,
       textFloor: TEXT_FLOOR,
@@ -67,16 +70,23 @@ describe('Search', () => {
     textEmbedder = mock<TextEmbedder>();
     imageEmbedder = mock<ImageEmbedder>();
     resultReader = mock<ResultReader>();
+    reranker = mock<Reranker>();
     pictureResultReader = mock<PictureResultReader>();
     fileStore = mock<FileStore>();
     textEmbedder.embedQuery.mockResolvedValue(VectorMother.random());
     imageEmbedder.embedQuery.mockResolvedValue(VectorMother.random(VISION_MODEL));
     resultReader.getBestFirst.mockResolvedValue([]);
+    reranker.rerank.mockImplementation(async (_, results) => [...results]);
     pictureResultReader.getBestFirst.mockResolvedValue([]);
     fileStore.urlOf.mockImplementation(fileKey => `/files/${fileKey.value}`);
     consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     search = aSearch();
   });
+
+  const rerankedAs = (results: Result[]): void => {
+    resultReader.getBestFirst.mockResolvedValue(results);
+    reranker.rerank.mockResolvedValue(results);
+  };
 
   describe('#constructor', () => {
     it.each([
@@ -107,20 +117,39 @@ describe('Search', () => {
       expect(pictureResultReader.getBestFirst).toHaveBeenCalledWith(imageVector);
     });
 
-    it('should give the Results of the port in their order', async () => {
-      resultReader.getBestFirst.mockResolvedValue([
-        aResult({name: 'the best.md'}),
+    it('should give the Query and the Results of the text port to the Reranker', async () => {
+      const results = [aResult({name: 'the best.md'}), aResult({name: 'the second.md'})];
+      resultReader.getBestFirst.mockResolvedValue(results);
+
+      await search.run({query: '  Animales ACUÁTICOS '});
+
+      expect(reranker.rerank).toHaveBeenCalledWith('  Animales ACUÁTICOS ', results);
+    });
+
+    it('should give the text Results in the order of the Reranker', async () => {
+      const [first, second, third] = [
+        aResult({name: 'the first.md'}),
         aResult({name: 'the second.md'}),
         aResult({name: 'the third.md'})
-      ]);
+      ];
+      resultReader.getBestFirst.mockResolvedValue([first, second, third]);
+      reranker.rerank.mockResolvedValue([third, first, second]);
 
       const {text} = await search.run({query: 'the trip'});
 
       expect(text.map(result => result.name)).toStrictEqual([
-        'the best.md',
-        'the second.md',
-        'the third.md'
+        'the third.md',
+        'the first.md',
+        'the second.md'
       ]);
+    });
+
+    it('should not call the Reranker when the text port gives no Result', async () => {
+      resultReader.getBestFirst.mockResolvedValue([]);
+
+      await search.run({query: 'the trip'});
+
+      expect(reranker.rerank).not.toHaveBeenCalled();
     });
 
     it('should give the whole text of the best Match, its page and the URL of the File', async () => {
@@ -233,9 +262,7 @@ describe('Search', () => {
     });
 
     it('should keep the image group when the text group is empty', async () => {
-      resultReader.getBestFirst.mockResolvedValue([
-        aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR - 0.01}})
-      ]);
+      rerankedAs([aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR - 0.01}})]);
       pictureResultReader.getBestFirst.mockResolvedValue([
         aPictureResult({name: 'the beach.png'})
       ]);
@@ -259,9 +286,7 @@ describe('Search', () => {
 
     it('should never gate the text group with the image Floor', async () => {
       search = aSearch({textFloor: 0.8, imageFloor: 0.05});
-      resultReader.getBestFirst.mockResolvedValue([
-        aResult({bestMatch: {text: 'The best.', score: 0.1}})
-      ]);
+      rerankedAs([aResult({bestMatch: {text: 'The best.', score: 0.1}})]);
 
       const {text} = await search.run({query: 'the trip'});
 
@@ -269,7 +294,7 @@ describe('Search', () => {
     });
 
     it('should give no text Result when the best Match is under the Floor', async () => {
-      resultReader.getBestFirst.mockResolvedValue([
+      rerankedAs([
         aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR - 0.01}}),
         aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR - 0.2}})
       ]);
@@ -280,7 +305,7 @@ describe('Search', () => {
     });
 
     it('should keep the Results under the Floor when the best Match reaches the Floor', async () => {
-      resultReader.getBestFirst.mockResolvedValue([
+      rerankedAs([
         aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR}}),
         aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR - 0.01}}),
         aResult({bestMatch: {text: 'The third.', score: TEXT_FLOOR - 0.4}})
@@ -295,8 +320,32 @@ describe('Search', () => {
       ]);
     });
 
-    it('should compare only the first Result with the Floor', async () => {
-      resultReader.getBestFirst.mockResolvedValue([
+    it('should gate the text group with the score of the Reranker, not the one of the text port', async () => {
+      const result = aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR + 0.4}});
+      resultReader.getBestFirst.mockResolvedValue([result]);
+      reranker.rerank.mockResolvedValue([
+        {...result, bestMatch: {...result.bestMatch, score: TEXT_FLOOR - 0.01}}
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text).toStrictEqual([]);
+    });
+
+    it('should keep the text group when the Reranker reaches the Floor and the text port does not', async () => {
+      const result = aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR - 0.4}});
+      resultReader.getBestFirst.mockResolvedValue([result]);
+      reranker.rerank.mockResolvedValue([
+        {...result, bestMatch: {...result.bestMatch, score: TEXT_FLOOR}}
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text.map(textResult => textResult.text)).toStrictEqual(['The best.']);
+    });
+
+    it('should compare only the first reranked Result with the Floor', async () => {
+      rerankedAs([
         aResult({bestMatch: {text: 'The first.', score: TEXT_FLOOR - 0.01}}),
         aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR + 0.4}})
       ]);
@@ -325,6 +374,13 @@ describe('Search', () => {
         'the text port',
         (error: Error): void => {
           resultReader.getBestFirst.mockRejectedValue(error);
+        }
+      ],
+      [
+        'the Reranker',
+        (error: Error): void => {
+          resultReader.getBestFirst.mockResolvedValue([aResult()]);
+          reranker.rerank.mockRejectedValue(error);
         }
       ]
     ])('should keep the image group when %s fails', async (_, fail) => {

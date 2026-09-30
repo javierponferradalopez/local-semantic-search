@@ -98,7 +98,8 @@ runEval<Kind, number, number>('the-cap-fits-the-wall-of-tokens', {
 
 const CORPUS_FOLDER = join(import.meta.dirname, '../../../../../../evals/corpus');
 
-const TEXT_FLOOR = Floor.of({value: TEXT_MODEL.floor});
+// The cosine Floor of ADR-0021. The text group now has a Reranker, and #93 moves this eval to it.
+const TEXT_FLOOR = Floor.of({value: 0.78});
 
 const RESOLVER = new ExtensionContentTypeResolver();
 const EXTRACTOR = new ContentTypeTextExtractor();

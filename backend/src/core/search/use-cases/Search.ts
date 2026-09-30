@@ -9,6 +9,7 @@ import type {PictureResult} from '../domain/PictureResult';
 import type {PictureResultReader} from '../domain/PictureResultReader';
 import type {Result} from '../domain/Result';
 import type {ResultReader} from '../domain/ResultReader';
+import type {Reranker} from '../domain/services/Reranker';
 import {Floor} from '../domain/value-objects/Floor';
 import {Query} from '../domain/value-objects/Query';
 
@@ -16,6 +17,7 @@ type ConstructorParams = {
   textEmbedder: TextEmbedder;
   imageEmbedder: ImageEmbedder;
   resultReader: ResultReader;
+  reranker: Reranker;
   pictureResultReader: PictureResultReader;
   fileStore: FileStore;
   textFloor: number;
@@ -34,6 +36,7 @@ export class Search {
   private readonly textEmbedder: TextEmbedder;
   private readonly imageEmbedder: ImageEmbedder;
   private readonly resultReader: ResultReader;
+  private readonly reranker: Reranker;
   private readonly pictureResultReader: PictureResultReader;
   private readonly fileStore: FileStore;
   private readonly textFloor: Floor;
@@ -43,6 +46,7 @@ export class Search {
     this.textEmbedder = params.textEmbedder;
     this.imageEmbedder = params.imageEmbedder;
     this.resultReader = params.resultReader;
+    this.reranker = params.reranker;
     this.pictureResultReader = params.pictureResultReader;
     this.fileStore = params.fileStore;
     this.textFloor = Floor.of({value: params.textFloor});
@@ -62,7 +66,9 @@ export class Search {
   private async textResultsOf(query: string): Promise<TextResult[]> {
     try {
       const vector = await this.textEmbedder.embedQuery(query);
-      const results = await this.resultReader.getBestFirst(vector);
+      const firstStage = await this.resultReader.getBestFirst(vector);
+      const results =
+        firstStage.length === 0 ? [] : await this.reranker.rerank(query, firstStage);
 
       return this.textFloor.isReachedBy(results)
         ? results.map(result => this.textResultOf(result))

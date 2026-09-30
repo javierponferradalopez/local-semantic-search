@@ -9,12 +9,13 @@ import {RetryImageResource} from '../../../core/resources/use-cases/RetryImageRe
 import {RetryTextResource} from '../../../core/resources/use-cases/RetryTextResource';
 import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
+import {RERANKER_MODEL} from '../../../core/search/infrastructure/transformers/RerankerModel';
+import {TransformersReranker} from '../../../core/search/infrastructure/transformers/TransformersReranker';
 import {GetMatches} from '../../../core/search/use-cases/GetMatches';
 import {Search} from '../../../core/search/use-cases/Search';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
-import {TEXT_MODEL} from '../../../core/shared/infrastructure/transformers/TextModel';
 import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {VISION_MODEL} from '../../../core/shared/infrastructure/transformers/VisionModel';
@@ -80,9 +81,10 @@ export const registerApplicationDependencies = (): void => {
       textEmbedder,
       imageEmbedder: container.getDependency(TransformersImageEmbedder),
       resultReader,
+      reranker: container.getDependency(TransformersReranker),
       pictureResultReader: container.getDependency(DrizzlePictureResultReader),
       fileStore,
-      textFloor: TEXT_MODEL.floor,
+      textFloor: RERANKER_MODEL.floor,
       imageFloor: VISION_MODEL.floor
     })
   );
