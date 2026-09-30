@@ -27,24 +27,26 @@ pnpm dev
 - `pnpm install` installs the three packages of the workspace.
 - `pnpm run bootstrap` copies `backend/.env.example` to `backend/.env`, starts
   Postgres, waits until it is healthy, applies the migrations, and gets the weights
-  of the Text model and of the Vision model into the model store,
+  of the Text model, the Vision model and the Reranker into the model store,
   `backend/data/models/`.
 - `pnpm dev` starts the backend on `http://localhost:3000` and the frontend on
   `http://localhost:5173`.
 
 ## The model store
 
-`backend/data/models/` holds the weights of two models, both in `fp32`:
+`backend/data/models/` holds the weights of three models:
 
-- The Text model, `intfloat/multilingual-e5-small`, about 0.5 GB.
-- The Vision model, `onnx-community/siglip2-base-patch16-224-ONNX`, about 1.5 GB:
-  its text tower and its vision tower.
+- The Text model, `intfloat/multilingual-e5-small`, in `fp32`, about 0.5 GB.
+- The Vision model, `onnx-community/siglip2-base-patch16-224-ONNX`, in `fp32`,
+  about 1.5 GB: its text tower and its vision tower.
+- The Reranker, `onnx-community/gte-multilingual-reranker-base`, in `q8`, about
+  0.35 GB.
 
 `pnpm run models:fetch` gets them, and `bootstrap` runs it. It is the only command
 that uses the network: the application never downloads.
 
-The backend loads the two models before it listens. This costs about 2 s at every
-start, `tsx watch` included, and about 3 GB stays resident. If the model
+The backend loads the three models before it listens. This costs about 3 s at
+every start, `tsx watch` included, and about 4 GB stays resident. If the model
 store does not hold a model, the backend does not start, and it tells you to run
 `pnpm run bootstrap`. If a file of a model is damaged, the backend shows the error
 of the library: delete the folder of the model and run `pnpm run models:fetch` again.
