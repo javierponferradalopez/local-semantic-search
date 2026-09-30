@@ -5,6 +5,11 @@ status: accepted
 
 # The ingest runs after the response, and nothing recovers a stopped one
 
+> **Superseded in part by [ADR-0039](0039-the-frontend-polls-the-ingest-state-while-a-resource-is-ingesting.md).**
+> The point "No polling and no server-sent events" of *What the user sees* no
+> longer holds: the frontend polls the list while a Resource is `Ingesting`, so
+> the row changes with no reload. The other points stay.
+
 The upload request lands the `File`, writes the row in `Ingesting`, returns
 `201` with that row and ends. The `Ingest` runs afterwards in the same process,
 driven by a domain event
