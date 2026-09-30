@@ -1,7 +1,7 @@
 import type {ContentType} from 'contract/ContentType';
 import type {JSX} from 'react';
 import {Card, CardContent} from '@/components/ui/card';
-import {ContentTypeIcon} from '@/search/ContentTypeIcon';
+import {ContentTypeIcon} from '@/components/ContentTypeIcon';
 
 type Props = {name: string; fileUrl: string} & (
   | {thumbnailUrl: string}

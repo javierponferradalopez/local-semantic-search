@@ -1,6 +1,6 @@
 import type {TextResult} from 'contract/TextResult';
 import type {JSX} from 'react';
-import {ContentTypeIcon} from '@/search/ContentTypeIcon';
+import {ContentTypeIcon} from '@/components/ContentTypeIcon';
 import {hrefOf} from '@/search/hrefOf';
 import {MoreInThisResource} from '@/search/MoreInThisResource';
 

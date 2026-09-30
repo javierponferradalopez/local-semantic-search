@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import type {ContentType} from 'contract/ContentType';
-import {ContentTypeIcon} from '@/search/ContentTypeIcon';
+import {ContentTypeIcon} from '@/components/ContentTypeIcon';
 
 const LABEL_OF: Record<ContentType, string> = {
   pdf: 'PDF',
