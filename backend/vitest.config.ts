@@ -16,9 +16,12 @@ const MODES: Record<Mode, TestUserConfig> = {
   integration: {...SHARED_INFRASTRUCTURE, include: ['test/integration/**/*.test.ts']},
   e2e: {...SHARED_INFRASTRUCTURE, include: ['test/e2e/**/*.test.ts']},
   eval: {
+    ...SHARED_INFRASTRUCTURE,
     include: ['test/eval/**/*.eval.ts'],
     reporters: ['verbose'],
-    testTimeout: 600_000
+    testTimeout: 600_000,
+    // The Ingest of the whole corpus runs in a hook.
+    hookTimeout: 1_800_000
   }
 };
 

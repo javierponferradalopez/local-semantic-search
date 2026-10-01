@@ -39,8 +39,12 @@ export type TestApi = {
 const INGEST_TIME_LIMIT_IN_MS = 20_000;
 const READ_INTERVAL_IN_MS = 100;
 
-// Starts the application for the suite that calls it, and wipes the store before each test.
-export const useTheTestApi = (): TestApi => {
+type Params = {wipeTheStore?: 'before each test' | 'once'};
+
+// Starts the application for the suite that calls it, and wipes the store.
+export const useTheTestApi = ({
+  wipeTheStore = 'before each test'
+}: Params = {}): TestApi => {
   let server: Server;
   let origin: string;
 
@@ -54,10 +58,16 @@ export const useTheTestApi = (): TestApi => {
     await container.getDependency(Pool).end();
   });
 
-  beforeEach(async () => {
+  const wipe = async (): Promise<void> => {
     await wipeTheData();
     await wipeTheFiles();
-  });
+  };
+
+  if (wipeTheStore === 'once') {
+    beforeAll(wipe);
+  } else {
+    beforeEach(wipe);
+  }
 
   const createTextResource = (
     name: string,
