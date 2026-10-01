@@ -1,0 +1,1003 @@
+{
+  "name": "the-text-group-of-a-search",
+  "means": {
+    "F0.5": 0.09999999999999992,
+    "precision": 0.08333333333333338,
+    "recall": 0.98,
+    "right empty": 0.7368421052631579,
+    "reciprocal rank": 0.98,
+    "recall@20 of the first stage": 1
+  },
+  "counts": {},
+  "cases": [
+    {
+      "input": "cómo hacer un guiso de legumbres con chorizo",
+      "expected": {
+        "answers": [
+          "receta-de-lentejas.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "hay que dejar las lentejas en remojo",
+      "expected": {
+        "answers": [
+          "receta-de-lentejas.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "truco para que el caldo quede más espeso",
+      "expected": {
+        "answers": [
+          "receta-de-lentejas.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cada cuánto se engrasa la cadena de la bici",
+      "expected": {
+        "answers": [
+          "mantenimiento-de-la-bicicleta.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "el cambio salta entre los piñones",
+      "expected": {
+        "answers": [
+          "mantenimiento-de-la-bicicleta.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "presión de las ruedas de la bicicleta",
+      "expected": {
+        "answers": [
+          "mantenimiento-de-la-bicicleta.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "qué visitar en Portugal",
+      "expected": {
+        "answers": [
+          "notas-del-viaje-a-lisboa.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "dónde coger el tranvía sin que vaya lleno",
+      "expected": {
+        "answers": [
+          "notas-del-viaje-a-lisboa.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "dulces típicos con canela",
+      "expected": {
+        "answers": [
+          "notas-del-viaje-a-lisboa.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cada cuánto riego la monstera",
+      "expected": {
+        "answers": [
+          "cuidado-de-las-plantas-de-interior.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "por qué se ponen amarillas las hojas",
+      "expected": {
+        "answers": [
+          "cuidado-de-las-plantas-de-interior.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cuándo cambiar una planta de maceta",
+      "expected": {
+        "answers": [
+          "cuidado-de-las-plantas-de-interior.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "alimentar la masa madre",
+      "expected": {
+        "answers": [
+          "sourdough-starter.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "la masa madre tiene un líquido gris encima",
+      "expected": {
+        "answers": [
+          "sourdough-starter.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "how do I know my starter is ready to bake",
+      "expected": {
+        "answers": [
+          "sourdough-starter.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "contraseña del wifi de invitados",
+      "expected": {
+        "answers": [
+          "home-network-setup.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "se ha caído internet, qué reinicio primero",
+      "expected": {
+        "answers": [
+          "home-network-setup.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "why the smart plugs use a separate network",
+      "expected": {
+        "answers": [
+          "home-network-setup.txt"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "plan de carrera de 21 kilómetros",
+      "expected": {
+        "answers": [
+          "entrenamiento-media-maraton.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "series de un kilómetro los martes",
+      "expected": {
+        "answers": [
+          "entrenamiento-media-maraton.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "qué comer antes de una carrera",
+      "expected": {
+        "answers": [
+          "entrenamiento-media-maraton.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cuánto pago de alquiler al mes",
+      "expected": {
+        "answers": [
+          "contrato-de-alquiler.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "me devuelven el depósito al irme del piso",
+      "expected": {
+        "answers": [
+          "contrato-de-alquiler.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "se pueden tener perros en la vivienda",
+      "expected": {
+        "answers": [
+          "contrato-de-alquiler.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "lesión de menisco",
+      "expected": {
+        "answers": [
+          "informe-de-la-rodilla.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "me hice daño en la rodilla jugando al pádel",
+      "expected": {
+        "answers": [
+          "informe-de-la-rodilla.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "do I need knee surgery",
+      "expected": {
+        "answers": [
+          "informe-de-la-rodilla.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cuánto cuesta reformar la cocina",
+      "expected": {
+        "answers": [
+          "presupuesto-de-la-cocina.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "precio de la encimera de cuarzo",
+      "expected": {
+        "answers": [
+          "presupuesto-de-la-cocina.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "kitchen renovation payment schedule",
+      "expected": {
+        "answers": [
+          "presupuesto-de-la-cocina.pdf"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "por qué no se fondea sobre la posidonia",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "qué es el blanqueamiento del coral",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "a qué temperatura del agua muere un coral",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cuándo ponen los huevos las tortugas",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "qué hago si me pica una medusa",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "bandera morada en la playa",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "por qué el mar sube más con luna llena",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "dónde avistar ballenas en el sur",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0,
+        "recall": 0,
+        "reciprocal rank": 0,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "animal que cambia de color para esconderse en las rocas",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "consejos para hacer snorkel",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "delfines",
+      "expected": {
+        "answers": [
+          "guia-de-la-vida-marina.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cómo cancelo una petición si el componente se desmonta",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "reintentar una petición que falla",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "qué hago con un error 401",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "invalidar la caché después de guardar",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "actualización optimista con useMutation",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "paginación con cursor en una lista larga",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "mostrar el progreso de la subida de un archivo",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "cómo mockear el servidor en los tests de un hook",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "staleTime",
+      "expected": {
+        "answers": [
+          "patrones-de-peticiones-al-servidor.md"
+        ],
+        "near": []
+      },
+      "scores": {
+        "F0.5": 0.10204081632653061,
+        "precision": 0.08333333333333333,
+        "recall": 1,
+        "reciprocal rank": 1,
+        "recall@20 of the first stage": 1
+      }
+    },
+    {
+      "input": "gatos",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "cómo declarar la renta como autónomo",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "reglas del ajedrez para principiantes",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "the history of the Roman Empire",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "aprender a tocar la guitarra",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "el tiempo mañana en Madrid",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "feature flags",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "cómo abro un modal",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 0
+      }
+    },
+    {
+      "input": "componentes del design system",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 0
+      }
+    },
+    {
+      "input": "traducciones con react-polyglot",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "migrar el brand kit antiguo al resources center",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "asdkjh qwe",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 0
+      }
+    },
+    {
+      "input": "qwerty",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "zzzz",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "jkl ñlk",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "aaaa bbbb",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "xkcd lol",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 1
+      }
+    },
+    {
+      "input": "123 456",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 0
+      }
+    },
+    {
+      "input": "fdsfsd",
+      "expected": {
+        "answers": [],
+        "near": []
+      },
+      "scores": {
+        "right empty": 0
+      }
+    }
+  ]
+}

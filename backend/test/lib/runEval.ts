@@ -120,8 +120,12 @@ const meansOf = <Input, Output, Expected>(
   for (const {name: scorer} of scorers) {
     const scores = cases.flatMap(report => report.scores[scorer] ?? []);
 
+    // A golden set can hold no case that a scorer judges, such as a Near leak with no Near Resource.
     if (scores.length === 0) {
-      throw new Error(`The scorer ${scorer} of the eval ${name} judged no case.`);
+      console.log(
+        `The scorer ${scorer} of the eval ${name} judged no case, so it has no mean.`
+      );
+      continue;
     }
 
     means[scorer] = scores.reduce((sum, score) => sum + score, 0) / scores.length;
