@@ -5,11 +5,16 @@ import type {EvalCase} from './runEval';
 // No Resource answers an absent Query.
 export type Labels = {answers: readonly string[]; near: readonly string[]};
 
+type Resources = Readonly<Record<string, {subject: string}>>;
+
 type Params = {
-  manifest: Manifest;
+  subjects: Manifest['subjects'];
+  resources: Resources;
   corpus: readonly string[];
   goldenSet: readonly GoldenQuery[];
 };
+
+type Corpus = Omit<Params, 'goldenSet'>;
 
 const answersOf = (goldenQuery: GoldenQuery): readonly string[] =>
   'answers' in goldenQuery ? goldenQuery.answers : [];
@@ -17,19 +22,19 @@ const answersOf = (goldenQuery: GoldenQuery): readonly string[] =>
 const subjectOf = (goldenQuery: GoldenQuery): string | undefined =>
   'subject' in goldenQuery ? goldenQuery.subject : undefined;
 
-const checkTheSplitOf = ({subjects}: Manifest, subject: string): void => {
+const checkTheSplitOf = (subjects: Manifest['subjects'], subject: string): void => {
   if (!(subject in subjects)) {
     throw new Error(`The subject ${subject} has no split.`);
   }
 };
 
-const checkTheManifest = (manifest: Manifest, corpus: readonly string[]): void => {
-  for (const {subject} of Object.values(manifest.resources)) {
-    checkTheSplitOf(manifest, subject);
+const checkTheManifest = ({subjects, resources, corpus}: Corpus): void => {
+  for (const {subject} of Object.values(resources)) {
+    checkTheSplitOf(subjects, subject);
   }
 
   for (const name of corpus) {
-    if (!(name in manifest.resources)) {
+    if (!(name in resources)) {
       throw new Error(`The corpus holds ${name}, which is not in the manifest.`);
     }
   }
@@ -37,15 +42,14 @@ const checkTheManifest = (manifest: Manifest, corpus: readonly string[]): void =
 
 const checkTheLabelsOf = (
   goldenQuery: GoldenQuery,
-  manifest: Manifest,
-  corpus: readonly string[]
+  {subjects, resources, corpus}: Corpus
 ): void => {
   const {query, near} = goldenQuery;
   const answers = answersOf(goldenQuery);
   const subject = subjectOf(goldenQuery);
 
   if (subject !== undefined) {
-    checkTheSplitOf(manifest, subject);
+    checkTheSplitOf(subjects, subject);
   }
 
   for (const name of [...answers, ...near]) {
@@ -54,7 +58,7 @@ const checkTheLabelsOf = (
     }
 
     // The split is by subject, so a label that crosses a subject crosses the split.
-    if (manifest.resources[name].subject !== subject) {
+    if (resources[name].subject !== subject) {
       throw new Error(
         `The Query "${query}" names ${name}, which is not of the subject ${subject ?? 'of the Query'}.`
       );
@@ -69,15 +73,11 @@ const checkTheLabelsOf = (
 };
 
 // A wrong label throws, so it never changes a score in silence.
-export const goldenCasesOf = ({
-  manifest,
-  corpus,
-  goldenSet
-}: Params): EvalCase<string, Labels>[] => {
-  checkTheManifest(manifest, corpus);
+export const goldenCasesOf = (params: Params): EvalCase<string, Labels>[] => {
+  checkTheManifest(params);
 
-  return goldenSet.map(goldenQuery => {
-    checkTheLabelsOf(goldenQuery, manifest, corpus);
+  return params.goldenSet.map(goldenQuery => {
+    checkTheLabelsOf(goldenQuery, params);
 
     return {
       input: goldenQuery.query,

@@ -1,35 +1,200 @@
-import type {GoldenCase} from './GoldenCase';
+import type {GoldenQuery} from './GoldenQuery';
 
-export const IMAGE_GOLDEN_SET: readonly GoldenCase[] = [
-  {query: 'un tranvía por una calle empedrada', expected: 'tranvia-en-lisboa.jpg'},
-  {query: 'bici aparcada de noche', expected: 'bicicleta-de-carretera.jpg'},
-  {query: 'un plato de lentejas', expected: 'guiso-de-lentejas-con-salchicha.jpg'},
-  {query: 'planta de hojas grandes con agujeros', expected: 'hojas-de-monstera.jpg'},
-  {query: 'hogaza de pan recién horneada', expected: 'pan-de-masa-madre.jpg'},
-  {query: 'el router de casa', expected: 'router-wifi.jpg'},
+export const IMAGE_GOLDEN_SET: readonly GoldenQuery[] = [
+  {
+    query: 'un tranvía por una calle empedrada',
+    language: 'es',
+    subject: 'trip-to-lisbon',
+    answers: ['tranvia-en-lisboa.jpg'],
+    near: []
+  },
+  {
+    query: 'bici aparcada de noche',
+    language: 'es',
+    subject: 'bicycle-care',
+    answers: ['bicicleta-de-carretera.jpg'],
+    near: []
+  },
+  {
+    query: 'un plato de lentejas',
+    language: 'es',
+    subject: 'lentils',
+    answers: ['guiso-de-lentejas-con-salchicha.jpg'],
+    near: []
+  },
+  {
+    query: 'planta de hojas grandes con agujeros',
+    language: 'es',
+    subject: 'house-plants',
+    answers: ['hojas-de-monstera.jpg'],
+    near: []
+  },
+  {
+    query: 'hogaza de pan recién horneada',
+    language: 'es',
+    subject: 'sourdough',
+    answers: ['pan-de-masa-madre.jpg'],
+    near: []
+  },
+  {
+    query: 'el router de casa',
+    language: 'es',
+    subject: 'home-network',
+    answers: ['router-wifi.jpg'],
+    near: []
+  },
   {
     query: 'gente corriendo una carrera por la ciudad',
-    expected: 'corredores-de-maraton.jpg'
+    language: 'es',
+    subject: 'half-marathon',
+    answers: ['corredores-de-maraton.jpg'],
+    near: []
   },
-  {query: 'un perro mordiendo un palo', expected: 'golden-retriever-con-un-palo.jpg'},
-  {query: 'un pico con nieve', expected: 'montana-nevada.jpg'},
-  {query: 'puesta de sol en la playa', expected: 'atardecer-en-la-playa.jpg'},
-  {query: 'cocina con armarios de madera', expected: 'cocina-moderna.jpg'},
-  {query: 'dog chewing a stick', expected: 'golden-retriever-con-un-palo.jpg'},
-  {query: 'snowy mountain peak', expected: 'montana-nevada.jpg'},
-  {query: 'sourdough loaf on a cutting board', expected: 'pan-de-masa-madre.jpg'},
-  {query: 'Lisboa', expected: 'tranvia-en-lisboa.jpg'},
-  {query: 'mi mascota', expected: 'golden-retriever-con-un-palo.jpg'},
-  {query: 'la conexión a internet', expected: 'router-wifi.jpg'},
-  {query: 'entrenar para una media maratón', expected: 'corredores-de-maraton.jpg'},
-  {query: 'vacaciones en la sierra', expected: 'montana-nevada.jpg'},
-  {query: 'una planta de interior', expected: 'hojas-de-monstera.jpg'},
-  {query: 'comida de cuchara', expected: 'guiso-de-lentejas-con-salchicha.jpg'},
-  {query: 'where I cook at home', expected: 'cocina-moderna.jpg'},
-  {query: 'un gato durmiendo en el sofá', expected: null},
-  {query: 'una bicicleta de montaña en el barro', expected: null},
-  {query: 'un tren de alta velocidad', expected: null},
-  {query: 'coches de Fórmula 1 en un circuito', expected: null},
-  {query: 'partitura de piano', expected: null},
-  {query: 'a birthday cake with candles', expected: null}
+  {
+    query: 'un perro mordiendo un palo',
+    language: 'es',
+    subject: 'pets',
+    answers: ['golden-retriever-con-un-palo.jpg'],
+    near: []
+  },
+  {
+    query: 'un pico con nieve',
+    language: 'es',
+    subject: 'mountains',
+    answers: ['montana-nevada.jpg'],
+    near: []
+  },
+  {
+    query: 'puesta de sol en la playa',
+    language: 'es',
+    subject: 'beach',
+    answers: ['atardecer-en-la-playa.jpg'],
+    near: []
+  },
+  {
+    query: 'cocina con armarios de madera',
+    language: 'es',
+    subject: 'kitchen-renovation',
+    answers: ['cocina-moderna.jpg'],
+    near: []
+  },
+  {
+    query: 'dog chewing a stick',
+    language: 'en',
+    subject: 'pets',
+    answers: ['golden-retriever-con-un-palo.jpg'],
+    near: []
+  },
+  {
+    query: 'snowy mountain peak',
+    language: 'en',
+    subject: 'mountains',
+    answers: ['montana-nevada.jpg'],
+    near: []
+  },
+  {
+    query: 'sourdough loaf on a cutting board',
+    language: 'en',
+    subject: 'sourdough',
+    answers: ['pan-de-masa-madre.jpg'],
+    near: []
+  },
+  {
+    query: 'Lisboa',
+    language: 'es',
+    subject: 'trip-to-lisbon',
+    answers: ['tranvia-en-lisboa.jpg'],
+    near: []
+  },
+  {
+    query: 'mi mascota',
+    language: 'es',
+    subject: 'pets',
+    answers: ['golden-retriever-con-un-palo.jpg'],
+    near: []
+  },
+  {
+    query: 'la conexión a internet',
+    language: 'es',
+    subject: 'home-network',
+    answers: ['router-wifi.jpg'],
+    near: []
+  },
+  {
+    query: 'entrenar para una media maratón',
+    language: 'es',
+    subject: 'half-marathon',
+    answers: ['corredores-de-maraton.jpg'],
+    near: []
+  },
+  {
+    query: 'vacaciones en la sierra',
+    language: 'es',
+    subject: 'mountains',
+    answers: ['montana-nevada.jpg'],
+    near: []
+  },
+  {
+    query: 'una planta de interior',
+    language: 'es',
+    subject: 'house-plants',
+    answers: ['hojas-de-monstera.jpg'],
+    near: []
+  },
+  {
+    query: 'comida de cuchara',
+    language: 'es',
+    subject: 'lentils',
+    answers: ['guiso-de-lentejas-con-salchicha.jpg'],
+    near: []
+  },
+  {
+    query: 'where I cook at home',
+    language: 'en',
+    subject: 'kitchen-renovation',
+    answers: ['cocina-moderna.jpg'],
+    near: []
+  },
+  {
+    query: 'un gato durmiendo en el sofá',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'dev',
+    near: []
+  },
+  {
+    query: 'una bicicleta de montaña en el barro',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'dev',
+    near: []
+  },
+  {
+    query: 'un tren de alta velocidad',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'test',
+    near: []
+  },
+  {
+    query: 'coches de Fórmula 1 en un circuito',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'dev',
+    near: []
+  },
+  {
+    query: 'partitura de piano',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'dev',
+    near: []
+  },
+  {
+    query: 'a birthday cake with candles',
+    language: 'en',
+    absent: 'off the subject',
+    split: 'test',
+    near: []
+  }
 ];
