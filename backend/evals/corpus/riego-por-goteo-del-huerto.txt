@@ -1,0 +1,17 @@
+Riego por goteo del huerto
+
+Instalado en abril: una tubería de 16 mm por cada bancal, con goteros cada 30 cm
+de 2 litros por hora. Lo controla un programador de pilas en el grifo.
+
+Programa:
+- Abril y mayo: días alternos, 10 minutos.
+- Junio: todos los días, 15 minutos.
+- Julio y agosto: todos los días, 20 minutos. Si pasa de 38 grados, otra tanda
+  corta de 10 minutos al anochecer.
+- Septiembre: días alternos, 15 minutos.
+
+El riego se programa a las 7 de la mañana. Por la mañana la planta tiene agua para
+las horas de calor, y las hojas se secan pronto. Regar por la tarde deja la tierra
+húmeda toda la noche, y salen más hongos.
+
+Cada mes se limpia el filtro del programador. Las pilas se cambian en marzo.

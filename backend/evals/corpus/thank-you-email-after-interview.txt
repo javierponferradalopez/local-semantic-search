@@ -1,0 +1,22 @@
+Thank-you email after an interview
+
+Send it the same day, before the end of the afternoon. Short: five or six lines.
+One email to each person who interviewed me, not one email to all.
+
+Template:
+
+Subject: Thank you for today's interview
+
+Hi <name>,
+
+Thank you for your time today. I enjoyed the talk about <something specific that
+we discussed, for example how the team moved the bookings to queues>.
+
+It made me even more interested in the role. If you need anything else from me,
+such as references or a code sample, I will be happy to send it.
+
+Best regards,
+<my name>
+
+Do not ask about the decision in this email. If there is no answer after one
+week, send one short follow-up.

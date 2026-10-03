@@ -1,0 +1,16 @@
+Limpiar el sensor de la cámara
+
+Si en las fotos con el diafragma cerrado (f/16) salen manchas oscuras siempre en
+el mismo sitio, hay polvo en el sensor.
+
+1. Primero, la limpieza automática del menú. A veces basta.
+2. Si no basta: cámara hacia abajo, objetivo fuera y la pera de aire. Unos soplos
+   suaves, sin meter la punta dentro.
+3. Nunca aire comprimido en bote. Sale con propelente líquido y frío, y puede
+   dejar manchas o romper el filtro del sensor.
+4. Si la mancha sigue, una espátula húmeda (swab) del tamaño del sensor, con dos
+   gotas de líquido, de un lado al otro y una sola pasada.
+5. Si nada funciona, a la tienda: cuesta unos 40 euros.
+
+Para que no entre polvo: cambiar el objetivo con la cámara hacia abajo y lejos
+del viento.

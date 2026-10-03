@@ -1,0 +1,88 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 710 >>
+stream
+BT /F1 11 Tf 14 TL 60 780 Td
+(API DE PEDIDOS - CONTRATO v2) Tj T*
+() Tj T*
+(Base: https://api.tienda.example/v2) Tj T*
+(Formato: JSON en UTF-8. Las fechas en ISO 8601, en UTC.) Tj T*
+() Tj T*
+(CREAR UN PEDIDO) Tj T*
+(POST /orders) Tj T*
+() Tj T*
+(Cuerpo:) Tj T*
+({) Tj T*
+(  "customerId": "c_1204",) Tj T*
+(  "lines": [{"productId": "p_77", "quantity": 2}],) Tj T*
+(  "shippingAddressId": "a_31") Tj T*
+(}) Tj T*
+() Tj T*
+(Respuesta 201 Created:) Tj T*
+({) Tj T*
+(  "id": "o_8812",) Tj T*
+(  "status": "pending",) Tj T*
+(  "total": 42.50,) Tj T*
+(  "currency": "EUR",) Tj T*
+(  "createdAt": "2026-03-02T10:15:00Z") Tj T*
+(}) Tj T*
+(La cabecera Location lleva la URL del pedido nuevo: /orders/o_8812.) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 793 >>
+stream
+BT /F1 11 Tf 14 TL 60 780 Td
+(LEER UN PEDIDO) Tj T*
+(GET /orders/{id}) Tj T*
+(Respuesta 200 con el mismo cuerpo que la creaciÛn, m·s las lÌneas.) Tj T*
+() Tj T*
+(CANCELAR UN PEDIDO) Tj T*
+(POST /orders/{id}/cancel) Tj T*
+(Solo se puede cancelar un pedido en estado "pending" o "paid".) Tj T*
+() Tj T*
+(LOS ESTADOS) Tj T*
+(pending -> paid -> shipped -> delivered) Tj T*
+(pending o paid -> cancelled) Tj T*
+() Tj T*
+(LOS ERRORES) Tj T*
+(Todos los errores tienen el mismo cuerpo: {"code": "...", "message": "..."}) Tj T*
+(400 invalid-body: falta un campo o un campo tiene un tipo incorrecto.) Tj T*
+(404 order-not-found: no existe un pedido con ese id.) Tj T*
+(409 order-not-cancellable: el pedido ya se ha enviado.) Tj T*
+(422 out-of-stock: no hay unidades suficientes de un producto.) Tj T*
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000350 00000 n 
+0000001110 00000 n 
+0000001236 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+2079
+%%EOF

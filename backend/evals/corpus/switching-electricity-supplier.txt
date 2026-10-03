@@ -1,0 +1,17 @@
+Switching the electricity supplier
+
+Notes from the call with the new company, so that we do it right.
+
+- Switching is free. The old company cannot charge us for leaving, because our
+  contract has no minimum stay.
+- The light is never cut off. The same cables and the same meter stay; only the
+  company that sends the bill changes.
+- We only need the ID of the account holder, the bank account and the CUPS code.
+  The CUPS is a code of 20 or 22 characters that starts with ES. It is printed
+  on the first page of every bill, near the address of the supply.
+- The new company does all the paperwork with the old one. We do not have to call
+  the old company at all.
+- The change takes about 21 days. The old company sends one last bill for the
+  days up to the change.
+
+Signed online on 3 February. Expected start: around 24 February.

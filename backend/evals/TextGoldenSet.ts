@@ -745,77 +745,121 @@ export const TEXT_GOLDEN_SET: readonly GoldenQuery[] = [
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'qué es el blanqueamiento del coral',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'a qué temperatura del agua muere un coral',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'cuándo ponen los huevos las tortugas',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'qué hago si me pica una medusa',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'bandera morada en la playa',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'por qué el mar sube más con luna llena',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'dónde avistar ballenas en el sur',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'animal que cambia de color para esconderse en las rocas',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'consejos para hacer snorkel',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   {
     query: 'delfines',
     language: 'es',
     subject: 'marine-life',
     answers: ['guia-de-la-vida-marina.md'],
-    near: []
+    near: [
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
   },
   // A technical Markdown with code blocks, as the owner's are (#88).
   {
@@ -823,63 +867,895 @@ export const TEXT_GOLDEN_SET: readonly GoldenQuery[] = [
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'reintentar una petición que falla',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'qué hago con un error 401',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'invalidar la caché después de guardar',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'actualización optimista con useMutation',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'paginación con cursor en una lista larga',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'mostrar el progreso de la subida de un archivo',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'cómo mockear el servidor en los tests de un hook',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {
     query: 'staleTime',
     language: 'es',
     subject: 'server-requests',
     answers: ['patrones-de-peticiones-al-servidor.md'],
-    near: []
+    near: [
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
+  },
+  {
+    query: 'qué salinidad necesita un acuario marino',
+    language: 'es',
+    subject: 'marine-life',
+    answers: ['acuario-de-agua-salada.md'],
+    near: [
+      'guia-de-la-vida-marina.md',
+      'open-water-course-booking.pdf',
+      'rock-pools-with-kids.md'
+    ]
+  },
+  {
+    query: 'cuánto cuesta sacarse el título de buceo',
+    language: 'es',
+    subject: 'marine-life',
+    answers: ['open-water-course-booking.pdf'],
+    near: [
+      'guia-de-la-vida-marina.md',
+      'acuario-de-agua-salada.md',
+      'rock-pools-with-kids.md'
+    ]
+  },
+  {
+    query: 'what animals live in the rock pools at low tide',
+    language: 'en',
+    subject: 'marine-life',
+    answers: ['rock-pools-with-kids.md'],
+    near: [
+      'guia-de-la-vida-marina.md',
+      'acuario-de-agua-salada.md',
+      'open-water-course-booking.pdf'
+    ]
+  },
+  {
+    query: 'por qué usamos server-sent events y no websockets',
+    language: 'es',
+    subject: 'server-requests',
+    answers: ['server-sent-events-para-avisos.md'],
+    near: [
+      'patrones-de-peticiones-al-servidor.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
+  },
+  {
+    query: 'CORS error when the frontend calls the API on localhost',
+    language: 'en',
+    subject: 'server-requests',
+    answers: ['cors-errors-in-local-dev.md'],
+    near: [
+      'patrones-de-peticiones-al-servidor.md',
+      'server-sent-events-para-avisos.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
+  },
+  {
+    query: 'qué devuelve la API al crear un pedido',
+    language: 'es',
+    subject: 'server-requests',
+    answers: ['contrato-de-la-api-de-pedidos.pdf'],
+    near: [
+      'patrones-de-peticiones-al-servidor.md',
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md'
+    ]
+  },
+  {
+    query: 'cuánto pagué de luz en enero',
+    language: 'es',
+    subject: 'electricity-bill',
+    answers: ['factura-de-la-luz-de-enero.pdf'],
+    near: [
+      'tarifas-de-la-luz-por-horas.md',
+      'switching-electricity-supplier.txt',
+      'bono-social-electrico.txt',
+      'solar-panels-quote.md'
+    ]
+  },
+  {
+    query: 'a qué horas es más barata la luz',
+    language: 'es',
+    subject: 'electricity-bill',
+    answers: ['tarifas-de-la-luz-por-horas.md', 'factura-de-la-luz-de-enero.pdf'],
+    near: [
+      'switching-electricity-supplier.txt',
+      'bono-social-electrico.txt',
+      'solar-panels-quote.md'
+    ]
+  },
+  {
+    query: 'cuándo pongo la lavadora para que salga más barato',
+    language: 'es',
+    subject: 'electricity-bill',
+    answers: ['tarifas-de-la-luz-por-horas.md', 'factura-de-la-luz-de-enero.pdf'],
+    near: [
+      'switching-electricity-supplier.txt',
+      'bono-social-electrico.txt',
+      'solar-panels-quote.md'
+    ]
+  },
+  {
+    query: 'qué potencia tengo contratada',
+    language: 'es',
+    subject: 'electricity-bill',
+    answers: ['factura-de-la-luz-de-enero.pdf', 'solar-panels-quote.md'],
+    near: [
+      'tarifas-de-la-luz-por-horas.md',
+      'switching-electricity-supplier.txt',
+      'bono-social-electrico.txt'
+    ]
+  },
+  {
+    query: 'cómo me cambio de compañía de la luz',
+    language: 'es',
+    subject: 'electricity-bill',
+    answers: ['switching-electricity-supplier.txt'],
+    near: [
+      'factura-de-la-luz-de-enero.pdf',
+      'tarifas-de-la-luz-por-horas.md',
+      'bono-social-electrico.txt',
+      'solar-panels-quote.md'
+    ]
+  },
+  {
+    query: 'where do I find the CUPS code',
+    language: 'en',
+    subject: 'electricity-bill',
+    answers: ['factura-de-la-luz-de-enero.pdf', 'switching-electricity-supplier.txt'],
+    near: [
+      'tarifas-de-la-luz-por-horas.md',
+      'bono-social-electrico.txt',
+      'solar-panels-quote.md'
+    ]
+  },
+  {
+    query: 'descuento en la luz para familias con pocos ingresos',
+    language: 'es',
+    subject: 'electricity-bill',
+    answers: ['bono-social-electrico.txt'],
+    near: [
+      'factura-de-la-luz-de-enero.pdf',
+      'tarifas-de-la-luz-por-horas.md',
+      'switching-electricity-supplier.txt',
+      'solar-panels-quote.md'
+    ]
+  },
+  {
+    query: 'how many years until the solar panels pay for themselves',
+    language: 'en',
+    subject: 'electricity-bill',
+    answers: ['solar-panels-quote.md'],
+    near: [
+      'factura-de-la-luz-de-enero.pdf',
+      'tarifas-de-la-luz-por-horas.md',
+      'switching-electricity-supplier.txt',
+      'bono-social-electrico.txt'
+    ]
+  },
+  {
+    query: 'cuánto es la franquicia del seguro del coche',
+    language: 'es',
+    subject: 'car-insurance',
+    answers: ['poliza-del-seguro-del-coche.pdf', 'renewal-quote-comparison.md'],
+    near: [
+      'parte-amistoso-como-rellenarlo.md',
+      'itv-del-coche.txt',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'cómo se rellena el parte amistoso',
+    language: 'es',
+    subject: 'car-insurance',
+    answers: ['parte-amistoso-como-rellenarlo.md'],
+    near: [
+      'poliza-del-seguro-del-coche.pdf',
+      'renewal-quote-comparison.md',
+      'itv-del-coche.txt',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'en cuántos días hay que avisar al seguro de un accidente',
+    language: 'es',
+    subject: 'car-insurance',
+    answers: ['poliza-del-seguro-del-coche.pdf', 'parte-amistoso-como-rellenarlo.md'],
+    near: [
+      'renewal-quote-comparison.md',
+      'itv-del-coche.txt',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'teléfono de la grúa',
+    language: 'es',
+    subject: 'car-insurance',
+    answers: ['poliza-del-seguro-del-coche.pdf'],
+    near: [
+      'parte-amistoso-como-rellenarlo.md',
+      'renewal-quote-comparison.md',
+      'itv-del-coche.txt',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'is the windscreen repair free',
+    language: 'en',
+    subject: 'car-insurance',
+    answers: ['poliza-del-seguro-del-coche.pdf', 'windscreen-chip-claim.txt'],
+    near: [
+      'parte-amistoso-como-rellenarlo.md',
+      'renewal-quote-comparison.md',
+      'itv-del-coche.txt'
+    ]
+  },
+  {
+    query: 'can my 20 year old son drive my car',
+    language: 'en',
+    subject: 'car-insurance',
+    answers: ['poliza-del-seguro-del-coche.pdf'],
+    near: [
+      'parte-amistoso-como-rellenarlo.md',
+      'renewal-quote-comparison.md',
+      'itv-del-coche.txt',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'cuándo tengo que pasar la ITV',
+    language: 'es',
+    subject: 'car-insurance',
+    answers: ['itv-del-coche.txt'],
+    near: [
+      'poliza-del-seguro-del-coche.pdf',
+      'parte-amistoso-como-rellenarlo.md',
+      'renewal-quote-comparison.md',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'how much does the car insurance cost per year',
+    language: 'en',
+    subject: 'car-insurance',
+    answers: ['poliza-del-seguro-del-coche.pdf', 'renewal-quote-comparison.md'],
+    near: [
+      'parte-amistoso-como-rellenarlo.md',
+      'itv-del-coche.txt',
+      'windscreen-chip-claim.txt'
+    ]
+  },
+  {
+    query: 'velocidad mínima para que la foto no salga movida',
+    language: 'es',
+    subject: 'photography',
+    answers: ['exposure-triangle-notes.md', 'fotografia-nocturna.md'],
+    near: [
+      'factura-de-la-camara.pdf',
+      'limpiar-el-sensor.txt',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'cómo fotografiar la Vía Láctea',
+    language: 'es',
+    subject: 'photography',
+    answers: ['fotografia-nocturna.md'],
+    near: [
+      'exposure-triangle-notes.md',
+      'factura-de-la-camara.pdf',
+      'limpiar-el-sensor.txt',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'what ISO for photos at night',
+    language: 'en',
+    subject: 'photography',
+    answers: ['fotografia-nocturna.md', 'exposure-triangle-notes.md'],
+    near: [
+      'factura-de-la-camara.pdf',
+      'limpiar-el-sensor.txt',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'cuánto dura la garantía de la cámara',
+    language: 'es',
+    subject: 'photography',
+    answers: ['factura-de-la-camara.pdf'],
+    near: [
+      'exposure-triangle-notes.md',
+      'fotografia-nocturna.md',
+      'limpiar-el-sensor.txt',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'how to clean dust off the camera sensor',
+    language: 'en',
+    subject: 'photography',
+    answers: ['limpiar-el-sensor.txt'],
+    near: [
+      'exposure-triangle-notes.md',
+      'fotografia-nocturna.md',
+      'factura-de-la-camara.pdf',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'apertura para desenfocar el fondo en un retrato',
+    language: 'es',
+    subject: 'photography',
+    answers: ['exposure-triangle-notes.md'],
+    near: [
+      'fotografia-nocturna.md',
+      'factura-de-la-camara.pdf',
+      'limpiar-el-sensor.txt',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'where are the backups of my photos',
+    language: 'en',
+    subject: 'photography',
+    answers: ['photo-backup-workflow.md'],
+    near: [
+      'exposure-triangle-notes.md',
+      'fotografia-nocturna.md',
+      'factura-de-la-camara.pdf',
+      'limpiar-el-sensor.txt'
+    ]
+  },
+  {
+    query: 'puedo limpiar el sensor con aire comprimido',
+    language: 'es',
+    subject: 'photography',
+    answers: ['limpiar-el-sensor.txt'],
+    near: [
+      'exposure-triangle-notes.md',
+      'fotografia-nocturna.md',
+      'factura-de-la-camara.pdf',
+      'photo-backup-workflow.md'
+    ]
+  },
+  {
+    query: 'cuánto cobraría en el trabajo nuevo',
+    language: 'es',
+    subject: 'job-interview',
+    answers: ['oferta-de-trabajo.pdf', 'negociar-el-salario.txt'],
+    near: [
+      'preparacion-entrevista-backend.md',
+      'system-design-practice.md',
+      'thank-you-email-after-interview.txt'
+    ]
+  },
+  {
+    query: 'cuántos días de teletrabajo tiene la oferta',
+    language: 'es',
+    subject: 'job-interview',
+    answers: ['oferta-de-trabajo.pdf', 'preparacion-entrevista-backend.md'],
+    near: [
+      'system-design-practice.md',
+      'thank-you-email-after-interview.txt',
+      'negociar-el-salario.txt'
+    ]
+  },
+  {
+    query: 'método STAR para responder en una entrevista',
+    language: 'es',
+    subject: 'job-interview',
+    answers: ['preparacion-entrevista-backend.md'],
+    near: [
+      'oferta-de-trabajo.pdf',
+      'system-design-practice.md',
+      'thank-you-email-after-interview.txt',
+      'negociar-el-salario.txt'
+    ]
+  },
+  {
+    query: 'how to design a URL shortener',
+    language: 'en',
+    subject: 'job-interview',
+    answers: ['system-design-practice.md'],
+    near: [
+      'preparacion-entrevista-backend.md',
+      'oferta-de-trabajo.pdf',
+      'thank-you-email-after-interview.txt',
+      'negociar-el-salario.txt'
+    ]
+  },
+  {
+    query: 'what to write in the email after the interview',
+    language: 'en',
+    subject: 'job-interview',
+    answers: ['thank-you-email-after-interview.txt'],
+    near: [
+      'preparacion-entrevista-backend.md',
+      'oferta-de-trabajo.pdf',
+      'system-design-practice.md',
+      'negociar-el-salario.txt'
+    ]
+  },
+  {
+    query: 'cómo pido más sueldo sin perder la oferta',
+    language: 'es',
+    subject: 'job-interview',
+    answers: ['negociar-el-salario.txt'],
+    near: [
+      'preparacion-entrevista-backend.md',
+      'oferta-de-trabajo.pdf',
+      'system-design-practice.md',
+      'thank-you-email-after-interview.txt'
+    ]
+  },
+  {
+    query: 'qué rango de sueldo pido',
+    language: 'es',
+    subject: 'job-interview',
+    answers: ['preparacion-entrevista-backend.md', 'negociar-el-salario.txt'],
+    near: [
+      'oferta-de-trabajo.pdf',
+      'system-design-practice.md',
+      'thank-you-email-after-interview.txt'
+    ]
+  },
+  {
+    query: 'how long is the trial period of the new job',
+    language: 'en',
+    subject: 'job-interview',
+    answers: ['oferta-de-trabajo.pdf'],
+    near: [
+      'preparacion-entrevista-backend.md',
+      'system-design-practice.md',
+      'thank-you-email-after-interview.txt',
+      'negociar-el-salario.txt'
+    ]
+  },
+  {
+    query: 'cuándo se plantan los tomates',
+    language: 'es',
+    subject: 'vegetable-garden',
+    answers: ['calendario-de-siembra.md'],
+    near: [
+      'riego-por-goteo-del-huerto.txt',
+      'tomato-blight.md',
+      'normas-del-huerto-urbano.pdf',
+      'compost-bin-notes.txt'
+    ]
+  },
+  {
+    query: 'cuándo planto los ajos',
+    language: 'es',
+    subject: 'vegetable-garden',
+    answers: ['calendario-de-siembra.md'],
+    near: [
+      'riego-por-goteo-del-huerto.txt',
+      'tomato-blight.md',
+      'normas-del-huerto-urbano.pdf',
+      'compost-bin-notes.txt'
+    ]
+  },
+  {
+    query: 'cuánto tiempo riego el huerto en verano',
+    language: 'es',
+    subject: 'vegetable-garden',
+    answers: ['riego-por-goteo-del-huerto.txt', 'calendario-de-siembra.md'],
+    near: ['tomato-blight.md', 'normas-del-huerto-urbano.pdf', 'compost-bin-notes.txt']
+  },
+  {
+    query: 'manchas marrones en las hojas de la tomatera',
+    language: 'es',
+    subject: 'vegetable-garden',
+    answers: ['tomato-blight.md'],
+    near: [
+      'calendario-de-siembra.md',
+      'riego-por-goteo-del-huerto.txt',
+      'normas-del-huerto-urbano.pdf',
+      'compost-bin-notes.txt'
+    ]
+  },
+  {
+    query: 'can I use chemical sprays on the allotment',
+    language: 'en',
+    subject: 'vegetable-garden',
+    answers: ['normas-del-huerto-urbano.pdf', 'tomato-blight.md'],
+    near: [
+      'calendario-de-siembra.md',
+      'riego-por-goteo-del-huerto.txt',
+      'compost-bin-notes.txt'
+    ]
+  },
+  {
+    query: 'cuánto cuesta la parcela del huerto urbano',
+    language: 'es',
+    subject: 'vegetable-garden',
+    answers: ['normas-del-huerto-urbano.pdf'],
+    near: [
+      'calendario-de-siembra.md',
+      'riego-por-goteo-del-huerto.txt',
+      'tomato-blight.md',
+      'compost-bin-notes.txt'
+    ]
+  },
+  {
+    query: 'how long until the compost is ready',
+    language: 'en',
+    subject: 'vegetable-garden',
+    answers: ['compost-bin-notes.txt'],
+    near: [
+      'calendario-de-siembra.md',
+      'riego-por-goteo-del-huerto.txt',
+      'tomato-blight.md',
+      'normas-del-huerto-urbano.pdf'
+    ]
+  },
+  {
+    query: 'regar las tomateras por la mañana o por la tarde',
+    language: 'es',
+    subject: 'vegetable-garden',
+    answers: [
+      'riego-por-goteo-del-huerto.txt',
+      'tomato-blight.md',
+      'calendario-de-siembra.md'
+    ],
+    near: ['normas-del-huerto-urbano.pdf', 'compost-bin-notes.txt']
+  },
+  {
+    query: 'cuánto cuesta el menú de la boda por persona',
+    language: 'es',
+    subject: 'wedding-planning',
+    answers: ['presupuesto-del-banquete.pdf', 'wedding-timeline.md'],
+    near: [
+      'lista-de-invitados.txt',
+      'discurso-del-padrino.md',
+      'papeles-para-casarse-por-lo-civil.md'
+    ]
+  },
+  {
+    query: 'cuánto hay que dejar de señal al restaurante',
+    language: 'es',
+    subject: 'wedding-planning',
+    answers: ['presupuesto-del-banquete.pdf', 'wedding-timeline.md'],
+    near: [
+      'lista-de-invitados.txt',
+      'discurso-del-padrino.md',
+      'papeles-para-casarse-por-lo-civil.md'
+    ]
+  },
+  {
+    query: 'qué papeles hacen falta para casarse por lo civil',
+    language: 'es',
+    subject: 'wedding-planning',
+    answers: ['papeles-para-casarse-por-lo-civil.md'],
+    near: [
+      'presupuesto-del-banquete.pdf',
+      'lista-de-invitados.txt',
+      'wedding-timeline.md',
+      'discurso-del-padrino.md'
+    ]
+  },
+  {
+    query: 'cuántos testigos necesitamos para la boda',
+    language: 'es',
+    subject: 'wedding-planning',
+    answers: ['papeles-para-casarse-por-lo-civil.md'],
+    near: [
+      'presupuesto-del-banquete.pdf',
+      'lista-de-invitados.txt',
+      'wedding-timeline.md',
+      'discurso-del-padrino.md'
+    ]
+  },
+  {
+    query: 'when do we send the wedding invitations',
+    language: 'en',
+    subject: 'wedding-planning',
+    answers: ['wedding-timeline.md'],
+    near: [
+      'presupuesto-del-banquete.pdf',
+      'lista-de-invitados.txt',
+      'discurso-del-padrino.md',
+      'papeles-para-casarse-por-lo-civil.md'
+    ]
+  },
+  {
+    query: 'how many guests are coming to the wedding',
+    language: 'en',
+    subject: 'wedding-planning',
+    answers: ['lista-de-invitados.txt', 'presupuesto-del-banquete.pdf'],
+    near: [
+      'wedding-timeline.md',
+      'discurso-del-padrino.md',
+      'papeles-para-casarse-por-lo-civil.md'
+    ]
+  },
+  {
+    query: 'ideas para el discurso del padrino',
+    language: 'es',
+    subject: 'wedding-planning',
+    answers: ['discurso-del-padrino.md'],
+    near: [
+      'presupuesto-del-banquete.pdf',
+      'lista-de-invitados.txt',
+      'wedding-timeline.md',
+      'papeles-para-casarse-por-lo-civil.md'
+    ]
+  },
+  {
+    query: 'cuánto cuesta la empresa de mudanzas',
+    language: 'es',
+    subject: 'moving-house',
+    answers: ['presupuesto-de-la-mudanza.pdf', 'checklist-cambio-de-domicilio.md'],
+    near: ['packing-tips.md', 'inventory-of-boxes.txt']
+  },
+  {
+    query: 'la mudanza tiene seguro si se rompe algo',
+    language: 'es',
+    subject: 'moving-house',
+    answers: ['presupuesto-de-la-mudanza.pdf'],
+    near: [
+      'checklist-cambio-de-domicilio.md',
+      'packing-tips.md',
+      'inventory-of-boxes.txt'
+    ]
+  },
+  {
+    query: 'dónde me empadrono al cambiar de piso',
+    language: 'es',
+    subject: 'moving-house',
+    answers: ['checklist-cambio-de-domicilio.md'],
+    near: ['presupuesto-de-la-mudanza.pdf', 'packing-tips.md', 'inventory-of-boxes.txt']
+  },
+  {
+    query: 'a quién aviso del cambio de dirección',
+    language: 'es',
+    subject: 'moving-house',
+    answers: ['checklist-cambio-de-domicilio.md'],
+    near: ['presupuesto-de-la-mudanza.pdf', 'packing-tips.md', 'inventory-of-boxes.txt']
+  },
+  {
+    query: 'how to pack books for a move',
+    language: 'en',
+    subject: 'moving-house',
+    answers: ['packing-tips.md'],
+    near: [
+      'presupuesto-de-la-mudanza.pdf',
+      'checklist-cambio-de-domicilio.md',
+      'inventory-of-boxes.txt'
+    ]
+  },
+  {
+    query: 'qué meto en la caja de la primera noche',
+    language: 'es',
+    subject: 'moving-house',
+    answers: ['packing-tips.md', 'inventory-of-boxes.txt'],
+    near: ['presupuesto-de-la-mudanza.pdf', 'checklist-cambio-de-domicilio.md']
+  },
+  {
+    query: 'which box has the kettle',
+    language: 'en',
+    subject: 'moving-house',
+    answers: ['inventory-of-boxes.txt', 'packing-tips.md'],
+    near: ['presupuesto-de-la-mudanza.pdf', 'checklist-cambio-de-domicilio.md']
+  },
+  {
+    query: 'do the movers pack the boxes for us',
+    language: 'en',
+    subject: 'moving-house',
+    answers: ['presupuesto-de-la-mudanza.pdf', 'packing-tips.md'],
+    near: ['checklist-cambio-de-domicilio.md', 'inventory-of-boxes.txt']
+  },
+  {
+    query: 'proporción de café y agua para el V60',
+    language: 'es',
+    subject: 'coffee-brewing',
+    answers: ['v60-recipe.md'],
+    near: [
+      'cafetera-italiana.md',
+      'descalcificar-la-cafetera.txt',
+      'ticket-de-la-tostaduria.pdf',
+      'coffee-and-sleep.txt'
+    ]
+  },
+  {
+    query: 'temperatura del agua para el café de filtro',
+    language: 'es',
+    subject: 'coffee-brewing',
+    answers: ['v60-recipe.md'],
+    near: [
+      'cafetera-italiana.md',
+      'descalcificar-la-cafetera.txt',
+      'ticket-de-la-tostaduria.pdf',
+      'coffee-and-sleep.txt'
+    ]
+  },
+  {
+    query: 'how fine to grind coffee for a moka pot',
+    language: 'en',
+    subject: 'coffee-brewing',
+    answers: ['cafetera-italiana.md', 'v60-recipe.md'],
+    near: [
+      'descalcificar-la-cafetera.txt',
+      'ticket-de-la-tostaduria.pdf',
+      'coffee-and-sleep.txt'
+    ]
+  },
+  {
+    query: 'se aprieta el café en la cafetera italiana',
+    language: 'es',
+    subject: 'coffee-brewing',
+    answers: ['cafetera-italiana.md'],
+    near: [
+      'v60-recipe.md',
+      'descalcificar-la-cafetera.txt',
+      'ticket-de-la-tostaduria.pdf',
+      'coffee-and-sleep.txt'
+    ]
+  },
+  {
+    query: 'cada cuánto hay que descalcificar la cafetera',
+    language: 'es',
+    subject: 'coffee-brewing',
+    answers: ['descalcificar-la-cafetera.txt'],
+    near: [
+      'v60-recipe.md',
+      'cafetera-italiana.md',
+      'ticket-de-la-tostaduria.pdf',
+      'coffee-and-sleep.txt'
+    ]
+  },
+  {
+    query: 'how many days after roasting is coffee at its best',
+    language: 'en',
+    subject: 'coffee-brewing',
+    answers: ['ticket-de-la-tostaduria.pdf', 'v60-recipe.md'],
+    near: [
+      'cafetera-italiana.md',
+      'descalcificar-la-cafetera.txt',
+      'coffee-and-sleep.txt'
+    ]
+  },
+  {
+    query: 'a partir de qué hora no tomar café para dormir bien',
+    language: 'es',
+    subject: 'coffee-brewing',
+    answers: ['coffee-and-sleep.txt'],
+    near: [
+      'v60-recipe.md',
+      'cafetera-italiana.md',
+      'descalcificar-la-cafetera.txt',
+      'ticket-de-la-tostaduria.pdf'
+    ]
+  },
+  {
+    query: 'agua del grifo o filtrada para el café',
+    language: 'es',
+    subject: 'coffee-brewing',
+    answers: ['v60-recipe.md', 'descalcificar-la-cafetera.txt'],
+    near: ['cafetera-italiana.md', 'ticket-de-la-tostaduria.pdf', 'coffee-and-sleep.txt']
+  },
+  {
+    query: 'suscripciones de GraphQL',
+    language: 'es',
+    absent: 'technical term of the owner',
+    subject: 'server-requests',
+    near: [
+      'patrones-de-peticiones-al-servidor.md',
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
+  },
+  {
+    query: 'configurar el service worker para usar la app sin conexión',
+    language: 'es',
+    absent: 'technical term of the owner',
+    subject: 'server-requests',
+    near: [
+      'patrones-de-peticiones-al-servidor.md',
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
+  },
+  {
+    query: 'rate limiting with Redis in the backend',
+    language: 'en',
+    absent: 'technical term of the owner',
+    subject: 'server-requests',
+    near: [
+      'patrones-de-peticiones-al-servidor.md',
+      'server-sent-events-para-avisos.md',
+      'cors-errors-in-local-dev.md',
+      'contrato-de-la-api-de-pedidos.pdf'
+    ]
   },
   {query: 'gatos', language: 'es', absent: 'off the subject', split: 'tuning', near: []},
   {
@@ -975,5 +1851,80 @@ export const TEXT_GOLDEN_SET: readonly GoldenQuery[] = [
     split: 'tuning',
     near: []
   },
+  {
+    query: 'receta de tortilla de patatas',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'tuning',
+    near: []
+  },
+  {
+    query: 'síntomas de la gripe',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'holdout',
+    near: []
+  },
+  {
+    query: 'historia de la catedral de Burgos',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'tuning',
+    near: []
+  },
+  {
+    query: 'cómo hacer punto de cruz',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'tuning',
+    near: []
+  },
+  {
+    query: 'how to play poker',
+    language: 'en',
+    absent: 'off the subject',
+    split: 'holdout',
+    near: []
+  },
+  {
+    query: 'horario de la biblioteca municipal',
+    language: 'es',
+    absent: 'off the subject',
+    split: 'tuning',
+    near: []
+  },
+  {
+    query: 'añadir un evento de analítica en el editor',
+    language: 'es',
+    absent: 'technical term of the owner',
+    split: 'tuning',
+    near: []
+  },
+  {
+    query: 'despliegue con el pipeline de Jenkins',
+    language: 'es',
+    absent: 'technical term of the owner',
+    split: 'holdout',
+    near: []
+  },
+  {
+    query: 'theme tokens for dark mode',
+    language: 'en',
+    absent: 'technical term of the owner',
+    split: 'tuning',
+    near: []
+  },
+  {
+    query: 'permisos del rol de editor en el workspace',
+    language: 'es',
+    absent: 'technical term of the owner',
+    split: 'tuning',
+    near: []
+  },
+  {query: 'ññññ', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: 'asdf asdf', language: 'es', absent: 'noise', split: 'holdout', near: []},
+  {query: 'kkkk jjjj', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: 'hjkl', language: 'en', absent: 'noise', split: 'tuning', near: []},
+  {query: '0000', language: 'es', absent: 'noise', split: 'holdout', near: []},
   {query: 'lorem ipsum dolor', language: 'en', absent: 'noise', split: 'tuning', near: []}
 ];

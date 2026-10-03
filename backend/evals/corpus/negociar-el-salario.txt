@@ -1,0 +1,18 @@
+Negociar el salario de la oferta
+
+La oferta que me han mandado es de 52.000 euros brutos al año. Mi rango era de
+50.000 a 55.000, así que hay margen para pedir un poco más.
+
+Cómo pedirlo sin poner en riesgo la oferta:
+
+- Primero agradecer la oferta y decir que me interesa el puesto. Siempre.
+- Pedir un número concreto, no un rango: 55.000. Si das un rango, te dan el
+  mínimo.
+- Justificarlo con datos: lo que paga el mercado para un backend sénior en
+  Madrid y mi experiencia con colas y Postgres, que es su stack.
+- Si no pueden subir el fijo, preguntar por otras cosas: un día más de
+  teletrabajo, presupuesto de formación o una revisión del sueldo a los seis
+  meses.
+- Hacerlo por teléfono, y confirmar después por escrito lo que se acuerde.
+
+No mentir con otra oferta que no existe.

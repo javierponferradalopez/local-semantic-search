@@ -1,0 +1,85 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 730 >>
+stream
+BT /F1 11 Tf 14 TL 60 780 Td
+(FACTURA DE ELECTRICIDAD) Tj T*
+() Tj T*
+(Número de factura: FE26-0193344) Tj T*
+(Fecha de emisión: 6 de febrero) Tj T*
+(Periodo de facturación: del 1 al 31 de enero \(31 días\)) Tj T*
+() Tj T*
+(Titular: Lucía Martín Ortega) Tj T*
+(Dirección de suministro: calle del Pez 14, 3.º B, Madrid) Tj T*
+(CUPS: ES0021000012345678QZ0F) Tj T*
+(Tarifa: PVPC 2.0TD) Tj T*
+(Potencia contratada: 4,6 kW en punta y 4,6 kW en valle) Tj T*
+() Tj T*
+(RESUMEN) Tj T*
+(Importe total de la factura: 87,40 euros) Tj T*
+(Se cargará en su cuenta bancaria el 12 de febrero.) Tj T*
+() Tj T*
+(Consumo del periodo: 312 kWh) Tj T*
+(Consumo medio diario: 10,06 kWh) Tj T*
+(Consumo del mismo mes del año anterior: 356 kWh) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 1291 >>
+stream
+BT /F1 11 Tf 14 TL 60 780 Td
+(DETALLE DE LA FACTURA) Tj T*
+() Tj T*
+(Término de potencia: 4,6 kW x 31 días ........................ 13,92 euros) Tj T*
+(Término de energía:) Tj T*
+(  Punta  \(94 kWh\)  ............................................ 21,43 euros) Tj T*
+(  Llano  \(88 kWh\)  ............................................ 14,96 euros) Tj T*
+(  Valle  \(130 kWh\) ............................................ 11,05 euros) Tj T*
+(Impuesto sobre la electricidad ................................. 3,16 euros) Tj T*
+(Alquiler del contador ........................................... 0,83 euros) Tj T*
+(IVA \(21 %\) ..................................................... 13,85 euros) Tj T*
+(Otros conceptos \(bono social de financiación\) ................... 0,20 euros) Tj T*
+(TOTAL ........................................................... 87,40 euros) Tj T*
+() Tj T*
+(PERIODOS HORARIOS \(de lunes a viernes laborables\)) Tj T*
+(Punta: de 10 a 14 h y de 18 a 22 h.) Tj T*
+(Llano: de 8 a 10 h, de 14 a 18 h y de 22 a 24 h.) Tj T*
+(Valle: de 0 a 8 h, y todas las horas de los sábados, los domingos y los festivos.) Tj T*
+() Tj T*
+(Para cualquier consulta sobre esta factura, llame al 900 100 200.) Tj T*
+(En caso de avería, llame al teléfono de su distribuidora: 900 300 400.) Tj T*
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000350 00000 n 
+0000001130 00000 n 
+0000001256 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+2598
+%%EOF
