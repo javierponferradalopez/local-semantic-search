@@ -1,5 +1,6 @@
 import {readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {type Bootstrap, verdictsOf} from './bootstrap';
 import {type MeansByTag, meansByTagOf, meansOf, type Scores, type Tags} from './means';
 
 const REPORTS_FOLDER = join(import.meta.dirname, '../../evals/reports');
@@ -32,6 +33,8 @@ export type Eval<Input, Output, Expected> = {
   counts: Count<Input, Output, Expected>[];
   // What the line of a case holds beside its scores, so that you can tune a cut with no new run.
   trace?: (output: Output) => unknown;
+  // The scorer that the paired bootstrap compares with the previous report, for each split.
+  mainScorer?: string;
 };
 
 type CaseReport = {
@@ -42,11 +45,17 @@ type CaseReport = {
   trace?: unknown;
 };
 
+// The holdout split gives the verdict on a change; you tune on the tuning split.
+type Verdicts =
+  | {scorer: string; previousReport: false}
+  | {scorer: string; previousReport: true; bySplit: Record<string, Bootstrap>};
+
 type Report = {
   name: string;
   means: Scores;
   meansByTag?: MeansByTag;
   counts: Scores;
+  verdicts?: Verdicts;
   cases: CaseReport[];
 };
 
@@ -66,6 +75,7 @@ export const runEval = <Input, Output, Expected>(
       // An eval with no tags keeps the report that it gave before the tags.
       meansByTag: Object.keys(meansByTag).length === 0 ? undefined : meansByTag,
       counts,
+      verdicts: verdictsAgainst(evaluation.mainScorer, cases, previous),
       cases
     };
 
@@ -83,7 +93,7 @@ export const runEval = <Input, Output, Expected>(
 
 const caseReportsOf = async <Input, Output, Expected>(
   name: string,
-  {data, task, scorers, counts, trace}: Eval<Input, Output, Expected>
+  {data, task, scorers, counts, trace, mainScorer}: Eval<Input, Output, Expected>
 ): Promise<{cases: CaseReport[]; counts: Scores}> => {
   const cases = await data();
 
@@ -97,6 +107,12 @@ const caseReportsOf = async <Input, Output, Expected>(
 
   if (new Set(scorers.map(scorer => scorer.name)).size !== scorers.length) {
     throw new Error(`The eval ${name} has two scorers with the same name.`);
+  }
+
+  if (mainScorer !== undefined && !scorers.some(scorer => scorer.name === mainScorer)) {
+    throw new Error(
+      `The main scorer ${mainScorer} of the eval ${name} is not a scorer of it.`
+    );
   }
 
   if (new Set(counts.map(count => count.name)).size !== counts.length) {
@@ -134,6 +150,20 @@ const caseReportsOf = async <Input, Output, Expected>(
   return {cases: reports, counts: totals};
 };
 
+const verdictsAgainst = (
+  scorer: string | undefined,
+  cases: readonly CaseReport[],
+  previous: Report | undefined
+): Verdicts | undefined => {
+  if (scorer === undefined) {
+    return undefined;
+  }
+
+  return previous === undefined
+    ? {scorer, previousReport: false}
+    : {scorer, previousReport: true, bySplit: verdictsOf(scorer, cases, previous.cases)};
+};
+
 const comparisonOf = (report: Report, previous: Report | undefined): string => {
   const previousCases = new Map(
     previous?.cases.map(previousCase => [keyOf(previousCase), previousCase.scores])
@@ -162,8 +192,34 @@ const comparisonOf = (report: Report, previous: Report | undefined): string => {
     ...caseLines,
     `The mean\n${scoreLinesOf(report.means, previous?.means)}`,
     ...tagLines,
-    ...countLines
+    ...countLines,
+    ...verdictLinesOf(report.verdicts)
   ].join('\n\n');
+};
+
+const verdictLinesOf = (verdicts: Verdicts | undefined): string[] => {
+  if (verdicts === undefined) {
+    return [];
+  }
+
+  if (!verdicts.previousReport) {
+    return [`The verdict of ${verdicts.scorer}\n  no previous report, so no verdict`];
+  }
+
+  const lines = Object.entries(verdicts.bySplit).map(
+    ([
+      split,
+      {
+        meanDifference,
+        interval: [low, high],
+        pairs,
+        verdict
+      }
+    ]) =>
+      `  ${split}: ${verdict}, mean difference ${meanDifference.toFixed(3)}, 95 % interval [${low.toFixed(3)}, ${high.toFixed(3)}], ${pairs} pairs`
+  );
+
+  return [`The verdict of ${verdicts.scorer}\n${lines.join('\n')}`];
 };
 
 const scoreLinesOf = (scores: Scores, previous: Scores | undefined, digits = 2): string =>

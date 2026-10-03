@@ -191,7 +191,8 @@ runEval('the-text-group-of-a-search', {
     {name: 'recall@20 of the first stage', score: firstStageRecall}
   ],
   counts: [],
-  trace: traceOf
+  trace: traceOf,
+  mainScorer: 'F0.5'
 });
 
 // The image group has one stage, so it has no score of a first stage.
@@ -213,5 +214,6 @@ runEval('the-image-group-of-a-search', {
     {name: 'reciprocal rank', score: reciprocalRank}
   ],
   counts: [],
-  trace: traceOf
+  trace: traceOf,
+  mainScorer: 'F0.5'
 });
