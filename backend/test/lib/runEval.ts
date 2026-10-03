@@ -1,9 +1,10 @@
 import {readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {type MeansByTag, meansByTagOf, meansOf, type Scores, type Tags} from './means';
 
 const REPORTS_FOLDER = join(import.meta.dirname, '../../evals/reports');
 
-export type EvalCase<Input, Expected> = {input: Input; expected: Expected};
+export type EvalCase<Input, Expected> = {input: Input; expected: Expected; tags?: Tags};
 
 type CaseResult<Input, Output, Expected> = {
   input: Input;
@@ -29,13 +30,25 @@ export type Eval<Input, Output, Expected> = {
   task: (input: Input) => Promise<Output>;
   scorers: Scorer<Input, Output, Expected>[];
   counts: Count<Input, Output, Expected>[];
+  // What the line of a case holds beside its scores, so that you can tune a cut with no new run.
+  trace?: (output: Output) => unknown;
 };
 
-type Scores = Record<string, number>;
+type CaseReport = {
+  input: unknown;
+  expected: unknown;
+  tags?: Tags;
+  scores: Scores;
+  trace?: unknown;
+};
 
-type CaseReport = {input: unknown; expected: unknown; scores: Scores};
-
-type Report = {name: string; means: Scores; counts: Scores; cases: CaseReport[]};
+type Report = {
+  name: string;
+  means: Scores;
+  meansByTag?: MeansByTag;
+  counts: Scores;
+  cases: CaseReport[];
+};
 
 // Nothing asserts a score, as ADR-0016 rules: only a throw fails the run.
 export const runEval = <Input, Output, Expected>(
@@ -45,12 +58,23 @@ export const runEval = <Input, Output, Expected>(
   it(name, async () => {
     const previous = await previousReportOf(name);
     const {cases, counts} = await caseReportsOf(name, evaluation);
+    const scorers = evaluation.scorers.map(scorer => scorer.name);
+    const meansByTag = meansByTagOf(scorers, cases);
     const report: Report = {
       name,
-      means: meansOf(name, evaluation.scorers, cases),
+      means: meansOf(scorers, cases),
+      // An eval with no tags keeps the report that it gave before the tags.
+      meansByTag: Object.keys(meansByTag).length === 0 ? undefined : meansByTag,
       counts,
       cases
     };
+
+    // A golden set can hold no case that a scorer judges, such as a Near leak with no Near Resource.
+    for (const scorer of scorers.filter(scorer => !(scorer in report.means))) {
+      console.log(
+        `The scorer ${scorer} of the eval ${name} judged no case, so it has no mean.`
+      );
+    }
 
     console.log(comparisonOf(report, previous));
     await writeFile(reportPathOf(name), `${JSON.stringify(report, null, 2)}\n`);
@@ -59,7 +83,7 @@ export const runEval = <Input, Output, Expected>(
 
 const caseReportsOf = async <Input, Output, Expected>(
   name: string,
-  {data, task, scorers, counts}: Eval<Input, Output, Expected>
+  {data, task, scorers, counts, trace}: Eval<Input, Output, Expected>
 ): Promise<{cases: CaseReport[]; counts: Scores}> => {
   const cases = await data();
 
@@ -82,7 +106,7 @@ const caseReportsOf = async <Input, Output, Expected>(
   const reports: CaseReport[] = [];
   const totals: Scores = Object.fromEntries(counts.map(count => [count.name, 0]));
 
-  for (const {input, expected} of cases) {
+  for (const {input, expected, tags} of cases) {
     const output = await task(input);
     const scores: Scores = {};
 
@@ -104,34 +128,10 @@ const caseReportsOf = async <Input, Output, Expected>(
       totals[count.name] += count.holds({input, output, expected}) ? 1 : 0;
     }
 
-    reports.push({input, expected, scores});
+    reports.push({input, expected, tags, scores, trace: trace?.(output)});
   }
 
   return {cases: reports, counts: totals};
-};
-
-const meansOf = <Input, Output, Expected>(
-  name: string,
-  scorers: Scorer<Input, Output, Expected>[],
-  cases: CaseReport[]
-): Scores => {
-  const means: Scores = {};
-
-  for (const {name: scorer} of scorers) {
-    const scores = cases.flatMap(report => report.scores[scorer] ?? []);
-
-    // A golden set can hold no case that a scorer judges, such as a Near leak with no Near Resource.
-    if (scores.length === 0) {
-      console.log(
-        `The scorer ${scorer} of the eval ${name} judged no case, so it has no mean.`
-      );
-      continue;
-    }
-
-    means[scorer] = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  }
-
-  return means;
 };
 
 const comparisonOf = (report: Report, previous: Report | undefined): string => {
@@ -149,10 +149,19 @@ const comparisonOf = (report: Report, previous: Report | undefined): string => {
       ? []
       : [`The counts\n${scoreLinesOf(report.counts, previous?.counts, 0)}`];
 
+  const tagLines = Object.entries(report.meansByTag ?? {}).flatMap(
+    ([tag, meansByValue]) =>
+      Object.entries(meansByValue).map(
+        ([value, means]) =>
+          `The mean for the ${tag} ${value}\n${scoreLinesOf(means, previous?.meansByTag?.[tag]?.[value])}`
+      )
+  );
+
   return [
     `The eval ${report.name}`,
     ...caseLines,
     `The mean\n${scoreLinesOf(report.means, previous?.means)}`,
+    ...tagLines,
     ...countLines
   ].join('\n\n');
 };
