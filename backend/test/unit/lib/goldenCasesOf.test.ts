@@ -1,7 +1,7 @@
 import type {GoldenQuery} from '../../../evals/GoldenQuery';
 import {goldenCasesOf} from '../../lib/goldenCasesOf';
 
-const SUBJECTS = {cooking: 'dev', cycling: 'test'} as const;
+const SUBJECTS = {cooking: 'tuning', cycling: 'holdout'} as const;
 
 const RESOURCES = {
   'lentils.md': {subject: 'cooking', language: 'es'},
@@ -23,7 +23,7 @@ const AN_ABSENT_QUERY: GoldenQuery = {
   query: 'zzzz',
   language: 'es',
   absent: 'noise',
-  split: 'dev',
+  split: 'tuning',
   near: []
 };
 
@@ -40,12 +40,12 @@ describe('goldenCasesOf', () => {
       {
         input: 'un guiso de lentejas',
         expected: {answers: ['lentils.md'], near: ['soup.md']},
-        tags: {split: 'dev', language: 'es', 'cross-language': 'no'}
+        tags: {split: 'tuning', language: 'es', 'cross-language': 'no'}
       },
       {
         input: 'zzzz',
         expected: {answers: [], near: []},
-        tags: {split: 'dev', language: 'es'}
+        tags: {split: 'tuning', language: 'es'}
       }
     ]);
   });
@@ -69,7 +69,7 @@ describe('goldenCasesOf', () => {
       goldenSet: [{...A_REAL_QUERY, answers: ['lentils.jpg']}]
     });
 
-    expect(tags).toStrictEqual({split: 'dev', language: 'es'});
+    expect(tags).toStrictEqual({split: 'tuning', language: 'es'});
   });
 
   it('should take the split of a Query from its subject', () => {
@@ -88,7 +88,7 @@ describe('goldenCasesOf', () => {
       ]
     });
 
-    expect(tags).toHaveProperty('split', 'test');
+    expect(tags).toHaveProperty('split', 'holdout');
   });
 
   it('should throw when a label names a Resource that is not in the corpus', () => {

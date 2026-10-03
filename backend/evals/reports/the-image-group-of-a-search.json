@@ -9,14 +9,14 @@
   },
   "meansByTag": {
     "split": {
-      "test": {
+      "holdout": {
         "F0.5": 0.11111111111111113,
         "precision": 0.09090909090909093,
         "recall": 1,
         "right empty": 1,
         "reciprocal rank": 0.90625
       },
-      "dev": {
+      "tuning": {
         "F0.5": 0.10317460317460321,
         "precision": 0.09090909090909091,
         "recall": 0.9285714285714286,
@@ -52,7 +52,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -132,7 +132,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -212,7 +212,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -292,7 +292,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -372,7 +372,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -452,7 +452,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -532,7 +532,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -612,7 +612,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -692,7 +692,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -772,7 +772,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -852,7 +852,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -932,7 +932,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "en"
       },
       "scores": {
@@ -1012,7 +1012,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "en"
       },
       "scores": {
@@ -1092,7 +1092,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "en"
       },
       "scores": {
@@ -1172,7 +1172,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -1252,7 +1252,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -1332,7 +1332,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1412,7 +1412,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1479,7 +1479,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1559,7 +1559,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1639,7 +1639,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1719,7 +1719,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "en"
       },
       "scores": {
@@ -1797,7 +1797,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1860,7 +1860,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -1923,7 +1923,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -1986,7 +1986,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -2061,7 +2061,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -2124,7 +2124,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "en"
       },
       "scores": {

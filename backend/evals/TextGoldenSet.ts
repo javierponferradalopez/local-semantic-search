@@ -353,40 +353,40 @@ export const TEXT_GOLDEN_SET: readonly GoldenQuery[] = [
     answers: ['patrones-de-peticiones-al-servidor.md'],
     near: []
   },
-  {query: 'gatos', language: 'es', absent: 'off the subject', split: 'dev', near: []},
+  {query: 'gatos', language: 'es', absent: 'off the subject', split: 'tuning', near: []},
   {
     query: 'cómo declarar la renta como autónomo',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'reglas del ajedrez para principiantes',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'the history of the Roman Empire',
     language: 'en',
     absent: 'off the subject',
-    split: 'test',
+    split: 'holdout',
     near: []
   },
   {
     query: 'aprender a tocar la guitarra',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'el tiempo mañana en Madrid',
     language: 'es',
     absent: 'off the subject',
-    split: 'test',
+    split: 'holdout',
     near: []
   },
   // The owner's words on their technical Markdown (#89). No Resource of the corpus answers them.
@@ -394,43 +394,43 @@ export const TEXT_GOLDEN_SET: readonly GoldenQuery[] = [
     query: 'feature flags',
     language: 'en',
     absent: 'technical term of the owner',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'cómo abro un modal',
     language: 'es',
     absent: 'technical term of the owner',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'componentes del design system',
     language: 'es',
     absent: 'technical term of the owner',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'traducciones con react-polyglot',
     language: 'es',
     absent: 'technical term of the owner',
-    split: 'test',
+    split: 'holdout',
     near: []
   },
   {
     query: 'migrar el brand kit antiguo al resources center',
     language: 'es',
     absent: 'technical term of the owner',
-    split: 'test',
+    split: 'holdout',
     near: []
   },
-  {query: 'asdkjh qwe', language: 'es', absent: 'noise', split: 'dev', near: []},
-  {query: 'qwerty', language: 'es', absent: 'noise', split: 'dev', near: []},
-  {query: 'zzzz', language: 'es', absent: 'noise', split: 'dev', near: []},
-  {query: 'jkl ñlk', language: 'es', absent: 'noise', split: 'test', near: []},
-  {query: 'aaaa bbbb', language: 'es', absent: 'noise', split: 'dev', near: []},
-  {query: 'xkcd lol', language: 'es', absent: 'noise', split: 'dev', near: []},
-  {query: '123 456', language: 'es', absent: 'noise', split: 'test', near: []},
-  {query: 'fdsfsd', language: 'es', absent: 'noise', split: 'test', near: []}
+  {query: 'asdkjh qwe', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: 'qwerty', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: 'zzzz', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: 'jkl ñlk', language: 'es', absent: 'noise', split: 'holdout', near: []},
+  {query: 'aaaa bbbb', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: 'xkcd lol', language: 'es', absent: 'noise', split: 'tuning', near: []},
+  {query: '123 456', language: 'es', absent: 'noise', split: 'holdout', near: []},
+  {query: 'fdsfsd', language: 'es', absent: 'noise', split: 'holdout', near: []}
 ];

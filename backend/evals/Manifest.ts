@@ -1,5 +1,6 @@
-// Dev tunes and test judges. The split does not change after the baseline.
-export type Split = 'dev' | 'test';
+// You tune on the tuning split, and the holdout split judges.
+// The split does not change after the baseline.
+export type Split = 'tuning' | 'holdout';
 
 export type Language = 'es' | 'en';
 
@@ -12,21 +13,21 @@ export type Manifest = {
 
 export const MANIFEST: Manifest = {
   subjects: {
-    lentils: 'dev',
-    'bicycle-care': 'dev',
-    'trip-to-lisbon': 'test',
-    'house-plants': 'dev',
-    sourdough: 'test',
-    'home-network': 'dev',
-    'half-marathon': 'dev',
-    'rental-contract': 'dev',
-    'knee-injury': 'test',
-    'kitchen-renovation': 'dev',
-    'marine-life': 'test',
-    'server-requests': 'dev',
-    pets: 'test',
-    mountains: 'dev',
-    beach: 'test'
+    lentils: 'tuning',
+    'bicycle-care': 'tuning',
+    'trip-to-lisbon': 'holdout',
+    'house-plants': 'tuning',
+    sourdough: 'holdout',
+    'home-network': 'tuning',
+    'half-marathon': 'tuning',
+    'rental-contract': 'tuning',
+    'knee-injury': 'holdout',
+    'kitchen-renovation': 'tuning',
+    'marine-life': 'holdout',
+    'server-requests': 'tuning',
+    pets: 'holdout',
+    mountains: 'tuning',
+    beach: 'holdout'
   },
   texts: {
     'receta-de-lentejas.md': {subject: 'lentils', language: 'es'},

@@ -3,7 +3,7 @@ export type Scores = Record<string, number>;
 // Each tag names one way to split the cases, such as the split or the language.
 export type Tags = Readonly<Record<string, string>>;
 
-// The means of each value of each tag: split → dev → F0.5.
+// The means of each value of each tag: split → tuning → F0.5.
 export type MeansByTag = Record<string, Record<string, Scores>>;
 
 type ScoredCase = {tags?: Tags; scores: Scores};

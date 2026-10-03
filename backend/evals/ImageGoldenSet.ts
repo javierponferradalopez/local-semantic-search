@@ -159,42 +159,42 @@ export const IMAGE_GOLDEN_SET: readonly GoldenQuery[] = [
     query: 'un gato durmiendo en el sofá',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'una bicicleta de montaña en el barro',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'un tren de alta velocidad',
     language: 'es',
     absent: 'off the subject',
-    split: 'test',
+    split: 'holdout',
     near: []
   },
   {
     query: 'coches de Fórmula 1 en un circuito',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'partitura de piano',
     language: 'es',
     absent: 'off the subject',
-    split: 'dev',
+    split: 'tuning',
     near: []
   },
   {
     query: 'a birthday cake with candles',
     language: 'en',
     absent: 'off the subject',
-    split: 'test',
+    split: 'holdout',
     near: []
   }
 ];

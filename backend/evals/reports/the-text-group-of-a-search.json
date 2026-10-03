@@ -10,7 +10,7 @@
   },
   "meansByTag": {
     "split": {
-      "dev": {
+      "tuning": {
         "F0.5": 0.10204081632653055,
         "precision": 0.08333333333333333,
         "recall": 1,
@@ -18,7 +18,7 @@
         "reciprocal rank": 1,
         "recall@20 of the first stage": 1
       },
-      "test": {
+      "holdout": {
         "F0.5": 0.09693877551020405,
         "precision": 0.0833333333333333,
         "recall": 0.95,
@@ -73,7 +73,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -210,7 +210,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -347,7 +347,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -484,7 +484,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -621,7 +621,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -758,7 +758,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -895,7 +895,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -1032,7 +1032,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -1169,7 +1169,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -1306,7 +1306,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -1443,7 +1443,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -1580,7 +1580,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -1717,7 +1717,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "yes"
       },
@@ -1854,7 +1854,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "yes"
       },
@@ -1991,7 +1991,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "en",
         "cross-language": "no"
       },
@@ -2128,7 +2128,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "yes"
       },
@@ -2265,7 +2265,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "yes"
       },
@@ -2402,7 +2402,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "en",
         "cross-language": "no"
       },
@@ -2539,7 +2539,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -2676,7 +2676,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -2813,7 +2813,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -2950,7 +2950,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -3087,7 +3087,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -3224,7 +3224,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -3361,7 +3361,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -3498,7 +3498,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -3635,7 +3635,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "en",
         "cross-language": "yes"
       },
@@ -3772,7 +3772,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -3909,7 +3909,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -4046,7 +4046,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "en",
         "cross-language": "yes"
       },
@@ -4183,7 +4183,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -4320,7 +4320,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -4457,7 +4457,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -4594,7 +4594,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -4731,7 +4731,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -4868,7 +4868,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -5005,7 +5005,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -5142,7 +5142,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -5265,7 +5265,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -5402,7 +5402,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -5539,7 +5539,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es",
         "cross-language": "no"
       },
@@ -5676,7 +5676,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -5813,7 +5813,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -5950,7 +5950,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6087,7 +6087,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6224,7 +6224,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6361,7 +6361,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6498,7 +6498,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6635,7 +6635,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6772,7 +6772,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es",
         "cross-language": "no"
       },
@@ -6907,7 +6907,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -7024,7 +7024,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -7141,7 +7141,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -7258,7 +7258,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "en"
       },
       "scores": {
@@ -7375,7 +7375,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -7492,7 +7492,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -7609,7 +7609,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "en"
       },
       "scores": {
@@ -7726,7 +7726,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -7856,7 +7856,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -7986,7 +7986,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -8103,7 +8103,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -8220,7 +8220,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -8350,7 +8350,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -8467,7 +8467,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -8584,7 +8584,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -8701,7 +8701,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -8818,7 +8818,7 @@
         "near": []
       },
       "tags": {
-        "split": "dev",
+        "split": "tuning",
         "language": "es"
       },
       "scores": {
@@ -8935,7 +8935,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
@@ -9065,7 +9065,7 @@
         "near": []
       },
       "tags": {
-        "split": "test",
+        "split": "holdout",
         "language": "es"
       },
       "scores": {
