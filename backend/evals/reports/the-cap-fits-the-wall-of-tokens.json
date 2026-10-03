@@ -6,77 +6,14 @@
   },
   "counts": {},
   "cases": [
-    {
-      "input": "Spanish prose",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 1,
-        "share of the wall": 0.73828125
-      }
-    },
-    {
-      "input": "English prose",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 1,
-        "share of the wall": 0.794921875
-      }
-    },
-    {
-      "input": "Markdown",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 0,
-        "share of the wall": 1.095703125
-      }
-    },
-    {
-      "input": "source code",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 1,
-        "share of the wall": 0.9921875
-      }
-    },
-    {
-      "input": "a table of numbers",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 0,
-        "share of the wall": 1.10546875
-      }
-    },
-    {
-      "input": "PDF-extracted text",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 1,
-        "share of the wall": 0.822265625
-      }
-    },
-    {
-      "input": "digits",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 0,
-        "share of the wall": 1.224609375
-      }
-    },
-    {
-      "input": "a string with no spaces",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 0,
-        "share of the wall": 2.302734375
-      }
-    },
-    {
-      "input": "characters the vocabulary does not know",
-      "expected": 512,
-      "scores": {
-        "fits the wall": 0,
-        "share of the wall": 2.939453125
-      }
-    }
+    {"input":"Spanish prose","expected":512,"scores":{"fits the wall":1,"share of the wall":0.73828125}},
+    {"input":"English prose","expected":512,"scores":{"fits the wall":1,"share of the wall":0.794921875}},
+    {"input":"Markdown","expected":512,"scores":{"fits the wall":0,"share of the wall":1.095703125}},
+    {"input":"source code","expected":512,"scores":{"fits the wall":1,"share of the wall":0.9921875}},
+    {"input":"a table of numbers","expected":512,"scores":{"fits the wall":0,"share of the wall":1.10546875}},
+    {"input":"PDF-extracted text","expected":512,"scores":{"fits the wall":1,"share of the wall":0.822265625}},
+    {"input":"digits","expected":512,"scores":{"fits the wall":0,"share of the wall":1.224609375}},
+    {"input":"a string with no spaces","expected":512,"scores":{"fits the wall":0,"share of the wall":2.302734375}},
+    {"input":"characters the vocabulary does not know","expected":512,"scores":{"fits the wall":0,"share of the wall":2.939453125}}
   ]
 }

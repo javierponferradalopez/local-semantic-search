@@ -113,9 +113,24 @@ type Traced<Group, Trace> = Group & {trace: Trace};
 
 const traceOf = <Trace>({trace}: {trace: Trace}): Trace => trace;
 
-type TextTrace = {shown: string[]; results: Scored[]; firstStage: Scored[]};
+// shown is the number of Results that the group shows, as it shows the first of them.
+type TextTrace = {shown: number; results: Scored[]; firstStage: Scored[]};
 
-type ImageTrace = {shown: string[]; results: Scored[]};
+type ImageTrace = {shown: number; results: Scored[]};
+
+const shownCountOf = (
+  query: string,
+  shown: readonly string[],
+  results: readonly Scored[]
+): number => {
+  if (shown.some((name, index) => results[index]?.name !== name)) {
+    throw new Error(
+      `The list that a group shows for the Query "${query}" is not the first of its Results.`
+    );
+  }
+
+  return shown.length;
+};
 
 type Recorded = {
   text: string[];
@@ -148,12 +163,14 @@ const textGroupOf = async (query: string): Promise<Traced<TextGroup, TextTrace>>
     throw new Error(`The text group of a Search failed for the Query "${query}".`);
   }
 
+  const results = scoredOf(reranking.reranked);
+
   return {
     shown: text,
     firstStage: reranking.firstStage.map(({name}) => name),
     trace: {
-      shown: text,
-      results: scoredOf(reranking.reranked),
+      shown: shownCountOf(query, text, results),
+      results,
       firstStage: scoredOf(reranking.firstStage)
     }
   };
@@ -169,7 +186,9 @@ const imageGroupOf = async (query: string): Promise<Traced<Shown, ImageTrace>> =
     throw new Error(`The image group of a Search failed for the Query "${query}".`);
   }
 
-  return {shown: images, trace: {shown: images, results: scoredOf(pictureResults)}};
+  const results = scoredOf(pictureResults);
+
+  return {shown: images, trace: {shown: shownCountOf(query, images, results), results}};
 };
 
 runEval('the-text-group-of-a-search', {

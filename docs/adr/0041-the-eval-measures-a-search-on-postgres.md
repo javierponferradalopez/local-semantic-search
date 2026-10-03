@@ -150,8 +150,11 @@ The text group and the image group are two reports,
 `the-text-group-of-a-search` and `the-image-group-of-a-search`, in
 `backend/evals/reports/`. They never share a score, as ADR-0016 decided. Each
 report gives the mean of each scorer for all the `Queries` and for each split,
-language and cross-language value, and one line for each `Query` with the list
-that was shown and the score of each `Result`.
+language and cross-language value, and one line for each `Query`. The line gives
+the full scores of the `Query`, the score of each `Result` to 3 decimals, and the
+number of `Results` that the group shows. The group shows the first `Results`, and
+the eval throws when it does not. A changed `Query` is then one changed line in the
+diff.
 
 The first run on the current pipeline is the baseline. It is committed, and each
 later front compares with it.

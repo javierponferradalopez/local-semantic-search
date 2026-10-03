@@ -1,7 +1,14 @@
 import {readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {type Bootstrap, verdictsOf} from './bootstrap';
-import {type MeansByTag, meansByTagOf, meansOf, type Scores, type Tags} from './means';
+import {verdictsOf} from './bootstrap';
+import {meansByTagOf, meansOf, type Scores, type Tags} from './means';
+import {
+  type CaseReport,
+  type Report,
+  reportOf,
+  reportTextOf,
+  type Verdicts
+} from './report';
 
 const REPORTS_FOLDER = join(import.meta.dirname, '../../evals/reports');
 
@@ -37,28 +44,6 @@ export type Eval<Input, Output, Expected> = {
   mainScorer?: string;
 };
 
-type CaseReport = {
-  input: unknown;
-  expected: unknown;
-  tags?: Tags;
-  scores: Scores;
-  trace?: unknown;
-};
-
-// The holdout split gives the verdict on a change; you tune on the tuning split.
-type Verdicts =
-  | {scorer: string; previousReport: false}
-  | {scorer: string; previousReport: true; bySplit: Record<string, Bootstrap>};
-
-type Report = {
-  name: string;
-  means: Scores;
-  meansByTag?: MeansByTag;
-  counts: Scores;
-  verdicts?: Verdicts;
-  cases: CaseReport[];
-};
-
 // Nothing asserts a score, as ADR-0016 rules: only a throw fails the run.
 export const runEval = <Input, Output, Expected>(
   name: string,
@@ -87,7 +72,7 @@ export const runEval = <Input, Output, Expected>(
     }
 
     console.log(comparisonOf(report, previous));
-    await writeFile(reportPathOf(name), `${JSON.stringify(report, null, 2)}\n`);
+    await writeFile(reportPathOf(name), reportTextOf(report));
   });
 };
 
@@ -240,7 +225,7 @@ const reportPathOf = (name: string): string => join(REPORTS_FOLDER, `${name}.jso
 
 const previousReportOf = async (name: string): Promise<Report | undefined> => {
   try {
-    return JSON.parse(await readFile(reportPathOf(name), 'utf8')) as Report;
+    return reportOf(await readFile(reportPathOf(name), 'utf8'));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       return undefined;
