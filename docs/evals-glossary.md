@@ -37,7 +37,9 @@ A test passes or fails; an eval gives a score. Only an error stops an eval.
 
 **Corpus**: the files that the eval ingests before it searches:
 [`corpus/`](../backend/evals/corpus/) for the text group and [`image-corpus/`](../backend/evals/image-corpus/) for the
-image group.
+image group. Each picture of `image-corpus/` is a free picture that Openverse found,
+resized to 512 pixels on its long edge. [`Manifest.ts`](../backend/evals/Manifest.ts) gives its
+title, its creator, its source and its licence.
 
 **Subject**: a topic of the corpus, such as lentils or a car insurance. Each file of
 the corpus has one subject. [`Manifest.ts`](../backend/evals/Manifest.ts) gives the subject of each
