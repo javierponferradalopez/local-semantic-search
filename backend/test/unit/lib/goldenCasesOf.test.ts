@@ -4,10 +4,10 @@ import {goldenCasesOf} from '../../lib/goldenCasesOf';
 const SUBJECTS = {cooking: 'dev', cycling: 'test'} as const;
 
 const RESOURCES = {
-  'lentils.md': {subject: 'cooking'},
-  'soup.md': {subject: 'cooking'},
-  'bike.md': {subject: 'cycling'}
-};
+  'lentils.md': {subject: 'cooking', language: 'es'},
+  'soup.md': {subject: 'cooking', language: 'en'},
+  'bike.md': {subject: 'cycling', language: 'es'}
+} as const;
 
 const CORPUS = ['lentils.md', 'soup.md', 'bike.md'];
 
@@ -39,10 +39,56 @@ describe('goldenCasesOf', () => {
     ).toStrictEqual([
       {
         input: 'un guiso de lentejas',
-        expected: {answers: ['lentils.md'], near: ['soup.md']}
+        expected: {answers: ['lentils.md'], near: ['soup.md']},
+        tags: {split: 'dev', language: 'es', 'cross-language': 'no'}
       },
-      {input: 'zzzz', expected: {answers: [], near: []}}
+      {
+        input: 'zzzz',
+        expected: {answers: [], near: []},
+        tags: {split: 'dev', language: 'es'}
+      }
     ]);
+  });
+
+  it('should tag a Query as cross-language when a Resource that answers it is in another language', () => {
+    const [{tags}] = goldenCasesOf({
+      subjects: SUBJECTS,
+      resources: RESOURCES,
+      corpus: CORPUS,
+      goldenSet: [{...A_REAL_QUERY, answers: ['lentils.md', 'soup.md'], near: []}]
+    });
+
+    expect(tags).toHaveProperty('cross-language', 'yes');
+  });
+
+  it('should give no cross-language tag to a Query whose Resources have no language', () => {
+    const [{tags}] = goldenCasesOf({
+      subjects: SUBJECTS,
+      resources: {...RESOURCES, 'lentils.jpg': {subject: 'cooking'}},
+      corpus: [...CORPUS, 'lentils.jpg'],
+      goldenSet: [{...A_REAL_QUERY, answers: ['lentils.jpg']}]
+    });
+
+    expect(tags).toStrictEqual({split: 'dev', language: 'es'});
+  });
+
+  it('should take the split of a Query from its subject', () => {
+    const [{tags}] = goldenCasesOf({
+      subjects: SUBJECTS,
+      resources: RESOURCES,
+      corpus: CORPUS,
+      goldenSet: [
+        {
+          query: 'cómo se cambia una rueda de coche',
+          language: 'es',
+          absent: 'off the subject',
+          subject: 'cycling',
+          near: ['bike.md']
+        }
+      ]
+    });
+
+    expect(tags).toHaveProperty('split', 'test');
   });
 
   it('should throw when a label names a Resource that is not in the corpus', () => {

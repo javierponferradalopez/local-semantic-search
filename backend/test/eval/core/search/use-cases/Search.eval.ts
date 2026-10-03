@@ -5,6 +5,7 @@ import {MANIFEST} from '../../../../../evals/Manifest';
 import {TEXT_GOLDEN_SET} from '../../../../../evals/TextGoldenSet';
 import {container} from '../../../../../src/api/config/di/Container';
 import type {PictureResult} from '../../../../../src/core/search/domain/PictureResult';
+import type {Result} from '../../../../../src/core/search/domain/Result';
 import {Floor} from '../../../../../src/core/search/domain/value-objects/Floor';
 import {DrizzlePictureResultReader} from '../../../../../src/core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../../../src/core/search/infrastructure/drizzle/DrizzleResultReader';
@@ -102,6 +103,20 @@ beforeAll(async () => {
   );
 });
 
+type Scored = {name: string; score: number};
+
+const scoredOf = (results: readonly (Result | PictureResult)[]): Scored[] =>
+  results.map(({name, bestMatch}) => ({name, score: bestMatch.score}));
+
+// The Results keep their scores when the Floor hides the list, so that you can tune a cut on them.
+type Traced<Group, Trace> = Group & {trace: Trace};
+
+const traceOf = <Trace>({trace}: {trace: Trace}): Trace => trace;
+
+type TextTrace = {shown: string[]; results: Scored[]; firstStage: Scored[]};
+
+type ImageTrace = {shown: string[]; results: Scored[]};
+
 type Recorded = {
   text: string[];
   images: string[];
@@ -123,7 +138,7 @@ const recordedSearchOf = async (query: string): Promise<Recorded> => {
 
 // Search gives an empty group when the group fails, so the eval finds the failure itself.
 // The store holds the corpus, so a group that did not fail always reads its Results.
-const textGroupOf = async (query: string): Promise<TextGroup> => {
+const textGroupOf = async (query: string): Promise<Traced<TextGroup, TextTrace>> => {
   const {text, reranking} = await recordedSearchOf(query);
   const failed =
     reranking === undefined ||
@@ -133,10 +148,18 @@ const textGroupOf = async (query: string): Promise<TextGroup> => {
     throw new Error(`The text group of a Search failed for the Query "${query}".`);
   }
 
-  return {shown: text, firstStage: reranking.firstStage.map(({name}) => name)};
+  return {
+    shown: text,
+    firstStage: reranking.firstStage.map(({name}) => name),
+    trace: {
+      shown: text,
+      results: scoredOf(reranking.reranked),
+      firstStage: scoredOf(reranking.firstStage)
+    }
+  };
 };
 
-const imageGroupOf = async (query: string): Promise<Shown> => {
+const imageGroupOf = async (query: string): Promise<Traced<Shown, ImageTrace>> => {
   const {images, pictureResults} = await recordedSearchOf(query);
   const failed =
     pictureResults === undefined ||
@@ -146,7 +169,7 @@ const imageGroupOf = async (query: string): Promise<Shown> => {
     throw new Error(`The image group of a Search failed for the Query "${query}".`);
   }
 
-  return {shown: images};
+  return {shown: images, trace: {shown: images, results: scoredOf(pictureResults)}};
 };
 
 runEval('the-text-group-of-a-search', {
@@ -167,7 +190,8 @@ runEval('the-text-group-of-a-search', {
     {name: 'reciprocal rank', score: reciprocalRank},
     {name: 'recall@20 of the first stage', score: firstStageRecall}
   ],
-  counts: []
+  counts: [],
+  trace: traceOf
 });
 
 // The image group has one stage, so it has no score of a first stage.
@@ -188,5 +212,6 @@ runEval('the-image-group-of-a-search', {
     {name: 'Near leak', score: nearLeak},
     {name: 'reciprocal rank', score: reciprocalRank}
   ],
-  counts: []
+  counts: [],
+  trace: traceOf
 });

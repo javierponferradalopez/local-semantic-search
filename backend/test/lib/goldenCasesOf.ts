@@ -1,11 +1,13 @@
 import type {GoldenQuery} from '../../evals/GoldenQuery';
-import type {Manifest} from '../../evals/Manifest';
+import type {Language, Manifest, Split} from '../../evals/Manifest';
+import type {Tags} from './means';
 import type {EvalCase} from './runEval';
 
 // No Resource answers an absent Query.
 export type Labels = {answers: readonly string[]; near: readonly string[]};
 
-type Resources = Readonly<Record<string, {subject: string}>>;
+// A picture has no language.
+type Resources = Readonly<Record<string, {subject: string; language?: Language}>>;
 
 type Params = {
   subjects: Manifest['subjects'];
@@ -72,6 +74,30 @@ const checkTheLabelsOf = (
   }
 };
 
+const splitOf = (goldenQuery: GoldenQuery, subjects: Manifest['subjects']): Split =>
+  'subject' in goldenQuery ? subjects[goldenQuery.subject] : goldenQuery.split;
+
+// No tag rather than a false "no": a picture has no language, and an absent Query no answer.
+const crossLanguageOf = (
+  goldenQuery: GoldenQuery,
+  resources: Resources
+): 'yes' | 'no' | undefined => {
+  const languages = answersOf(goldenQuery).map(name => resources[name].language);
+
+  if (languages.length === 0 || languages.includes(undefined)) {
+    return undefined;
+  }
+
+  return languages.some(language => language !== goldenQuery.language) ? 'yes' : 'no';
+};
+
+const tagsOf = (goldenQuery: GoldenQuery, {subjects, resources}: Corpus): Tags => {
+  const crossLanguage = crossLanguageOf(goldenQuery, resources);
+  const tags = {split: splitOf(goldenQuery, subjects), language: goldenQuery.language};
+
+  return crossLanguage === undefined ? tags : {...tags, 'cross-language': crossLanguage};
+};
+
 // A wrong label throws, so it never changes a score in silence.
 export const goldenCasesOf = (params: Params): EvalCase<string, Labels>[] => {
   checkTheManifest(params);
@@ -81,7 +107,8 @@ export const goldenCasesOf = (params: Params): EvalCase<string, Labels>[] => {
 
     return {
       input: goldenQuery.query,
-      expected: {answers: answersOf(goldenQuery), near: goldenQuery.near}
+      expected: {answers: answersOf(goldenQuery), near: goldenQuery.near},
+      tags: tagsOf(goldenQuery, params)
     };
   });
 };
