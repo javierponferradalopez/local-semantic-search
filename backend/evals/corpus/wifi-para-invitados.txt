@@ -1,0 +1,13 @@
+Wifi para las visitas
+
+Hola. Si necesitas internet en casa, conéctate a esta red:
+
+Red: Casa-Invitados
+Contraseña: girasol-azul-42
+
+Funciona en toda la casa, también en el jardín.
+
+Desde esta red no se ve la impresora ni el NAS. Si necesitas imprimir algo,
+pídemelo y lo imprimo yo.
+
+Esta nota está pegada en la puerta de la nevera.

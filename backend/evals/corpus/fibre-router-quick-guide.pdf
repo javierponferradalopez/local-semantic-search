@@ -1,0 +1,78 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 773 >>
+stream
+BT /F1 11 Tf 14 TL 60 780 Td
+(FIBRE ROUTER QUICK GUIDE) Tj T*
+() Tj T*
+(The lights on the front of the router) Tj T*
+() Tj T*
+(POWER, green: the router is on.) Tj T*
+() Tj T*
+(PON, green and steady: the router is synchronised with the fibre network. PON) Tj T*
+(blinking: the router is trying to synchronise. Wait two minutes.) Tj T*
+() Tj T*
+(LOS, red: loss of signal. The router receives no light from the fibre. Check) Tj T*
+(that the green fibre cable is plugged in and not bent. If LOS stays red, call) Tj T*
+(technical support: the fault is in the line, not in your home.) Tj T*
+() Tj T*
+(INTERNET, green: the router has an internet connection.) Tj T*
+() Tj T*
+(WI-FI, off: normal in bridge mode, when another router or a mesh system makes) Tj T*
+(the wifi.) Tj T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 786 >>
+stream
+BT /F1 11 Tf 14 TL 60 780 Td
+(Restarting the router) Tj T*
+() Tj T*
+(When the internet drops, restart the fibre router first. Switch it off, wait 30) Tj T*
+(seconds and switch it on. Wait until PON and INTERNET are steady green, which) Tj T*
+(takes about two minutes. Only then restart your own router or the main node of) Tj T*
+(your mesh system.) Tj T*
+() Tj T*
+(Factory reset) Tj T*
+() Tj T*
+(With the router on, hold the RESET pin at the back for 10 seconds with a paper) Tj T*
+(clip, until all the lights blink. The router starts again with the settings of) Tj T*
+(the label on its base: the wifi name, the wifi password and the admin password.) Tj T*
+() Tj T*
+(A factory reset removes bridge mode. Set bridge mode again in the admin page, in) Tj T*
+(Advanced, WAN, Mode.) Tj T*
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000350 00000 n 
+0000001174 00000 n 
+0000001300 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+2137
+%%EOF

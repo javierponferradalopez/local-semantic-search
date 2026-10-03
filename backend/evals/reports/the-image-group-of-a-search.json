@@ -42,6 +42,30 @@
     }
   },
   "counts": {},
+  "verdicts": {
+    "scorer": "F0.5",
+    "previousReport": true,
+    "bySplit": {
+      "holdout": {
+        "meanDifference": 0,
+        "interval": [
+          0,
+          0
+        ],
+        "pairs": 8,
+        "verdict": "tie"
+      },
+      "tuning": {
+        "meanDifference": 0,
+        "interval": [
+          0,
+          0
+        ],
+        "pairs": 14,
+        "verdict": "tie"
+      }
+    }
+  },
   "cases": [
     {
       "input": "un tranvía por una calle empedrada",
