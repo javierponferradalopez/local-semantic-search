@@ -5,7 +5,9 @@ from your files, the system stores their vectors, and you find the content when
 you type text.
 
 The words this product uses are in [`CONTEXT.md`](CONTEXT.md). The decisions are in
-[`docs/adr/`](docs/adr/).
+[`docs/adr/`](docs/adr/). The words of the evals, such as F0.5, `holdout` and the
+verdict, are in [`docs/evals-glossary.md`](docs/evals-glossary.md), for a
+person who is new to search and RAG.
 
 ## Prerequisites
 
