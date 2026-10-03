@@ -61,12 +61,12 @@
         "verdict": "tie"
       },
       "tuning": {
-        "meanDifference": 0.0010755290258395848,
+        "meanDifference": 0,
         "interval": [
           0,
-          0.003226587077518755
+          0
         ],
-        "pairs": 46,
+        "pairs": 50,
         "verdict": "tie"
       }
     }
