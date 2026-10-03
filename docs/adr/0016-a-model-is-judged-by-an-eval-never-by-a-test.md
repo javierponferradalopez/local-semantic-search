@@ -13,6 +13,15 @@ status: accepted
 > **Amended by [ADR-0040](0040-a-reranker-gates-and-orders-the-text-group.md).**
 > The text eval ranks with the two stages of the text group: the cosine of the
 > Text model, then the score of the Reranker.
+>
+> **Amended by [ADR-0041](0041-the-eval-measures-a-search-on-postgres.md).**
+> The eval measures the `Search` use case on a real Postgres, and it ingests the
+> corpus through the application. Each `Query` has the `Resources` that answer it
+> and its Near `Resources`, and F0.5 of the list that a group shows is the main
+> number. The verdict of the `Floor` is removed. A paired bootstrap against the
+> previous report gives the verdict, on the `holdout` subjects. The eval of the
+> cap, the score with no pass or fail, the versioned reports and the rule that CI
+> never runs an eval stand.
 
 **No automated test loads a model. What a model does — the prefix its adapter
 writes, the width of its `Vector`, and above all whether the right `Resource`

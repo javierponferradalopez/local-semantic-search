@@ -89,19 +89,19 @@ backend/    Express, Drizzle and Postgres. Relative imports.
 | `pnpm run test:unit` | Runs the unit tests |
 | `pnpm run test:integration` | Runs the integration tests. Needs Docker |
 | `pnpm run test:e2e` | Runs the end-to-end tests. Needs Docker |
-| `pnpm run test:eval` | Runs the evals. Needs the models in the model store |
+| `pnpm run test:eval` | Runs the evals. Needs Docker and the models in the model store |
 
 ## The tests
 
 Vitest runs in four modes, and each mode has one script. `unit` covers the domain
 and the use cases, with the ports mocked. `integration` covers the adapters, which
 are the parts that talk to the store and to the disk. `e2e` covers the endpoints,
-over the application booted in process. `eval` measures what a model does.
+over the application booted in process. `eval` measures what a `Search` gives.
 
-`test:integration` and `test:e2e` share one test infrastructure: one container with
-the Postgres image of `backend/docker-compose.yml`, the migrations, and a temp
-directory for the Files. The two never run together, because they share one
-database, and each suite wipes the data before it starts. No test touches
+`test:integration`, `test:e2e` and `test:eval` share one test infrastructure: one
+container with the Postgres image of `backend/docker-compose.yml`, the migrations, and
+a temp directory for the Files. Each run starts its own container, and each suite
+wipes the data before it starts. No test touches
 `backend/data/`.
 
 A port is mocked with the helper in `backend/test/utils/mock.ts`, and never with
@@ -111,13 +111,20 @@ CI runs Biome, the type check and the unit tests, and nothing else. A test never
 loads a model: what a model does is measured by an eval, which
 [ADR-0016](docs/adr/0016-a-model-is-judged-by-an-eval-never-by-a-test.md) describes.
 
-An eval is a `*.eval.ts` file in `backend/test/eval/`, in the mirror of
-`infrastructure/`. It calls `runEval` of `backend/test/lib/runEval.ts` with `data`,
+An eval is a `*.eval.ts` file in `backend/test/eval/`, in the mirror of the code
+that it measures. It calls `runEval` of `backend/test/lib/runEval.ts` with `data`,
 `task` and `scorers`, the shape of Evalite. An eval gives a score, not a pass or a
 fail: the runner prints the score of each case beside the score of the previous run,
 and writes the report into `backend/evals/reports/`. Git versions the reports, so a
 change of model or of cutter carries its evidence in the same commit. CI never runs
 the evals, because CI never downloads a model.
+
+The eval of `Search` starts a Postgres container, so it needs Docker. It ingests the
+corpus of `backend/evals/` through the application, which takes minutes, and runs the
+`Search` that ships. Each report gives a verdict against the previous report: "win",
+"loss" or "tie", for the `tuning` and the `holdout` subjects. The verdict of
+`holdout` is the one that counts.
+[ADR-0041](docs/adr/0041-the-eval-measures-a-search-on-postgres.md) describes it.
 
 ## The house style
 
