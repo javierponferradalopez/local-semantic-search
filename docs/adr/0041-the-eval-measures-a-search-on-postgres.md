@@ -79,8 +79,9 @@ cutter.
 
 The data step throws when a label names a `Resource` that is not in the corpus, a
 file of the corpus is not in the manifest, a `Resource` both answers a `Query` and
-is Near to it, a label crosses to a different subject, or a subject has no split.
-A typo then cannot change a score in silence.
+is Near to it, a `Resource` of the subject of a `Query` neither answers it nor is
+Near to it, a label crosses to a different subject, or a subject has no split.
+A typo or a forgotten label then cannot change a score in silence.
 
 ## The scorers
 

@@ -72,6 +72,13 @@ const checkTheLabelsOf = (
       throw new Error(`${name} answers the Query "${query}" and is Near to it.`);
     }
   }
+
+  // A Resource that a label forgets would lower the Near leak in silence.
+  for (const [name, resource] of Object.entries(resources)) {
+    if (resource.subject === subject && !answers.includes(name) && !near.includes(name)) {
+      throw new Error(`${name} neither answers the Query "${query}" nor is Near to it.`);
+    }
+  }
 };
 
 const splitOf = (goldenQuery: GoldenQuery, subjects: Manifest['subjects']): Split =>

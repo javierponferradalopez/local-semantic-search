@@ -66,7 +66,9 @@ describe('goldenCasesOf', () => {
       subjects: SUBJECTS,
       resources: {...RESOURCES, 'lentils.jpg': {subject: 'cooking'}},
       corpus: [...CORPUS, 'lentils.jpg'],
-      goldenSet: [{...A_REAL_QUERY, answers: ['lentils.jpg']}]
+      goldenSet: [
+        {...A_REAL_QUERY, answers: ['lentils.jpg'], near: ['lentils.md', 'soup.md']}
+      ]
     });
 
     expect(tags).toStrictEqual({split: 'tuning', language: 'es'});
@@ -142,6 +144,17 @@ describe('goldenCasesOf', () => {
         resources: RESOURCES,
         corpus: CORPUS,
         goldenSet: [{...AN_ABSENT_QUERY, near: ['soup.md']}]
+      })
+    ).toThrow('soup.md');
+  });
+
+  it('should throw when a Resource of the subject of a Query neither answers it nor is Near to it', () => {
+    expect(() =>
+      goldenCasesOf({
+        subjects: SUBJECTS,
+        resources: RESOURCES,
+        corpus: CORPUS,
+        goldenSet: [{...A_REAL_QUERY, near: []}]
       })
     ).toThrow('soup.md');
   });
