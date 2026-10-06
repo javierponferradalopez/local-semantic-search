@@ -44,6 +44,10 @@ export class ValueObjectError extends DomainError {
     return new ValueObjectError(`A ${valueObject} holds a number that is not finite`);
   }
 
+  public static causeItIsBelowZero(valueObject: string): ValueObjectError {
+    return new ValueObjectError(`A ${valueObject} is below 0`);
+  }
+
   public static causeItDoesNotHoldItsWidth(
     valueObject: string,
     length: number,

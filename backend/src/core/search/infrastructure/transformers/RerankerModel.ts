@@ -4,5 +4,6 @@ export const RERANKER_MODEL = {
   dtype: 'q8',
   // 4.3.0 does not know model_type `new`. This value selects only the class that feeds the graph.
   config: {model_type: 'xlm-roberta'},
-  floor: -0.58
+  floor: -0.3,
+  margin: 0.2
 } as const;

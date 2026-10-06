@@ -13,6 +13,12 @@ const BAD_REQUEST = 400;
 const FIELDS_OF_A_TEXT_RESULT = ['contentType', 'fileUrl', 'name', 'resourceId', 'text'];
 const FIELDS_OF_AN_IMAGE_RESULT = ['fileUrl', 'name', 'resourceId', 'thumbnailUrl'];
 
+// The text of page one of two-pages-with-text.pdf, so that the Margin keeps the two Resources.
+const THE_TEXT_OF_THE_PDF = Buffer.from(
+  'Page one of the fixture.\nAn extractor reads this text.\n'
+);
+const THE_QUERY_OF_THE_PDF = 'an extractor reads this text';
+
 const fixture = (name: string): Promise<Buffer> =>
   readFile(join(import.meta.dirname, '../../../../fixtures', name));
 
@@ -34,13 +40,10 @@ describe('GET /search', () => {
   };
 
   it('should give one text Result for each Ready Resource, and no image', async () => {
-    await createAReadyResource(
-      'the lighthouse.md',
-      await fixture('markdown-with-headings.md')
-    );
+    await createAReadyResource('the fixture.md', THE_TEXT_OF_THE_PDF);
     await createAReadyResource('the pages.pdf', await fixture('two-pages-with-text.pdf'));
 
-    const response = await api.search('the lighthouse on the coast');
+    const response = await api.search(THE_QUERY_OF_THE_PDF);
 
     expect(response.status).toBe(OK);
 
@@ -49,7 +52,7 @@ describe('GET /search', () => {
     expect(Object.keys(body).toSorted()).toStrictEqual(['images', 'text']);
     expect(body.images).toStrictEqual([]);
     expect(body.text.map(result => result.name).toSorted()).toStrictEqual([
-      'the lighthouse.md',
+      'the fixture.md',
       'the pages.pdf'
     ]);
 
@@ -59,13 +62,12 @@ describe('GET /search', () => {
   });
 
   it('should give a page to a Content type with pages, and no page key to the others', async () => {
-    await createAReadyResource(
-      'the lighthouse.md',
-      await fixture('markdown-with-headings.md')
-    );
+    await createAReadyResource('the fixture.md', THE_TEXT_OF_THE_PDF);
     await createAReadyResource('the pages.pdf', await fixture('two-pages-with-text.pdf'));
 
-    const {text} = (await (await api.search('the lighthouse')).json()) as SearchResponse;
+    const {text} = (await (
+      await api.search(THE_QUERY_OF_THE_PDF)
+    ).json()) as SearchResponse;
     const pdf = text.find(result => result.contentType === 'pdf');
     const markdown = text.find(result => result.contentType === 'markdown');
 

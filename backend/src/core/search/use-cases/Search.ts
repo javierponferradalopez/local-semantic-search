@@ -11,6 +11,7 @@ import type {Result} from '../domain/Result';
 import type {ResultReader} from '../domain/ResultReader';
 import type {Reranker} from '../domain/services/Reranker';
 import {Floor} from '../domain/value-objects/Floor';
+import {Margin} from '../domain/value-objects/Margin';
 import {Query} from '../domain/value-objects/Query';
 
 type ConstructorParams = {
@@ -21,6 +22,7 @@ type ConstructorParams = {
   pictureResultReader: PictureResultReader;
   fileStore: FileStore;
   textFloor: number;
+  textMargin: number;
   imageFloor: number;
 };
 
@@ -40,6 +42,7 @@ export class Search {
   private readonly pictureResultReader: PictureResultReader;
   private readonly fileStore: FileStore;
   private readonly textFloor: Floor;
+  private readonly textMargin: Margin;
   private readonly imageFloor: Floor;
 
   public constructor(params: ConstructorParams) {
@@ -50,6 +53,7 @@ export class Search {
     this.pictureResultReader = params.pictureResultReader;
     this.fileStore = params.fileStore;
     this.textFloor = Floor.of({value: params.textFloor});
+    this.textMargin = Margin.of({value: params.textMargin});
     this.imageFloor = Floor.of({value: params.imageFloor});
   }
 
@@ -71,7 +75,7 @@ export class Search {
         firstStage.length === 0 ? [] : await this.reranker.rerank(query, firstStage);
 
       return this.textFloor.isReachedBy(results)
-        ? results.map(result => this.textResultOf(result))
+        ? this.textMargin.cut(results).map(result => this.textResultOf(result))
         : [];
     } catch (error) {
       return nothingForAFailedGroup('text', error);

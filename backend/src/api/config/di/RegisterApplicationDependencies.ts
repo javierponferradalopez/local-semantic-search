@@ -85,6 +85,7 @@ export const registerApplicationDependencies = (): void => {
       pictureResultReader: container.getDependency(DrizzlePictureResultReader),
       fileStore,
       textFloor: RERANKER_MODEL.floor,
+      textMargin: RERANKER_MODEL.margin,
       imageFloor: VISION_MODEL.floor
     })
   );

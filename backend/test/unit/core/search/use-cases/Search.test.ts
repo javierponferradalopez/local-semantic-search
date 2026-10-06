@@ -15,6 +15,7 @@ import {StringMother} from '../../../../utils/object-mother/StringMother';
 import {VectorMother} from '../../../../utils/object-mother/VectorMother';
 
 const TEXT_FLOOR = 0.5;
+const TEXT_MARGIN = 0.2;
 const IMAGE_FLOOR = 0.05;
 
 const aResult = (overrides: Partial<Result> = {}): Result => {
@@ -53,7 +54,9 @@ describe('Search', () => {
   let consoleError: MockInstance<typeof console.error>;
   let search: Search;
 
-  const aSearch = (floors: {textFloor?: number; imageFloor?: number} = {}): Search =>
+  const aSearch = (
+    cut: {textFloor?: number; textMargin?: number; imageFloor?: number} = {}
+  ): Search =>
     new Search({
       textEmbedder,
       imageEmbedder,
@@ -62,8 +65,9 @@ describe('Search', () => {
       pictureResultReader,
       fileStore,
       textFloor: TEXT_FLOOR,
+      textMargin: TEXT_MARGIN,
       imageFloor: IMAGE_FLOOR,
-      ...floors
+      ...cut
     });
 
   beforeEach(() => {
@@ -94,6 +98,10 @@ describe('Search', () => {
       ['image', {imageFloor: Number.POSITIVE_INFINITY}]
     ])('should refuse a %s Floor that is not a finite score', (_, floors) => {
       expect(() => aSearch(floors)).toThrow(ValueObjectError);
+    });
+
+    it.each([Number.NaN, -0.01])('should refuse the text Margin %j', textMargin => {
+      expect(() => aSearch({textMargin})).toThrow(ValueObjectError);
     });
   });
 
@@ -304,7 +312,7 @@ describe('Search', () => {
       expect(text).toStrictEqual([]);
     });
 
-    it('should keep the Results under the Floor when the best Match reaches the Floor', async () => {
+    it('should keep a Result under the Floor within the Margin, and remove one outside it, when the best Match reaches the Floor', async () => {
       rerankedAs([
         aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR}}),
         aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR - 0.01}}),
@@ -313,10 +321,66 @@ describe('Search', () => {
 
       const {text} = await search.run({query: 'the trip'});
 
+      expect(text.map(result => result.text)).toStrictEqual(['The best.', 'The second.']);
+    });
+
+    it('should keep a text Result at exactly the best score minus the Margin', async () => {
+      const best = TEXT_FLOOR + 0.3;
+      rerankedAs([
+        aResult({bestMatch: {text: 'The best.', score: best}}),
+        aResult({bestMatch: {text: 'At the edge.', score: best - TEXT_MARGIN}})
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
       expect(text.map(result => result.text)).toStrictEqual([
         'The best.',
-        'The second.',
-        'The third.'
+        'At the edge.'
+      ]);
+    });
+
+    it('should remove each text Result below the best score minus the Margin', async () => {
+      const best = TEXT_FLOOR + 0.3;
+      rerankedAs([
+        aResult({bestMatch: {text: 'The best.', score: best}}),
+        aResult({bestMatch: {text: 'Near.', score: best - 0.1}}),
+        aResult({bestMatch: {text: 'Far.', score: best - TEXT_MARGIN - 0.01}}),
+        aResult({bestMatch: {text: 'Farther.', score: best - 1}})
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text.map(result => result.text)).toStrictEqual(['The best.', 'Near.']);
+    });
+
+    it('should cut the text group with the score of the Reranker, not the one of the text port', async () => {
+      const [best, second] = [
+        aResult({bestMatch: {text: 'The best.', score: TEXT_FLOOR + 0.3}}),
+        aResult({bestMatch: {text: 'The second.', score: TEXT_FLOOR + 0.25}})
+      ];
+      resultReader.getBestFirst.mockResolvedValue([best, second]);
+      reranker.rerank.mockResolvedValue([
+        best,
+        {...second, bestMatch: {...second.bestMatch, score: TEXT_FLOOR - 0.5}}
+      ]);
+
+      const {text} = await search.run({query: 'the trip'});
+
+      expect(text.map(result => result.text)).toStrictEqual(['The best.']);
+    });
+
+    it('should never cut the image group with the text Margin', async () => {
+      search = aSearch({textMargin: 0});
+      pictureResultReader.getBestFirst.mockResolvedValue([
+        aPictureResult({name: 'the best.png', bestMatch: {score: IMAGE_FLOOR + 0.5}}),
+        aPictureResult({name: 'the second.png', bestMatch: {score: IMAGE_FLOOR - 0.5}})
+      ]);
+
+      const {images} = await search.run({query: 'the beach'});
+
+      expect(images.map(result => result.name)).toStrictEqual([
+        'the best.png',
+        'the second.png'
       ]);
     });
 
