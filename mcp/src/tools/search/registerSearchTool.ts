@@ -1,16 +1,18 @@
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
+import type {ImageResult} from 'contract/ImageResult';
 import {z} from 'zod';
 import {BackendUnavailable} from '../../gateways/BackendUnavailable';
 import {Refusal} from '../../gateways/Refusal';
+import type {SearchGateway, Thumbnail} from '../../gateways/SearchGateway';
 import type {ServerDependencies} from '../../server/createServer';
 import {presentFailure} from '../presentFailure';
-import {presentSearch} from './presentSearch';
+import {type PictureResult, presentSearch} from './presentSearch';
 
 const DESCRIPTION = [
   'Searches the files of the user by meaning, and gives the Results in two separate groups: Text and Picture.',
   'Each Text Result gives the name of its file, its resource id, its content type, the passage that matched, the page when the file has pages, and a link that opens the file.',
-  'Each Picture Result gives the name of its file and a link that opens it.',
+  'Each Picture Result gives the name of its file, a link that opens it, and a thumbnail of the Picture.',
   'Call this tool when the user asks a question about their own content.',
   'A Result can be on a near subject and not answer the question: read its text, and ignore a Result that does not answer.',
   'To read more of the file of a Text Result, call `get_matches` with its resource id.',
@@ -39,7 +41,12 @@ export const registerSearchTool = (
     },
     async ({query}): Promise<CallToolResult> => {
       try {
-        return presentSearch(await gateways.search.search(query), backendUrl);
+        const {text, images} = await gateways.search.search(query);
+        const pictures = await Promise.all(
+          images.map(result => withItsThumbnail(result, gateways.search))
+        );
+
+        return presentSearch({text, pictures}, backendUrl);
       } catch (error) {
         if (error instanceof Refusal || error instanceof BackendUnavailable) {
           return presentFailure(error);
@@ -49,4 +56,28 @@ export const registerSearchTool = (
       }
     }
   );
+};
+
+const withItsThumbnail = async (
+  result: ImageResult,
+  search: SearchGateway
+): Promise<PictureResult> => {
+  const thumbnail = await thumbnailOrNothing(result.thumbnailUrl, search);
+
+  return thumbnail?.mediaType.startsWith('image/') ? {result, thumbnail} : {result};
+};
+
+const thumbnailOrNothing = async (
+  thumbnailUrl: string,
+  search: SearchGateway
+): Promise<Thumbnail | undefined> => {
+  try {
+    return await search.thumbnail(thumbnailUrl);
+  } catch (error) {
+    if (error instanceof Refusal || error instanceof BackendUnavailable) {
+      return undefined;
+    }
+
+    throw error;
+  }
 };

@@ -1,11 +1,15 @@
 import type {Client} from '@modelcontextprotocol/sdk/client/index.js';
-import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
+import type {
+  CallToolResult,
+  ImageContent,
+  TextContent
+} from '@modelcontextprotocol/sdk/types.js';
 import type {ImageResult} from 'contract/ImageResult';
 import type {SearchResponse} from 'contract/SearchResponse';
 import type {TextResult} from 'contract/TextResult';
 import {BackendUnavailable} from '../../../../src/gateways/BackendUnavailable';
 import {Refusal} from '../../../../src/gateways/Refusal';
-import type {SearchGateway} from '../../../../src/gateways/SearchGateway';
+import type {SearchGateway, Thumbnail} from '../../../../src/gateways/SearchGateway';
 import {connectAClient} from '../../../lib/connectAClient';
 import {type MockProxy, mock} from '../../../utils/mock';
 
@@ -33,10 +37,31 @@ const imageResultNamed = (
 
 const NO_RESULT: SearchResponse = {text: [], images: []};
 
+const THUMBNAIL: Thumbnail = {bytes: new Uint8Array([1, 2, 3]), mediaType: 'image/webp'};
+
+const imageBlockOf = ({bytes, mediaType}: Thumbnail): ImageContent => ({
+  type: 'image',
+  data: Buffer.from(bytes).toString('base64'),
+  mimeType: mediaType
+});
+
+const pictureBlockOf = (name: string): TextContent => ({
+  type: 'text',
+  text: `- ${name}\n  File: http://localhost:3000/files/${name}`
+});
+
+const PICTURE_GROUP_TITLE: TextContent = {
+  type: 'text',
+  text: 'Results of the Picture group:'
+};
+
 const textsOf = (result: CallToolResult): string[] =>
   result.content.map(block => (block.type === 'text' ? block.text : ''));
 
 const textOf = (result: CallToolResult): string => textsOf(result).join('\n');
+
+const pictureBlocksOf = (result: CallToolResult): CallToolResult['content'] =>
+  result.content.slice(1);
 
 describe('search', () => {
   let search: MockProxy<SearchGateway>;
@@ -48,6 +73,7 @@ describe('search', () => {
   beforeEach(async () => {
     search = mock<SearchGateway>();
     search.search.mockResolvedValue(NO_RESULT);
+    search.thumbnail.mockResolvedValue(THUMBNAIL);
     client = await connectAClient({gateways: {search}, backendUrl: BACKEND_URL});
   });
 
@@ -145,7 +171,7 @@ describe('search', () => {
     expect(text).toContain('  Match:\n    # Arms\n    \n    - eight');
   });
 
-  it('should give the name and the File of each Picture Result, in its own group', async () => {
+  it('should give the name, the File and the thumbnail of each Picture Result, in its own group', async () => {
     search.search.mockResolvedValue({
       text: [textResultNamed('notes.md')],
       images: [imageResultNamed('octopus.png'), imageResultNamed('squid.webp')]
@@ -154,17 +180,91 @@ describe('search', () => {
     const result = await searchFor('octopus');
 
     expect(result.isError).toBeFalsy();
-    expect(textsOf(result)[1]).toBe(
-      [
-        'Results of the Picture group:',
-        '',
-        '- octopus.png',
-        '  File: http://localhost:3000/files/octopus.png',
-        '',
-        '- squid.webp',
-        '  File: http://localhost:3000/files/squid.webp'
-      ].join('\n')
+    expect(pictureBlocksOf(result)).toEqual([
+      PICTURE_GROUP_TITLE,
+      pictureBlockOf('octopus.png'),
+      imageBlockOf(THUMBNAIL),
+      pictureBlockOf('squid.webp'),
+      imageBlockOf(THUMBNAIL)
+    ]);
+    expect(search.thumbnail.mock.calls).toEqual([
+      ['/thumbnails/octopus.png'],
+      ['/thumbnails/squid.webp']
+    ]);
+  });
+
+  it('should give the thumbnail of each Picture Result that the backend gives, with the media type of each', async () => {
+    const names = ['a.png', 'b.jpg', 'c.webp', 'd.png', 'e.png', 'f.png', 'g.gif'];
+    const thumbnailOf = (name: string): Thumbnail => ({
+      bytes: new TextEncoder().encode(name),
+      mediaType: `image/${name.split('.')[1]}`
+    });
+    search.search.mockResolvedValue({
+      text: [],
+      images: names.map(name => imageResultNamed(name))
+    });
+    search.thumbnail.mockImplementation(async url =>
+      thumbnailOf(url.replace('/thumbnails/', ''))
     );
+
+    const result = await searchFor('octopus');
+
+    expect(pictureBlocksOf(result)).toEqual([
+      PICTURE_GROUP_TITLE,
+      ...names.flatMap(name => [pictureBlockOf(name), imageBlockOf(thumbnailOf(name))])
+    ]);
+  });
+
+  it.each([
+    ['refuses it', new Refusal([])],
+    ['is unavailable', new BackendUnavailable(BACKEND_URL)]
+  ])(
+    'should give a Picture Result as metadata only when the backend %s, and change no other Result',
+    async (_case, failure) => {
+      search.search.mockResolvedValue({
+        text: [textResultNamed('notes.md')],
+        images: [
+          imageResultNamed('a.png'),
+          imageResultNamed('b.png'),
+          imageResultNamed('c.png')
+        ]
+      });
+      search.thumbnail.mockImplementation(async url => {
+        if (url === '/thumbnails/b.png') {
+          throw failure;
+        }
+
+        return THUMBNAIL;
+      });
+
+      const result = await searchFor('octopus');
+
+      expect(result.isError).toBeFalsy();
+      expect(textsOf(result)[0]).toContain('- notes.md');
+      expect(pictureBlocksOf(result)).toEqual([
+        PICTURE_GROUP_TITLE,
+        pictureBlockOf('a.png'),
+        imageBlockOf(THUMBNAIL),
+        pictureBlockOf('b.png'),
+        pictureBlockOf('c.png'),
+        imageBlockOf(THUMBNAIL)
+      ]);
+    }
+  );
+
+  it('should give a Picture Result as metadata only when its thumbnail is not an image', async () => {
+    search.search.mockResolvedValue({text: [], images: [imageResultNamed('a.png')]});
+    search.thumbnail.mockResolvedValue({
+      bytes: new Uint8Array([1]),
+      mediaType: 'application/octet-stream'
+    });
+
+    const result = await searchFor('octopus');
+
+    expect(pictureBlocksOf(result)).toEqual([
+      PICTURE_GROUP_TITLE,
+      pictureBlockOf('a.png')
+    ]);
   });
 
   it('should show each Result that the backend gives, and cut nothing', async () => {
@@ -174,10 +274,10 @@ describe('search', () => {
       images: names.map(name => imageResultNamed(name.replace('.md', '.png')))
     });
 
-    const [text, pictures] = textsOf(await searchFor('octopus'));
+    const [text, ...pictures] = textsOf(await searchFor('octopus'));
 
     expect(text.match(/^- /gm)).toHaveLength(25);
-    expect(pictures.match(/^- /gm)).toHaveLength(25);
+    expect(pictures.filter(picture => picture.startsWith('- '))).toHaveLength(25);
   });
 
   it('should resolve the File URL of each Result against BACKEND_URL', async () => {
@@ -217,10 +317,10 @@ describe('search', () => {
       images: [imageResultNamed('octopus.png')]
     });
 
-    const [text, pictures] = textsOf(await searchFor('octopus'));
+    const [text, ...pictures] = textsOf(await searchFor('octopus'));
 
     expect(text).toMatch(/found no Text Result/);
-    expect(pictures).toContain('- octopus.png');
+    expect(pictures).toContain(pictureBlockOf('octopus.png').text);
   });
 
   it('should give an error that names BACKEND_URL and pnpm dev when the backend is unavailable', async () => {
