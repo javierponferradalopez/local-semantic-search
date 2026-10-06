@@ -1,12 +1,12 @@
 import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
 import type {CallToolResult} from '@modelcontextprotocol/sdk/types.js';
 import type {ImageResult} from 'contract/ImageResult';
-import {z} from 'zod';
 import {BackendUnavailable} from '../../gateways/BackendUnavailable';
 import {Refusal} from '../../gateways/Refusal';
 import type {SearchGateway, Thumbnail} from '../../gateways/SearchGateway';
 import type {ServerDependencies} from '../../server/createServer';
 import {presentFailure} from '../presentFailure';
+import {queryField} from '../queryField';
 import {type PictureResult, presentSearch} from './presentSearch';
 
 const DESCRIPTION = [
@@ -30,12 +30,9 @@ export const registerSearchTool = (
       title: 'Search the Resources',
       description: DESCRIPTION,
       inputSchema: {
-        query: z
-          .string()
-          .regex(/\S/, 'The query must have at least one character that is not a space')
-          .describe(
-            'What to look for, in the words of the question. Any language. Send it again with other words when the Results do not answer.'
-          )
+        query: queryField.describe(
+          'What to look for, in the words of the question. Any language. Send it again with other words when the Results do not answer.'
+        )
       },
       annotations: {readOnlyHint: true}
     },
