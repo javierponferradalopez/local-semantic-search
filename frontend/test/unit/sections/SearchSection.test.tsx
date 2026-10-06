@@ -395,6 +395,21 @@ describe('SearchSection', () => {
       ]);
     });
 
+    it('should say that there is nothing more when the gateway gives no Match', async () => {
+      search.matches.mockResolvedValue([]);
+
+      renderWithGateways(<SearchSection />, {search, resources});
+
+      await searchFor('the trip');
+      await openMoreInThisFile();
+
+      expect(
+        await screen.findByText('Nothing more in this file for this search.')
+      ).toBeDefined();
+      expect(screen.queryByRole('list', {name: 'More in the manual.pdf'})).toBeNull();
+      expect(screen.queryByRole('button', {name: 'More in this file'})).toBeNull();
+    });
+
     it('should open the fileUrl at the page of each Match', async () => {
       search.matches.mockResolvedValue([{text: 'The best text.', page: 4}]);
 

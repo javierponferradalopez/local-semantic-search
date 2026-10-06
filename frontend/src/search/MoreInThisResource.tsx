@@ -40,7 +40,12 @@ export const MoreInThisResource = ({result, query}: Props): JSX.Element => {
         </Button>
       )}
       <RefusalAlert texts={refusal} />
-      {matches !== undefined && (
+      {matches?.length === 0 && (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Nothing more in this file for this search.
+        </p>
+      )}
+      {matches !== undefined && matches.length > 0 && (
         <ol
           className="mt-2 space-y-2 border-l pl-4"
           aria-label={`More in ${result.name}`}
