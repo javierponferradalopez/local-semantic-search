@@ -10,6 +10,7 @@ All the tools are read-only. No tool creates, deletes or retries a Resource.
 
 | Tool | What it gives |
 |---|---|
+| `search` | The Results of a Query in two groups. A Text Result has its name, Content type, the text of its Match, the page when there is one and a link to its File. A Picture Result has its name and a link to its File. |
 | `list_resources` | Each Resource with its name, Content type, Ingest state, creation date and a link to its File. A `Failed` Resource also has the code of its Reason. |
 
 ## Before you connect a client
