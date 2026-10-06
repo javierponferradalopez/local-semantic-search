@@ -1,5 +1,6 @@
 import type {IncomingMessage, ServerResponse} from 'node:http';
 import type {ApiError} from 'contract/ApiError';
+import type {GetMatchesResponse} from 'contract/GetMatchesResponse';
 import type {SearchResponse} from 'contract/SearchResponse';
 import {BackendUnavailable} from '../../../../src/gateways/BackendUnavailable';
 import {HttpSearchGateway} from '../../../../src/gateways/http/HttpSearchGateway';
@@ -60,6 +61,77 @@ describe('HttpSearchGateway', () => {
     it('should be unavailable when the backend refuses the connection', async () => {
       const error = await new HttpSearchGateway({backendUrl: NO_BACKEND_URL})
         .search('octopus')
+        .catch(e => e);
+
+      expect(error).toBeInstanceOf(BackendUnavailable);
+      expect(error.address).toBe(NO_BACKEND_URL);
+    });
+  });
+
+  describe('#matches', () => {
+    it('should give the Matches that GET /resources/texts/:id/matches gives for the Query', async () => {
+      const matches: GetMatchesResponse = [
+        {text: 'The octopus has eight arms.', page: 3},
+        {text: 'Each arm has suckers.'}
+      ];
+      let requestUrl: string | undefined;
+      const backendUrl = await startAFalseBackend({
+        'GET /resources/texts/0b1c2d3e-0000-4000-8000-000000000001/matches': (
+          request: IncomingMessage,
+          response: ServerResponse
+        ): void => {
+          requestUrl = request.url;
+          answerJson(200, matches)(request, response);
+        }
+      });
+
+      const response = await new HttpSearchGateway({backendUrl}).matches(
+        '0b1c2d3e-0000-4000-8000-000000000001',
+        'arms & legs?'
+      );
+
+      expect(requestUrl).toBe(
+        '/resources/texts/0b1c2d3e-0000-4000-8000-000000000001/matches?q=arms+%26+legs%3F'
+      );
+      expect(response).toEqual(matches);
+    });
+
+    it('should encode the id of the Resource in the path', async () => {
+      let requestUrl: string | undefined;
+      const backendUrl = await startAFalseBackend({
+        'GET /resources/texts/a%2F..%3Fb/matches': (
+          request: IncomingMessage,
+          response: ServerResponse
+        ): void => {
+          requestUrl = request.url;
+          answerJson(200, [])(request, response);
+        }
+      });
+
+      await new HttpSearchGateway({backendUrl}).matches('a/..?b', 'octopus');
+
+      expect(requestUrl).toBe('/resources/texts/a%2F..%3Fb/matches?q=octopus');
+    });
+
+    it('should refuse with the codes of an ApiError', async () => {
+      const apiError: ApiError = {
+        errors: [{code: 'resource_not_found', params: {resourceId: 'an-id'}}]
+      };
+      const backendUrl = await startAFalseBackend({
+        'GET /resources/texts/an-id/matches': answerJson(404, apiError)
+      });
+
+      const error = await new HttpSearchGateway({backendUrl})
+        .matches('an-id', 'octopus')
+        .catch(e => e);
+
+      expect(error).toBeInstanceOf(Refusal);
+      expect(error.items).toEqual(apiError.errors);
+    });
+
+    it('should be unavailable when the backend refuses the connection', async () => {
+      const error = await new HttpSearchGateway({backendUrl: NO_BACKEND_URL})
+        .matches('an-id', 'octopus')
         .catch(e => e);
 
       expect(error).toBeInstanceOf(BackendUnavailable);
