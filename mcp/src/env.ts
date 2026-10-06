@@ -1,4 +1,8 @@
-const getEnv = (name: string): string => {
+import {config} from 'dotenv';
+
+config({quiet: true});
+
+const getEnv =(name: string): string => {
   const value = process.env[name];
 
   if (value === undefined) {

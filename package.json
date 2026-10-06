@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "bootstrap": "pnpm --filter backend run bootstrap",
+    "bootstrap": "pnpm --filter backend --filter mcp run bootstrap",
     "models:fetch": "pnpm --filter backend run models:fetch",
     "dev": "pnpm -r --parallel run dev",
     "lint": "biome check .",

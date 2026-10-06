@@ -27,10 +27,10 @@ pnpm dev
 ```
 
 - `pnpm install` installs the four packages of the workspace.
-- `pnpm run bootstrap` copies `backend/.env.example` to `backend/.env`, starts
-  Postgres, waits until it is healthy, applies the migrations, and gets the weights
-  of the Text model, the Vision model and the Reranker into the model store,
-  `backend/data/models/`.
+- `pnpm run bootstrap` copies `backend/.env.example` to `backend/.env` and
+  `mcp/.env.example` to `mcp/.env`, starts Postgres, waits until it is healthy,
+  applies the migrations, and gets the weights of the Text model, the Vision model
+  and the Reranker into the model store, `backend/data/models/`.
 - `pnpm dev` starts the backend on `http://localhost:3000` and the frontend on
   `http://localhost:5173`.
 

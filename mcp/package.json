@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "bootstrap": "cp -n .env.example .env || true",
     "start": "tsx src/main.ts",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run --mode unit",
@@ -12,6 +13,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.1",
     "contract": "workspace:*",
+    "dotenv": "17.2.4",
     "zod": "4.6.5"
   },
   "devDependencies": {
