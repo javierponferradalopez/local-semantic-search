@@ -1,6 +1,5 @@
 import {act, fireEvent, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {MAXIMUM_FILE_SIZE_IN_BYTES} from 'contract/MaximumFileSizeInBytes';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {Refusal} from '@/gateways/Refusal';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
@@ -19,11 +18,28 @@ const rowNamed = (name: string): ResourceRow => ({
 });
 
 describe('LibrarySection', () => {
+  it.each([
+    [[], '0 Resources'],
+    [[rowNamed('notes.md')], '1 Resource'],
+    [[rowNamed('notes.md'), rowNamed('manual.pdf')], '2 Resources']
+  ])(
+    'should give the heading Library and the number of Resources',
+    async (rows, count) => {
+      const resources = mock<ResourceGateway>();
+      resources.list.mockResolvedValue(rows);
+
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
+
+      expect(await screen.findByText(count)).toBeDefined();
+      expect(screen.getByRole('heading', {level: 1, name: 'Library'})).toBeDefined();
+    }
+  );
+
   it('should list what the gateway gives', async () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([rowNamed('notes.md'), rowNamed('manual.pdf')]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     expect(await screen.findByText('notes.md')).toBeDefined();
     expect(screen.getByText('manual.pdf')).toBeDefined();
@@ -36,7 +52,7 @@ describe('LibrarySection', () => {
       rowNamed('notes.md')
     ]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     expect(await screen.findByRole('cell', {name: 'png'})).toBeDefined();
     expect(screen.getByRole('cell', {name: 'markdown'})).toBeDefined();
@@ -47,7 +63,7 @@ describe('LibrarySection', () => {
     const fileUrl = 'https://store.example/resources/an%20id/notes.md?signature=a';
     resources.list.mockResolvedValue([{...rowNamed('notes.md'), fileUrl}]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     const link = await screen.findByRole('link', {name: 'notes.md'});
 
@@ -59,7 +75,7 @@ describe('LibrarySection', () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([rowNamed('notes.md')]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     const cell = await screen.findByRole('cell', {name: /2026/});
 
@@ -79,7 +95,7 @@ describe('LibrarySection', () => {
       const resources = mock<ResourceGateway>();
       resources.list.mockResolvedValue([rowNamed('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await screen.findByText('notes.md');
 
@@ -106,7 +122,7 @@ describe('LibrarySection', () => {
         }
       ]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       const thumbnail = (await firstCellOf('the beach.png')).querySelector('img');
 
@@ -118,7 +134,7 @@ describe('LibrarySection', () => {
       const resources = mock<ResourceGateway>();
       resources.list.mockResolvedValue([{...rowNamed('manual.pdf'), contentType: 'pdf'}]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       const cell = await firstCellOf('manual.pdf');
 
@@ -132,7 +148,7 @@ describe('LibrarySection', () => {
         {...rowNamed('the beach.png'), contentType: 'png'}
       ]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       const cell = await firstCellOf('the beach.png');
 
@@ -149,7 +165,7 @@ describe('LibrarySection', () => {
       {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'}
     ]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     const rowOf = async (name: string): Promise<HTMLElement> =>
       screen.findByRole('row', {name: new RegExp(name)});
@@ -171,7 +187,7 @@ describe('LibrarySection', () => {
       {...rowNamed('scan.pdf'), ingestState: 'failed', reason: 'ingest_error'}
     ]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     expect((await screen.findByText('Ready')).getAttribute('data-variant')).toBe(
       'secondary'
@@ -186,7 +202,7 @@ describe('LibrarySection', () => {
       {...rowNamed('manual.pdf'), ingestState: 'ready'}
     ]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     const ingesting = await screen.findByRole('status', {name: 'Ingesting'});
 
@@ -198,7 +214,7 @@ describe('LibrarySection', () => {
     const resources = mock<ResourceGateway>();
     resources.list.mockResolvedValue([]);
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     expect(await screen.findByText('The library holds nothing yet.')).toBeDefined();
     expect(screen.queryByRole('table')).toBeNull();
@@ -217,7 +233,7 @@ describe('LibrarySection', () => {
         {...rowNamed('scan.pdf'), ingestState: 'failed', reason}
       ]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       expect(await screen.findByText(text)).toBeDefined();
     }
@@ -229,97 +245,11 @@ describe('LibrarySection', () => {
       new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
     );
 
-    renderWithGateways(<LibrarySection />, {resources});
+    renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
     expect(
       within(await screen.findByRole('alert')).getByText(
         'The server refused the value of "q".'
-      )
-    ).toBeDefined();
-  });
-
-  it('should keep the refusal of the list when a later action of the owner is refused', async () => {
-    const resources = mock<ResourceGateway>();
-    resources.list.mockRejectedValue(
-      new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
-    );
-    resources.createTextResource.mockRejectedValue(
-      new Refusal([
-        {
-          code: 'duplicate_resource',
-          params: {resourceId: 'an-id', name: 'notes.md', ingestState: 'ready'}
-        }
-      ])
-    );
-
-    renderWithGateways(<LibrarySection />, {resources});
-
-    await screen.findByRole('alert');
-    await userEvent.upload(theDropZone(), aFile('notes.md'));
-
-    await waitFor(() =>
-      expect(
-        within(screen.getByRole('alert'))
-          .getAllByRole('listitem')
-          .map(item => item.textContent)
-      ).toEqual([
-        'The server refused the value of "q".',
-        'These bytes are already in the library as "notes.md", which is Ready.'
-      ])
-    );
-  });
-
-  it('should keep a Resource that the owner creates before the list arrives', async () => {
-    const resources = mock<ResourceGateway>();
-    let giveTheList: (rows: ResourceRow[]) => void = () => undefined;
-    resources.list.mockReturnValue(new Promise(resolve => (giveTheList = resolve)));
-    resources.createTextResource.mockResolvedValue(rowNamed('new.md'));
-
-    renderWithGateways(<LibrarySection />, {resources});
-
-    await userEvent.upload(theDropZone(), aFile('new.md'));
-    await screen.findByText('new.md');
-    giveTheList([rowNamed('old.md')]);
-
-    expect(await screen.findByText('old.md')).toBeDefined();
-    expect(screen.getByText('new.md')).toBeDefined();
-  });
-
-  it('should show once a Resource that the owner creates before the list arrives, when the list holds it', async () => {
-    const resources = mock<ResourceGateway>();
-    let giveTheList: (rows: ResourceRow[]) => void = () => undefined;
-    resources.list.mockReturnValue(new Promise(resolve => (giveTheList = resolve)));
-    resources.createTextResource.mockResolvedValue(rowNamed('new.md'));
-
-    renderWithGateways(<LibrarySection />, {resources});
-
-    await userEvent.upload(theDropZone(), aFile('new.md'));
-    await screen.findByText('new.md');
-    giveTheList([rowNamed('new.md'), rowNamed('old.md')]);
-
-    expect(await screen.findByText('old.md')).toBeDefined();
-    expect(screen.getAllByText('new.md')).toHaveLength(1);
-  });
-
-  it('should show the text of a Refusal, and never the failure itself', async () => {
-    const resources = mock<ResourceGateway>();
-    resources.list.mockResolvedValue([]);
-    resources.createTextResource.mockRejectedValue(
-      new Refusal([
-        {
-          code: 'duplicate_resource',
-          params: {resourceId: 'an-id', name: 'notes.md', ingestState: 'ready'}
-        }
-      ])
-    );
-
-    renderWithGateways(<LibrarySection />, {resources});
-
-    await userEvent.upload(theDropZone(), aFile('notes.md'));
-
-    expect(
-      await screen.findByText(
-        'These bytes are already in the library as "notes.md", which is Ready.'
       )
     ).toBeDefined();
   });
@@ -333,7 +263,7 @@ describe('LibrarySection', () => {
     });
 
     it('should ask in a dialog, and remove nothing before the owner confirms', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
 
@@ -343,7 +273,7 @@ describe('LibrarySection', () => {
     });
 
     it('should name the Resource, and say that the delete cannot be undone', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
 
@@ -357,7 +287,7 @@ describe('LibrarySection', () => {
     });
 
     it('should give the focus to Cancel, and close on Cancel without a call to the gateway', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
 
@@ -383,7 +313,7 @@ describe('LibrarySection', () => {
         })
       );
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Delete notes.md'}));
 
@@ -413,7 +343,7 @@ describe('LibrarySection', () => {
         })
       );
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await deleteAndConfirm('notes.md');
       await userEvent.keyboard('{Escape}');
@@ -433,7 +363,7 @@ describe('LibrarySection', () => {
     it('should take the row out of the list and close the dialog when the owner confirms', async () => {
       resources.deleteTextResource.mockResolvedValue();
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await deleteAndConfirm('notes.md');
 
@@ -450,7 +380,7 @@ describe('LibrarySection', () => {
       ]);
       resources.deleteImageResource.mockResolvedValue();
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await deleteAndConfirm('the beach.png');
 
@@ -467,7 +397,7 @@ describe('LibrarySection', () => {
         )
         .mockResolvedValueOnce();
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await deleteAndConfirm('notes.md');
       await screen.findByRole('alert');
@@ -481,7 +411,7 @@ describe('LibrarySection', () => {
         new Refusal([{code: 'resource_not_found', params: {resourceId: 'notes.md'}}])
       );
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await deleteAndConfirm('notes.md');
 
@@ -502,7 +432,7 @@ describe('LibrarySection', () => {
       resources.retryTextResource.mockReturnValue(new Promise(() => {}));
       resources.deleteTextResource.mockResolvedValue();
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
       await userEvent.click(screen.getByRole('button', {name: 'Delete notes.md'}));
@@ -523,7 +453,7 @@ describe('LibrarySection', () => {
       const fadeOut = theDialogFadesOut();
 
       try {
-        renderWithGateways(<LibrarySection />, {resources});
+        renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
         await userEvent.click(
           await screen.findByRole('button', {name: 'Delete notes.md'})
@@ -559,7 +489,7 @@ describe('LibrarySection', () => {
     });
 
     it('should offer Retry on a Failed row alone, and Delete on every row', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       expect(await screen.findByRole('button', {name: 'Retry scan.pdf'})).toBeDefined();
       expect(screen.getAllByRole('button', {name: /^Retry /})).toHaveLength(1);
@@ -569,7 +499,7 @@ describe('LibrarySection', () => {
     it('should show the row that the gateway gives back, in Ingesting', async () => {
       resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
 
@@ -595,7 +525,7 @@ describe('LibrarySection', () => {
         contentType: 'png'
       });
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       expect(await screen.findByText('The image is too large.')).toBeDefined();
 
@@ -616,7 +546,7 @@ describe('LibrarySection', () => {
         })
       );
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       const retry = await screen.findByRole('button', {name: 'Retry scan.pdf'});
       await userEvent.click(retry);
@@ -652,7 +582,7 @@ describe('LibrarySection', () => {
     it('should ask nothing before a Retry', async () => {
       resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
 
@@ -667,7 +597,7 @@ describe('LibrarySection', () => {
         )
         .mockResolvedValueOnce(rowNamed('scan.pdf'));
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       const retry = await screen.findByRole('button', {name: 'Retry scan.pdf'});
       await userEvent.click(retry);
@@ -696,7 +626,7 @@ describe('LibrarySection', () => {
       async (_, item, text) => {
         resources.retryTextResource.mockRejectedValue(new Refusal([item]));
 
-        renderWithGateways(<LibrarySection />, {resources});
+        renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
         await userEvent.click(
           await screen.findByRole('button', {name: 'Retry scan.pdf'})
@@ -722,7 +652,7 @@ describe('LibrarySection', () => {
         ])
       );
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
 
@@ -747,7 +677,7 @@ describe('LibrarySection', () => {
       );
       const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await userEvent.click(await screen.findByRole('button', {name: 'Retry scan.pdf'}));
 
@@ -809,7 +739,7 @@ describe('LibrarySection', () => {
         .mockResolvedValueOnce([rowNamed('notes.md')])
         .mockResolvedValue([ready('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL - 1);
 
@@ -833,7 +763,7 @@ describe('LibrarySection', () => {
     it('should not ask for the list when no Resource is Ingesting', async () => {
       resources.list.mockResolvedValue([ready('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL * 5);
 
@@ -846,7 +776,7 @@ describe('LibrarySection', () => {
         ready('notes.md')
       ]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL * 5);
 
@@ -856,21 +786,8 @@ describe('LibrarySection', () => {
     it('should ask for the list while one Resource of several is Ingesting', async () => {
       resources.list.mockResolvedValue([ready('manual.pdf'), rowNamed('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
-      await letTimePass(POLL_INTERVAL);
-
-      expect(resources.list).toHaveBeenCalledTimes(2);
-    });
-
-    it('should start again when a create makes a Resource Ingesting', async () => {
-      resources.list.mockResolvedValue([]);
-      resources.createTextResource.mockResolvedValue(rowNamed('notes.md'));
-
-      renderWithGateways(<LibrarySection />, {resources});
-
-      await letTimePass(POLL_INTERVAL);
-      dropOnTheDropZone(aFile('notes.md'));
       await letTimePass(POLL_INTERVAL);
 
       expect(resources.list).toHaveBeenCalledTimes(2);
@@ -882,7 +799,7 @@ describe('LibrarySection', () => {
       ]);
       resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL);
       fireEvent.click(screen.getByRole('button', {name: 'Retry scan.pdf'}));
@@ -894,7 +811,7 @@ describe('LibrarySection', () => {
     it('should stop while the tab is hidden, and start again when it is visible', async () => {
       resources.list.mockResolvedValue([rowNamed('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(0);
       theTabIs('hidden');
@@ -914,7 +831,7 @@ describe('LibrarySection', () => {
         .mockResolvedValueOnce([rowNamed('notes.md')])
         .mockReturnValueOnce(tick.list);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL);
       theTabIs('hidden');
@@ -934,7 +851,7 @@ describe('LibrarySection', () => {
         )
         .mockResolvedValue([rowNamed('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL);
 
@@ -954,7 +871,7 @@ describe('LibrarySection', () => {
         .mockReturnValueOnce(tick.list)
         .mockResolvedValue([rowNamed('notes.md')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL * 5);
 
@@ -970,48 +887,6 @@ describe('LibrarySection', () => {
       expect(resources.list).toHaveBeenCalledTimes(3);
     });
 
-    it('should keep a Resource that the owner creates while a tick is in flight', async () => {
-      const tick = aListThatWaits();
-      resources.list
-        .mockResolvedValueOnce([rowNamed('old.md')])
-        .mockReturnValueOnce(tick.list);
-      resources.createTextResource.mockResolvedValue(rowNamed('new.md'));
-
-      renderWithGateways(<LibrarySection />, {resources});
-
-      await letTimePass(POLL_INTERVAL);
-      dropOnTheDropZone(aFile('new.md'));
-      await letTimePass(0);
-      tick.give([ready('old.md')]);
-      await letTimePass(0);
-
-      expect(screen.getByText('old.md')).toBeDefined();
-      expect(screen.getByText('new.md')).toBeDefined();
-    });
-
-    it('should show once a Resource that a tick holds before its create ends', async () => {
-      let endTheCreate: (row: ResourceRow) => void = () => undefined;
-      resources.list
-        .mockResolvedValueOnce([rowNamed('old.md')])
-        .mockResolvedValue([rowNamed('new.md'), rowNamed('old.md')]);
-      resources.createTextResource.mockReturnValue(
-        new Promise(resolve => (endTheCreate = resolve))
-      );
-
-      renderWithGateways(<LibrarySection />, {resources});
-
-      await letTimePass(0);
-      dropOnTheDropZone(aFile('new.md'));
-      await letTimePass(POLL_INTERVAL);
-
-      expect(screen.getByText('new.md')).toBeDefined();
-
-      endTheCreate(rowNamed('new.md'));
-      await letTimePass(0);
-
-      expect(screen.getAllByText('new.md')).toHaveLength(1);
-    });
-
     it('should keep a Resource that the owner retries while a tick is in flight Ingesting', async () => {
       const tick = aListThatWaits();
       const failed: ResourceRow = {
@@ -1025,7 +900,7 @@ describe('LibrarySection', () => {
         .mockResolvedValue([rowNamed('scan.pdf')]);
       resources.retryTextResource.mockResolvedValue(rowNamed('scan.pdf'));
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL);
       fireEvent.click(screen.getByRole('button', {name: 'Retry scan.pdf'}));
@@ -1045,173 +920,15 @@ describe('LibrarySection', () => {
         .mockResolvedValueOnce([rowNamed('notes.md'), rowNamed('manual.pdf')])
         .mockResolvedValue([rowNamed('manual.pdf')]);
 
-      renderWithGateways(<LibrarySection />, {resources});
+      renderWithGateways(<LibrarySection onUpload={vi.fn()} />, {resources});
 
       await letTimePass(POLL_INTERVAL);
 
       expect(screen.queryByText('notes.md')).toBeNull();
       expect(screen.getByText('manual.pdf')).toBeDefined();
     });
-
-    it('should remove the refusal of the list when a tick succeeds', async () => {
-      resources.list
-        .mockRejectedValueOnce(
-          new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
-        )
-        .mockResolvedValue([rowNamed('notes.md'), rowNamed('old.md')]);
-      resources.createTextResource.mockResolvedValue(rowNamed('notes.md'));
-
-      renderWithGateways(<LibrarySection />, {resources});
-
-      await letTimePass(0);
-
-      expect(screen.getByRole('alert')).toBeDefined();
-
-      dropOnTheDropZone(aFile('notes.md'));
-      await letTimePass(POLL_INTERVAL);
-
-      expect(screen.getByText('old.md')).toBeDefined();
-      expect(screen.queryByRole('alert')).toBeNull();
-    });
-  });
-
-  describe('the Gate', () => {
-    let resources: MockProxy<ResourceGateway>;
-
-    beforeEach(() => {
-      resources = mock<ResourceGateway>();
-      resources.list.mockResolvedValue([]);
-      resources.createTextResource.mockResolvedValue(rowNamed('notes.md'));
-    });
-
-    it('should say what the drop zone takes, from the table of contract/', () => {
-      renderWithGateways(<LibrarySection />, {resources});
-
-      expect(
-        screen.getByText(
-          'It takes .pdf, .txt, .md, .jpg, .jpeg, .png, .webp, .gif, .avif or .svg, up to 50 MB.'
-        )
-      ).toBeDefined();
-      expect(theDropZone().getAttribute('accept')).toBe(
-        '.pdf,.txt,.md,.jpg,.jpeg,.png,.webp,.gif,.avif,.svg'
-      );
-      expect(theDropZone().hasAttribute('multiple')).toBe(false);
-    });
-
-    it.each(['the beach.png', 'THE BEACH.JPG', 'the diagram.svg'])(
-      'should send the image %j to the route of the images',
-      async name => {
-        resources.createImageResource.mockResolvedValue(rowNamed(name));
-
-        renderWithGateways(<LibrarySection />, {resources});
-
-        await userEvent.upload(theDropZone(), aFile(name));
-
-        expect(await screen.findByText(name)).toBeDefined();
-        expect(resources.createImageResource).toHaveBeenCalledTimes(1);
-        expect(resources.createTextResource).not.toHaveBeenCalled();
-      }
-    );
-
-    it.each(['notes.md', 'manual.pdf', 'NOTES.TXT'])(
-      'should send the text %j to the route of the texts',
-      async name => {
-        renderWithGateways(<LibrarySection />, {resources});
-
-        await userEvent.upload(theDropZone(), aFile(name));
-
-        await waitFor(() =>
-          expect(resources.createTextResource).toHaveBeenCalledTimes(1)
-        );
-        expect(resources.createImageResource).not.toHaveBeenCalled();
-      }
-    );
-
-    it.each(['the scan.tiff', 'the photo.heic'])(
-      'should refuse %j, which the table does not hold, before the bytes travel',
-      async name => {
-        renderWithGateways(<LibrarySection />, {resources});
-
-        dropOnTheDropZone(aFile(name));
-
-        expect(await screen.findByRole('alert')).toBeDefined();
-        expect(resources.createImageResource).not.toHaveBeenCalled();
-        expect(resources.createTextResource).not.toHaveBeenCalled();
-      }
-    );
-
-    it('should refuse a drop that names no Content type, before the bytes travel', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
-
-      dropOnTheDropZone(aFile('the notes.docx', {type: 'text/plain'}));
-
-      expect(
-        await screen.findByText(
-          'The library cannot read "the notes.docx". Its extension names no Content type.'
-        )
-      ).toBeDefined();
-      expect(resources.createTextResource).not.toHaveBeenCalled();
-    });
-
-    it('should refuse a file above the limit, and give the size seen and the limit', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
-
-      await userEvent.upload(
-        theDropZone(),
-        aFile('manual.pdf', {sizeInBytes: MAXIMUM_FILE_SIZE_IN_BYTES + 1})
-      );
-
-      expect(
-        await screen.findByText('The file is 50.1 MB, and the limit is 50 MB.')
-      ).toBeDefined();
-      expect(resources.createTextResource).not.toHaveBeenCalled();
-    });
-
-    it('should refuse several files, and say how many arrived', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
-
-      dropOnTheDropZone(aFile('a.md'), aFile('b.md'), aFile('c.md'));
-
-      expect(
-        await screen.findByText('3 files arrived. Drop one file at a time.')
-      ).toBeDefined();
-      expect(resources.createTextResource).not.toHaveBeenCalled();
-    });
-
-    it('should show the drop zone differently while a drag is over it', () => {
-      renderWithGateways(<LibrarySection />, {resources});
-
-      const zone = theDropZone().closest('label') as HTMLLabelElement;
-      const atRest = zone.className;
-
-      fireEvent.dragOver(zone);
-      expect(zone.className).not.toBe(atRest);
-
-      fireEvent.dragLeave(zone);
-      expect(zone.className).toBe(atRest);
-
-      fireEvent.dragOver(zone);
-      fireEvent.drop(zone, {dataTransfer: {files: []}});
-      expect(zone.className).toBe(atRest);
-    });
-
-    it('should keep the refusal until the next action of the owner', async () => {
-      renderWithGateways(<LibrarySection />, {resources});
-
-      dropOnTheDropZone(aFile('a.md'), aFile('b.md'));
-
-      expect(await screen.findByRole('alert')).toBeDefined();
-
-      dropOnTheDropZone(aFile('notes.md'));
-
-      expect(await screen.findByText('notes.md')).toBeDefined();
-      expect(screen.queryByRole('alert')).toBeNull();
-    });
   });
 });
-
-const theDropZone = (): HTMLInputElement =>
-  screen.getByLabelText<HTMLInputElement>('Drop a file here, or pick one.');
 
 const deleteAndConfirm = async (name: string): Promise<void> => {
   await userEvent.click(await screen.findByRole('button', {name: `Delete ${name}`}));
@@ -1238,21 +955,4 @@ const theDialogFadesOut = (): ReturnType<typeof vi.spyOn> => {
           } as CSSStyleDeclaration)
         : computedStyle(element, pseudoElement)
     );
-};
-
-const dropOnTheDropZone = (...files: File[]): void => {
-  fireEvent.drop(theDropZone(), {dataTransfer: {files}});
-};
-
-const aFile = (
-  name: string,
-  {type, sizeInBytes}: {type?: string; sizeInBytes?: number} = {}
-): File => {
-  const file = new File(['a text'], name, {type});
-
-  if (sizeInBytes !== undefined) {
-    Object.defineProperty(file, 'size', {value: sizeInBytes});
-  }
-
-  return file;
 };

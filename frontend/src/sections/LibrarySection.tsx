@@ -1,15 +1,15 @@
-import type {ErrorItem} from 'contract/ErrorItem';
 import type {ResourceRow} from 'contract/ResourceRow';
 import {type JSX, useState} from 'react';
+import {EmptyState} from '@/components/EmptyState';
 import {RefusalAlert} from '@/components/RefusalAlert';
-import {textsOfErrorItems} from '@/errors/textsOfErrorItems';
 import {textsOfFailure} from '@/errors/textsOfFailure';
 import {DeleteResourceDialog} from '@/library/DeleteResourceDialog';
-import {DropZone} from '@/library/DropZone';
 import {ResourceList} from '@/library/ResourceList';
 import {useResources} from '@/resources/ResourcesContext';
 
-export const LibrarySection = (): JSX.Element => {
+type Props = {onUpload: () => void};
+
+export const LibrarySection = ({onUpload}: Props): JSX.Element => {
   const resources = useResources();
   const [refusal, setRefusal] = useState<string[]>([]);
   const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(new Set());
@@ -21,11 +21,6 @@ export const LibrarySection = (): JSX.Element => {
     resources.listFailure === undefined ? [] : textsOfFailure(resources.listFailure);
 
   const refuse = (failure: unknown): void => setRefusal(textsOfFailure(failure));
-
-  const create = (file: File): void => {
-    setRefusal([]);
-    resources.create(file).catch(refuse);
-  };
 
   const whileBusy = (row: ResourceRow, action: Promise<void>): Promise<void> => {
     setRefusal([]);
@@ -48,20 +43,25 @@ export const LibrarySection = (): JSX.Element => {
 
   return (
     <section aria-labelledby="library-heading">
-      <h2 id="library-heading" className="mt-8 mb-4 text-2xl font-semibold">
+      <h1 id="library-heading" className="text-3xl font-bold">
         Library
-      </h2>
-      <DropZone
-        onFile={create}
-        onRefusal={(item: ErrorItem): void => setRefusal(textsOfErrorItems([item]))}
-      />
+      </h1>
+      <p className="mt-1 mb-4 text-muted-foreground">
+        {resources.rows.length === 1
+          ? '1 Resource'
+          : `${resources.rows.length} Resources`}
+      </p>
       <RefusalAlert texts={[...refusalOfTheList, ...refusal]} />
-      <ResourceList
-        rows={resources.rows}
-        busyIds={busyIds}
-        onRetry={retry}
-        onDelete={setToDelete}
-      />
+      {resources.rows.length === 0 ? (
+        <EmptyState text="The library holds nothing yet." onUpload={onUpload} />
+      ) : (
+        <ResourceList
+          rows={resources.rows}
+          busyIds={busyIds}
+          onRetry={retry}
+          onDelete={setToDelete}
+        />
+      )}
       <DeleteResourceDialog
         row={toDelete}
         deleting={deleting}

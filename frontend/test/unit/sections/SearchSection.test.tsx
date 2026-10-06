@@ -67,7 +67,7 @@ describe('SearchSection', () => {
   };
 
   it('should give the Query to the gateway exactly as the owner typed it', async () => {
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('  Animales ACUÁTICOS ');
 
@@ -75,7 +75,7 @@ describe('SearchSection', () => {
   });
 
   it('should search nothing for a Query that holds only spaces', async () => {
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('   ');
 
@@ -89,7 +89,7 @@ describe('SearchSection', () => {
       images: []
     });
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -113,7 +113,7 @@ describe('SearchSection', () => {
       images: []
     });
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -125,7 +125,7 @@ describe('SearchSection', () => {
   it('should show no page when the Content type has none', async () => {
     search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -139,7 +139,7 @@ describe('SearchSection', () => {
       images: []
     });
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -156,7 +156,7 @@ describe('SearchSection', () => {
       images: []
     });
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -167,7 +167,7 @@ describe('SearchSection', () => {
   });
 
   it('should say once that nothing was found, in place of both groups, when both are empty', async () => {
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -183,7 +183,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the best.png'), anImageResult('the second.png')]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
 
@@ -201,7 +201,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the beach.svg', {thumbnailUrl: '/files/the beach.webp'})]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
 
@@ -219,7 +219,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the beach.png', {fileUrl})]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
 
@@ -236,7 +236,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the beach.png')]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
       await screen.findByRole('link', {name: 'the beach.png'});
@@ -254,7 +254,7 @@ describe('SearchSection', () => {
       });
       const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
 
@@ -271,7 +271,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the beach.png')]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
       await screen.findByRole('region', {name: 'Images'});
@@ -284,7 +284,7 @@ describe('SearchSection', () => {
     it('should keep the Images group with its own empty message when only the text group has Results', async () => {
       search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
 
@@ -300,7 +300,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the beach.png')]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('a beach');
 
@@ -316,7 +316,7 @@ describe('SearchSection', () => {
       new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
     );
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
 
@@ -328,7 +328,7 @@ describe('SearchSection', () => {
       .mockResolvedValueOnce({text: [aTextResult('the notes.md')], images: []})
       .mockRejectedValueOnce(new Refusal([{code: 'invalid_input', params: {path: 'q'}}]));
 
-    renderWithGateways(<SearchSection />, {search, resources});
+    renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
     await searchFor('the trip');
     await screen.findByRole('link', {name: 'the notes.md'});
@@ -353,7 +353,7 @@ describe('SearchSection', () => {
     };
 
     it('should show a link that carries no number, and say neither passage nor chunk', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
 
@@ -364,7 +364,7 @@ describe('SearchSection', () => {
     });
 
     it('should give the Resource and the Query of the Search to the gateway', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       // The scheduled search of the new Query never answers, so the Results stay those of the old one.
@@ -381,7 +381,7 @@ describe('SearchSection', () => {
         {text: 'The second text.', page: 2}
       ]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -398,7 +398,7 @@ describe('SearchSection', () => {
     it('should say that there is nothing more when the gateway gives no Match', async () => {
       search.matches.mockResolvedValue([]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -413,7 +413,7 @@ describe('SearchSection', () => {
     it('should open the fileUrl at the page of each Match', async () => {
       search.matches.mockResolvedValue([{text: 'The best text.', page: 4}]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -432,7 +432,7 @@ describe('SearchSection', () => {
       });
       search.matches.mockResolvedValue([{text: 'The best text.'}]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -447,7 +447,7 @@ describe('SearchSection', () => {
         new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
       );
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -460,7 +460,7 @@ describe('SearchSection', () => {
     it('should ask the gateway once when the owner clicks twice before the answer', async () => {
       search.matches.mockReturnValue(new Promise(() => undefined));
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -474,7 +474,7 @@ describe('SearchSection', () => {
         new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
       );
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -493,7 +493,7 @@ describe('SearchSection', () => {
       ]);
       const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -512,7 +512,7 @@ describe('SearchSection', () => {
         )
         .mockResolvedValueOnce([{text: 'The best text.'}]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -526,7 +526,7 @@ describe('SearchSection', () => {
     it('should close the panel when the owner searches another Query', async () => {
       search.matches.mockResolvedValue([{text: 'The best text.'}]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await openMoreInThisFile();
@@ -585,7 +585,7 @@ describe('SearchSection', () => {
     };
 
     it('should search nothing while the Query, without its spaces at the ends, has fewer than 3 characters', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('  ab ');
       pushEnter();
@@ -595,7 +595,7 @@ describe('SearchSection', () => {
     });
 
     it('should search once, 300 ms after the last keystroke, with the Query as the owner typed it', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox(' the trip');
       await wait(SEARCH_DELAY - 1);
@@ -609,7 +609,7 @@ describe('SearchSection', () => {
     });
 
     it('should cancel the scheduled search when the owner types again', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the');
       await wait(SEARCH_DELAY - 100);
@@ -625,7 +625,7 @@ describe('SearchSection', () => {
     });
 
     it('should search at once on Enter, and cancel the scheduled search', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       pushEnter();
@@ -642,7 +642,7 @@ describe('SearchSection', () => {
         .mockResolvedValueOnce([aResourceRow('notes.md', {ingestState: 'ingesting'})])
         .mockResolvedValue([aResourceRow('notes.md')]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       pushEnter();
@@ -653,7 +653,7 @@ describe('SearchSection', () => {
     });
 
     it('should not search again on Enter for the Query that the scheduled search searched', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -663,7 +663,7 @@ describe('SearchSection', () => {
     });
 
     it('should not search again for the same Query with other spaces at its ends', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox(' the trip');
       await wait(SEARCH_DELAY);
@@ -678,7 +678,7 @@ describe('SearchSection', () => {
         new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
       );
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -690,7 +690,7 @@ describe('SearchSection', () => {
     it('should keep the last Results while the Query has 1 or 2 characters', async () => {
       search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -705,7 +705,7 @@ describe('SearchSection', () => {
       resources.list.mockResolvedValue([aResourceRow('recent.md')]);
       search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -722,7 +722,7 @@ describe('SearchSection', () => {
       const pending = aPendingSearch();
       search.search.mockReturnValue(pending.promise);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -740,7 +740,7 @@ describe('SearchSection', () => {
       const pending = aPendingSearch();
       search.search.mockReturnValue(pending.promise);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       expect(screen.queryByRole('status', {name: 'Searching'})).toBeNull();
 
@@ -758,7 +758,7 @@ describe('SearchSection', () => {
       const pending = aPendingSearch();
       search.search.mockReturnValue(pending.promise);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -774,7 +774,7 @@ describe('SearchSection', () => {
       const newer = aPendingSearch();
       search.search.mockReturnValueOnce(older.promise).mockReturnValueOnce(newer.promise);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -796,7 +796,7 @@ describe('SearchSection', () => {
       const newer = aPendingSearch();
       search.search.mockReturnValueOnce(older.promise).mockReturnValueOnce(newer.promise);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -812,7 +812,7 @@ describe('SearchSection', () => {
         new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
       );
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -825,7 +825,7 @@ describe('SearchSection', () => {
     });
 
     it('should search a Query of exactly 3 characters without its spaces at the ends', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('  abc ');
       await wait(SEARCH_DELAY);
@@ -836,7 +836,7 @@ describe('SearchSection', () => {
     it('should search the same Query again after the owner empties the box, and show its Results', async () => {
       search.search.mockResolvedValue({text: [aTextResult('the notes.md')], images: []});
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -853,7 +853,7 @@ describe('SearchSection', () => {
         new Refusal([{code: 'invalid_input', params: {path: 'q'}}])
       );
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -866,7 +866,7 @@ describe('SearchSection', () => {
       const pending = aPendingSearch();
       search.search.mockReturnValue(pending.promise);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       typeInTheBox('the trip');
       await wait(SEARCH_DELAY);
@@ -880,7 +880,10 @@ describe('SearchSection', () => {
     });
 
     it('should search nothing when the section goes before the scheduled search', async () => {
-      const {unmount} = renderWithGateways(<SearchSection />, {search, resources});
+      const {unmount} = renderWithGateways(<SearchSection onUpload={vi.fn()} />, {
+        search,
+        resources
+      });
 
       typeInTheBox('the trip');
       unmount();
@@ -903,7 +906,7 @@ describe('SearchSection', () => {
         ['6.md', '5.md', '4.md', '3.md', '2.md', '1.md'].map(name => aResourceRow(name))
       );
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       expect(await recentNames()).toEqual(['6.md', '5.md', '4.md', '3.md', '2.md']);
     });
@@ -919,7 +922,7 @@ describe('SearchSection', () => {
         })
       ]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       const link = await screen.findByRole('link', {name: 'manual.pdf'});
       const item = within(link.closest('li') as HTMLElement);
@@ -942,7 +945,7 @@ describe('SearchSection', () => {
         })
       ]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       const link = await screen.findByRole('link', {name: 'the beach.png'});
 
@@ -959,7 +962,7 @@ describe('SearchSection', () => {
       async (_, name, contentType, label) => {
         resources.list.mockResolvedValue([aResourceRow(name, {contentType})]);
 
-        renderWithGateways(<SearchSection />, {search, resources});
+        renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
         const link = await screen.findByRole('link', {name});
 
@@ -969,7 +972,7 @@ describe('SearchSection', () => {
     );
 
     it('should show no recent heading when the gateway gives no Resource', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await vi.waitFor(() => expect(resources.list).toHaveBeenCalledOnce());
 
@@ -979,7 +982,7 @@ describe('SearchSection', () => {
     it('should hide the recent Resources when the box holds a Query, also when the text group is empty', async () => {
       resources.list.mockResolvedValue([aResourceRow('notes.md')]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await screen.findByRole('link', {name: 'notes.md'});
       await searchFor('the trip');
@@ -994,7 +997,7 @@ describe('SearchSection', () => {
         images: [anImageResult('the beach.png')]
       });
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await searchFor('the trip');
       await screen.findByRole('link', {name: 'the notes.md'});
@@ -1008,7 +1011,7 @@ describe('SearchSection', () => {
     it('should show the recent Resources for a box that holds only spaces', async () => {
       resources.list.mockResolvedValue([aResourceRow('notes.md')]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await userEvent.type(screen.getByRole('searchbox', {name: 'Search'}), '   ');
 
@@ -1018,7 +1021,7 @@ describe('SearchSection', () => {
     it('should not ask the gateway again when the owner empties the box', async () => {
       resources.list.mockResolvedValue([aResourceRow('notes.md')]);
 
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await screen.findByRole('link', {name: 'notes.md'});
       const box = screen.getByRole('searchbox', {name: 'Search'});
@@ -1030,7 +1033,7 @@ describe('SearchSection', () => {
     });
 
     it('should not ask the gateway again while the owner types a Query', async () => {
-      renderWithGateways(<SearchSection />, {search, resources});
+      renderWithGateways(<SearchSection onUpload={vi.fn()} />, {search, resources});
 
       await userEvent.type(screen.getByRole('searchbox', {name: 'Search'}), 'the trip');
 

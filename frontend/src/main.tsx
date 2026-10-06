@@ -1,5 +1,6 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
+import {BrowserRouter} from 'react-router';
 import {App} from '@/App';
 import {GatewaysProvider} from '@/config/GatewaysContext';
 import {HttpResourceGateway} from '@/gateways/http/HttpResourceGateway';
@@ -19,7 +20,9 @@ createRoot(root).render(
       gateways={{resources: new HttpResourceGateway(), search: new HttpSearchGateway()}}
     >
       <ResourcesProvider>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </ResourcesProvider>
     </GatewaysProvider>
   </StrictMode>

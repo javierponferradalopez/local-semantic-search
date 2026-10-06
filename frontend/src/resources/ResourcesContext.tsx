@@ -18,6 +18,8 @@ import {extensionOf} from '@/library/extensionOf';
 // An action rejects with the failure of the gateway and leaves the list as it was.
 export type Resources = {
   rows: ResourceRow[];
+  // The rows that a create of this page load made, newest first. A reload forgets them.
+  rowsOfThisSession: ResourceRow[];
   listFailure: unknown;
   create: (file: File) => Promise<void>;
   retry: (row: ResourceRow) => Promise<void>;
@@ -42,6 +44,7 @@ export const ResourcesProvider = ({children}: Props): JSX.Element => {
   const gateway = useResourceGateway();
   const [rows, setRows] = useState<ResourceRow[]>([]);
   const [listFailure, setListFailure] = useState<unknown>();
+  const [idsOfThisSession, setIdsOfThisSession] = useState<string[]>([]);
   // Each change sets a new object, so the poll runs again after each list, also when React batches its start and its end.
   const [listing, setListing] = useState({inFlight: true});
   const changedWhileListing = useRef(new Set<string>());
@@ -95,6 +98,7 @@ export const ResourcesProvider = ({children}: Props): JSX.Element => {
     changedWhileListing.current.add(row.id);
     // A tick that ends before the create can already hold the row.
     setRows(listed => [row, ...listed.filter(({id}) => id !== row.id)]);
+    setIdsOfThisSession(ids => [row.id, ...ids.filter(id => id !== row.id)]);
   };
 
   const retry = async ({id, contentType}: ResourceRow): Promise<void> => {
@@ -114,8 +118,21 @@ export const ResourcesProvider = ({children}: Props): JSX.Element => {
     setRows(listed => listed.filter(row => row.id !== id));
   };
 
+  const rowsOfThisSession = idsOfThisSession.flatMap(
+    sessionId => rows.find(({id}) => id === sessionId) ?? []
+  );
+
   return (
-    <ResourcesContext value={{rows, listFailure, create, retry, delete: deleteResource}}>
+    <ResourcesContext
+      value={{
+        rows,
+        rowsOfThisSession,
+        listFailure,
+        create,
+        retry,
+        delete: deleteResource
+      }}
+    >
       {children}
     </ResourcesContext>
   );

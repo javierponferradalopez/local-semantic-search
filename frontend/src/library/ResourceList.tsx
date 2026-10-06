@@ -20,96 +20,90 @@ type Props = {
   onDelete: (row: ResourceRow) => void;
 };
 
-export const ResourceList = ({rows, busyIds, onRetry, onDelete}: Props): JSX.Element => {
-  if (rows.length === 0) {
-    return <p className="text-muted-foreground">The library holds nothing yet.</p>;
-  }
+export const ResourceList = ({rows, busyIds, onRetry, onDelete}: Props): JSX.Element => (
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead scope="col" className="w-14">
+          <span className="sr-only">Preview</span>
+        </TableHead>
+        <TableHead scope="col">Name</TableHead>
+        <TableHead scope="col">Content type</TableHead>
+        <TableHead scope="col">Ingest state</TableHead>
+        <TableHead scope="col">Created</TableHead>
+        <TableHead scope="col">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {rows.map(row => {
+        const busy = busyIds.has(row.id);
 
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead scope="col" className="w-14">
-            <span className="sr-only">Preview</span>
-          </TableHead>
-          <TableHead scope="col">Name</TableHead>
-          <TableHead scope="col">Content type</TableHead>
-          <TableHead scope="col">Ingest state</TableHead>
-          <TableHead scope="col">Created</TableHead>
-          <TableHead scope="col">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map(row => {
-          const busy = busyIds.has(row.id);
-
-          return (
-            <TableRow key={row.id} aria-busy={busy}>
-              <TableCell>
-                {row.thumbnailUrl === undefined ? (
-                  <div className="flex size-10 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                    <ContentTypeIcon contentType={row.contentType} className="size-5" />
-                  </div>
-                ) : (
-                  <img
-                    src={row.thumbnailUrl}
-                    alt=""
-                    className="size-10 rounded-md bg-muted object-cover"
-                  />
-                )}
-              </TableCell>
-              <TableCell>
-                <a
-                  href={row.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  {row.name}
-                </a>
-              </TableCell>
-              <TableCell>{row.contentType}</TableCell>
-              <TableCell>
-                <IngestStateBadge ingestState={row.ingestState} />
-                {row.reason !== undefined && (
-                  <p className="mt-1 whitespace-normal text-destructive">
-                    {textOfReason(row.reason)}
-                  </p>
-                )}
-              </TableCell>
-              <TableCell>
-                <time dateTime={row.createdAt}>
-                  {new Date(row.createdAt).toLocaleString('en-GB')}
-                </time>
-              </TableCell>
-              <TableCell className="space-x-2">
-                {row.ingestState === 'failed' && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    aria-label={`Retry ${row.name}`}
-                    disabled={busy}
-                    onClick={(): void => onRetry(row)}
-                  >
-                    {busy ? 'Retrying…' : 'Retry'}
-                  </Button>
-                )}
+        return (
+          <TableRow key={row.id} aria-busy={busy}>
+            <TableCell>
+              {row.thumbnailUrl === undefined ? (
+                <div className="flex size-10 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                  <ContentTypeIcon contentType={row.contentType} className="size-5" />
+                </div>
+              ) : (
+                <img
+                  src={row.thumbnailUrl}
+                  alt=""
+                  className="size-10 rounded-md bg-muted object-cover"
+                />
+              )}
+            </TableCell>
+            <TableCell>
+              <a
+                href={row.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {row.name}
+              </a>
+            </TableCell>
+            <TableCell>{row.contentType}</TableCell>
+            <TableCell>
+              <IngestStateBadge ingestState={row.ingestState} />
+              {row.reason !== undefined && (
+                <p className="mt-1 whitespace-normal text-destructive">
+                  {textOfReason(row.reason)}
+                </p>
+              )}
+            </TableCell>
+            <TableCell>
+              <time dateTime={row.createdAt}>
+                {new Date(row.createdAt).toLocaleString('en-GB')}
+              </time>
+            </TableCell>
+            <TableCell className="space-x-2">
+              {row.ingestState === 'failed' && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  aria-label={`Delete ${row.name}`}
+                  aria-label={`Retry ${row.name}`}
                   disabled={busy}
-                  onClick={(): void => onDelete(row)}
+                  onClick={(): void => onRetry(row)}
                 >
-                  Delete
+                  {busy ? 'Retrying…' : 'Retry'}
                 </Button>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
-  );
-};
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                aria-label={`Delete ${row.name}`}
+                disabled={busy}
+                onClick={(): void => onDelete(row)}
+              >
+                Delete
+              </Button>
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+);

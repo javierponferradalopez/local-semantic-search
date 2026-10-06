@@ -1,5 +1,5 @@
 import type {SearchResponse} from 'contract/SearchResponse';
-import {LoaderCircle} from 'lucide-react';
+import {LoaderCircle, Search} from 'lucide-react';
 import {
   type ChangeEvent,
   type FormEvent,
@@ -8,6 +8,7 @@ import {
   useRef,
   useState
 } from 'react';
+import {EmptyState} from '@/components/EmptyState';
 import {RefusalAlert} from '@/components/RefusalAlert';
 import {Input} from '@/components/ui/input';
 import {useSearchGateway} from '@/config/GatewaysContext';
@@ -23,7 +24,9 @@ const SEARCH_DELAY = 300;
 
 const lengthOf = (value: string): number => value.trim().length;
 
-export const SearchSection = (): JSX.Element => {
+type Props = {onUpload: () => void};
+
+export const SearchSection = ({onUpload}: Props): JSX.Element => {
   const gateway = useSearchGateway();
   const {rows} = useResources();
   const [query, setQuery] = useState('');
@@ -96,17 +99,21 @@ export const SearchSection = (): JSX.Element => {
   };
 
   return (
-    <section aria-labelledby="search-heading">
-      <h2 id="search-heading" className="mt-8 mb-4 text-2xl font-semibold">
+    <section aria-labelledby="search-heading" className="mt-6">
+      <h1 id="search-heading" className="sr-only">
         Search
-      </h2>
+      </h1>
       <search>
         <form onSubmit={submit} className="relative">
+          <Search
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted-foreground"
+          />
           <Input
             type="search"
             aria-label="Search"
             placeholder="Describe what you remember, like “the lighthouse on the Galician coast”"
-            className="h-10 pr-10"
+            className="h-14 pr-12 pl-12 text-lg md:text-lg"
             value={query}
             onChange={(event: ChangeEvent<HTMLInputElement>): void =>
               change(event.target.value)
@@ -116,13 +123,18 @@ export const SearchSection = (): JSX.Element => {
             <LoaderCircle
               role="status"
               aria-label="Searching"
-              className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground"
+              className="absolute top-1/2 right-4 size-5 -translate-y-1/2 animate-spin text-muted-foreground"
             />
           )}
         </form>
       </search>
       <RefusalAlert texts={refusal} />
-      {boxIsEmpty && <RecentResourceList rows={rows.slice(0, RECENT_RESOURCES)} />}
+      {boxIsEmpty &&
+        (rows.length === 0 ? (
+          <EmptyState text="Nothing is here yet." onUpload={onUpload} />
+        ) : (
+          <RecentResourceList rows={rows.slice(0, RECENT_RESOURCES)} />
+        ))}
       {!boxIsEmpty && searched !== undefined && <Groups {...searched} />}
     </section>
   );
