@@ -128,9 +128,14 @@ _Avoid_: Reference, Source
 The least score that the best Match must reach, for a group to say that it found
 something. The score is the one of the model that judges the group: the Reranker
 for text, the Vision model for images. A Floor never crosses from one model to
-the other. It decides only the empty answer, and it does not remove
-Results from the list.
+the other. It decides the empty answer of a group. It also removes each Match of
+`get_matches` below it.
 _Avoid_: Threshold, Cutoff, Minimum score
+
+**Margin**:
+The most that a Result can be below the best Result of its group and stay in the
+list. Each group has its Margin, in the score of its model.
+_Avoid_: Gap, Tolerance, Relative threshold
 
 ### Models
 
@@ -143,6 +148,6 @@ space is not the space of the Text model, and the two are never compared.
 
 **Reranker**:
 The model that reads a Query and a Chunk together and gives one score for the
-pair. It orders the text Results, and the text Floor is its score. It makes no
-Vector.
+pair. It orders the text Results and the Matches of one Resource, and the text
+Floor is its score. It makes no Vector.
 _Avoid_: Cross-encoder, Rescorer

@@ -176,7 +176,7 @@ Only the text group has it.
 **`shown`**: how many Resources the group shows. They are always the first ones of
 `results`, so `shown: 3` means the first 3 Results.
 
-**Cut**: a rule that decides how many Results the group shows, such as the `Floor`.
+**Cut**: a rule that decides how many Results the group shows, such as the `Margin`.
 To try a new cut, apply it to `results` and calculate the scorers again.
 
 ## Read more
