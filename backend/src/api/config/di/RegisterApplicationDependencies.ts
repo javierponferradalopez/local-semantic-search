@@ -96,6 +96,7 @@ export const registerApplicationDependencies = (): void => {
   container.registerImplementation(
     GetMatches,
     new GetMatches({
+      resourceRepository,
       textEmbedder,
       resultReader,
       reranker,

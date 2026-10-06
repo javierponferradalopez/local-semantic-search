@@ -11,6 +11,7 @@ import {useTheTestApi} from '../../../../lib/testApi';
 
 const OK = 200;
 const BAD_REQUEST = 400;
+const NOT_FOUND = 404;
 
 const fixture = (name: string): Promise<Buffer> =>
   readFile(join(import.meta.dirname, '../../../../fixtures', name));
@@ -94,8 +95,29 @@ describe('GET /resources/texts/:id/matches', () => {
     }
   });
 
-  it('should give no Match for an identifier that no Resource holds', async () => {
-    expect(await matchesOf(randomUUID(), 'the lighthouse')).toStrictEqual([]);
+  it('should give 404 and resource_not_found for an identifier that no Resource holds', async () => {
+    const resourceId = randomUUID();
+
+    const response = await api.matches(resourceId, 'the lighthouse');
+
+    expect(response.status).toBe(NOT_FOUND);
+    expect(await response.json()).toStrictEqual({
+      errors: [{code: 'resource_not_found', params: {resourceId}}]
+    } satisfies ApiError);
+  });
+
+  it('should give 404 and resource_not_found for an identifier that an Image Resource holds', async () => {
+    const {id} = await api.createAnImageResourceRow(
+      'a small picture.png',
+      await fixture('a-small-picture.png')
+    );
+
+    const response = await api.matches(id, 'the lighthouse');
+
+    expect(response.status).toBe(NOT_FOUND);
+    expect(await response.json()).toStrictEqual({
+      errors: [{code: 'resource_not_found', params: {resourceId: id}}]
+    } satisfies ApiError);
   });
 
   it.each([

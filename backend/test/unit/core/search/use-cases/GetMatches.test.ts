@@ -1,3 +1,5 @@
+import {ResourceNotFoundError} from '../../../../../src/core/resources/domain/errors/ResourceNotFoundError';
+import type {ResourceRepository} from '../../../../../src/core/resources/domain/ResourceRepository';
 import {ResourceId} from '../../../../../src/core/resources/domain/value-objects/ResourceId';
 import type {Match} from '../../../../../src/core/search/domain/Match';
 import type {ResultReader} from '../../../../../src/core/search/domain/ResultReader';
@@ -5,6 +7,8 @@ import type {Reranker} from '../../../../../src/core/search/domain/services/Rera
 import {GetMatches} from '../../../../../src/core/search/use-cases/GetMatches';
 import {ValueObjectError} from '../../../../../src/core/shared/domain/errors/ValueObjectError';
 import type {TextEmbedder} from '../../../../../src/core/shared/domain/services/TextEmbedder';
+import {ImageResourceBuilder} from '../../../../utils/builders/image-resource/ImageResourceBuilder';
+import {TextResourceBuilder} from '../../../../utils/builders/text-resource/TextResourceBuilder';
 import {type MockProxy, mock} from '../../../../utils/mock';
 import {StringMother} from '../../../../utils/object-mother/StringMother';
 import {VectorMother} from '../../../../utils/object-mother/VectorMother';
@@ -15,6 +19,7 @@ const MATCHES_LIMIT = 3;
 const aMatch = (text: string, score: number): Match => ({text, score});
 
 describe('GetMatches', () => {
+  let resourceRepository: MockProxy<ResourceRepository>;
   let textEmbedder: MockProxy<TextEmbedder>;
   let resultReader: MockProxy<ResultReader>;
   let reranker: MockProxy<Reranker>;
@@ -22,6 +27,7 @@ describe('GetMatches', () => {
   let id: string;
 
   beforeEach(() => {
+    resourceRepository = mock<ResourceRepository>();
     textEmbedder = mock<TextEmbedder>();
     resultReader = mock<ResultReader>();
     reranker = mock<Reranker>();
@@ -29,6 +35,7 @@ describe('GetMatches', () => {
     resultReader.getMatchesBestFirst.mockResolvedValue([]);
     reranker.rerankMatches.mockImplementation(async (_, matches) => [...matches]);
     getMatches = new GetMatches({
+      resourceRepository,
       textEmbedder,
       resultReader,
       reranker,
@@ -36,6 +43,9 @@ describe('GetMatches', () => {
       matchesLimit: MATCHES_LIMIT
     });
     id = StringMother.randomUuid();
+    resourceRepository.find.mockResolvedValue(
+      TextResourceBuilder.aTextResource().build()
+    );
   });
 
   const givenTheReranked = (matches: Match[]): void => {
@@ -154,6 +164,33 @@ describe('GetMatches', () => {
       await expect(getMatches.run({id: 'not-a-uuid', query: 'the trip'})).rejects.toThrow(
         ValueObjectError
       );
+
+      expect(textEmbedder.embedQuery).not.toHaveBeenCalled();
+    });
+
+    it('should look for the Text Resource that holds the identifier', async () => {
+      await getMatches.run({id, query: 'the trip'});
+
+      expect(resourceRepository.find).toHaveBeenCalledWith(ResourceId.of({value: id}));
+    });
+
+    it('should refuse an identifier that no Resource holds, and embed nothing', async () => {
+      resourceRepository.find.mockResolvedValue(undefined);
+
+      await expect(getMatches.run({id, query: 'the trip'})).rejects.toThrow(
+        ResourceNotFoundError
+      );
+
+      expect(textEmbedder.embedQuery).not.toHaveBeenCalled();
+    });
+
+    it('should refuse an identifier that an Image Resource holds, and embed nothing', async () => {
+      const imageResource = ImageResourceBuilder.anImageResource().build();
+      resourceRepository.find.mockResolvedValue(imageResource);
+
+      await expect(
+        getMatches.run({id: imageResource.id.value, query: 'the trip'})
+      ).rejects.toThrow(ResourceNotFoundError);
 
       expect(textEmbedder.embedQuery).not.toHaveBeenCalled();
     });
