@@ -22,6 +22,10 @@ status: accepted
 > previous report gives the verdict, on the `holdout` subjects. The eval of the
 > cap, the score with no pass or fail, the versioned reports and the rule that CI
 > never runs an eval stand.
+>
+> **Amended by [ADR-0042](0042-a-floor-gates-a-group-and-a-margin-cuts-it.md).**
+> ADR-0042 supersedes ADR-0021. The absent `Queries` stay in the golden set, and
+> the eval measures the `Floor` and the `Margin` of each group together.
 
 **No automated test loads a model. What a model does — the prefix its adapter
 writes, the width of its `Vector`, and above all whether the right `Resource`

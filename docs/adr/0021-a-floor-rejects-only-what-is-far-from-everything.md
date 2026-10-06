@@ -1,10 +1,16 @@
 ---
 kind: decision
-status: accepted
+status: superseded by ADR-0042
 ---
 
 # A Floor rejects only what is far from everything
 
+> **Superseded by [ADR-0042](0042-a-floor-gates-a-group-and-a-margin-cuts-it.md).**
+> Each group has a `Floor` and a `Margin`, and the `Floors` are higher: an agent
+> reads each `Result`. ADR-0042 writes again the parts of this record that
+> stand: the gate runs in the use case, the number lives in the constant of its
+> model, and a `Chunk` holds a letter or a digit.
+>
 > **Amended by [ADR-0040](0040-a-reranker-gates-and-orders-the-text-group.md).**
 > The text `Floor` is a score of the Reranker `gte-multilingual-reranker-base`
 > `q8`, −0.58, not a cosine of `multilingual-e5-small`, and the Reranker orders

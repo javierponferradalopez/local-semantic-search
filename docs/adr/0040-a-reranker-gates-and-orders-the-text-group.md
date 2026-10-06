@@ -5,6 +5,14 @@ status: accepted
 
 # A reranker gates and orders the text group
 
+> **Amended by [ADR-0042](0042-a-floor-gates-a-group-and-a-margin-cuts-it.md).**
+> The text `Floor` is −0.3, not −0.58, and the text group has a `Margin` of 0.2
+> below its best `Result`. `GetMatches` now goes through the Reranker and the
+> text `Floor`: the consequence "`GetMatches` does not change" no longer holds.
+> The `Margin` is not the relative signal that this record refused: it removes
+> `Results` below the best one, and it does not decide the empty answer. The
+> two stages, the model, its config, `q8` and the place of the number stand.
+
 **The text group of a `Search` has two stages. The vector search of
 `multilingual-e5-small` gives the best `Chunk` of each of the 20 best
 `Resources`. Then the Reranker `gte-multilingual-reranker-base` `q8` scores each

@@ -9,6 +9,10 @@ status: accepted
 > The rule *nothing is dropped* now reads: nothing that holds a letter or a
 > digit is dropped. A passage with no letter and no digit, such as `---`, is
 > not a `Chunk`. Everything else stands.
+>
+> **Amended by [ADR-0042](0042-a-floor-gates-a-group-and-a-margin-cuts-it.md).**
+> ADR-0042 supersedes ADR-0021 and writes again the rule of the letter or the
+> digit, with its evidence. The rule does not change.
 
 **A `Chunk` is cut by the structure of its format and by a size in Unicode code
 points. No tokenizer takes part in the cut. The text model embeds any `Chunk`
