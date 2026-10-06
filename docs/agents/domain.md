@@ -67,6 +67,7 @@ The packages:
 
 - `backend` — `backend/`
 - `frontend` — `frontend/`
+- `mcp` — `mcp/`
 
 ### Before you write code
 
