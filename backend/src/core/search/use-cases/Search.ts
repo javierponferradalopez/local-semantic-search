@@ -24,6 +24,7 @@ type ConstructorParams = {
   textFloor: number;
   textMargin: number;
   imageFloor: number;
+  imageMargin: number;
 };
 
 // A failed group is empty, so it does not stop the other group. The detail is for the developer.
@@ -44,6 +45,7 @@ export class Search {
   private readonly textFloor: Floor;
   private readonly textMargin: Margin;
   private readonly imageFloor: Floor;
+  private readonly imageMargin: Margin;
 
   public constructor(params: ConstructorParams) {
     this.textEmbedder = params.textEmbedder;
@@ -55,6 +57,7 @@ export class Search {
     this.textFloor = Floor.of({value: params.textFloor});
     this.textMargin = Margin.of({value: params.textMargin});
     this.imageFloor = Floor.of({value: params.imageFloor});
+    this.imageMargin = Margin.of({value: params.imageMargin});
   }
 
   public async run({query}: {query: string}): Promise<SearchResponse> {
@@ -88,7 +91,7 @@ export class Search {
       const results = await this.pictureResultReader.getBestFirst(vector);
 
       return this.imageFloor.isReachedBy(results)
-        ? results.map(result => this.imageResultOf(result))
+        ? this.imageMargin.cut(results).map(result => this.imageResultOf(result))
         : [];
     } catch (error) {
       return nothingForAFailedGroup('image', error);

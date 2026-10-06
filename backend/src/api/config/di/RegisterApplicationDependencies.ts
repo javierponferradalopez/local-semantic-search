@@ -88,7 +88,8 @@ export const registerApplicationDependencies = (): void => {
       fileStore,
       textFloor: RERANKER_MODEL.floor,
       textMargin: RERANKER_MODEL.margin,
-      imageFloor: VISION_MODEL.floor
+      imageFloor: VISION_MODEL.floor,
+      imageMargin: VISION_MODEL.margin
     })
   );
 

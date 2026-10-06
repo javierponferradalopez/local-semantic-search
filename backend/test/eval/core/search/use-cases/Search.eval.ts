@@ -74,7 +74,7 @@ const ingest = async (
   }
 };
 
-// The same Search, Floors and Margin as the wiring, so a new parameter of Search breaks this compile.
+// The same Search, Floors and Margins as the wiring, so a new parameter of Search breaks this compile.
 const theSearch = (): Search =>
   new Search({
     textEmbedder: container.getDependency(TransformersTextEmbedder),
@@ -85,7 +85,8 @@ const theSearch = (): Search =>
     fileStore: container.getDependency(FilesystemFileStore),
     textFloor: RERANKER_MODEL.floor,
     textMargin: RERANKER_MODEL.margin,
-    imageFloor: VISION_MODEL.floor
+    imageFloor: VISION_MODEL.floor,
+    imageMargin: VISION_MODEL.margin
   });
 
 beforeAll(async () => {
