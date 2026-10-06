@@ -47,13 +47,14 @@ export class DrizzlePictureResultReader implements PictureResultReader {
           eq(pictureVectors768.modelDtype, vector.model.dtype)
         )
       )
-      .orderBy(pictures.resourceId, distance)
+      // A Resource has one Picture: the id makes the order total, as in the text Search.
+      .orderBy(pictures.resourceId, distance, pictures.id)
       .as('best_matches');
 
     const rows = await database
       .select()
       .from(bestMatches)
-      .orderBy(asc(bestMatches.distance))
+      .orderBy(asc(bestMatches.distance), asc(bestMatches.resourceId))
       .limit(this.resultsLimit);
 
     return rows.map(({distance: rowDistance, ...resource}) => ({

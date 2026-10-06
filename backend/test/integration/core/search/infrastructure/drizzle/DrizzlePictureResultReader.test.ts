@@ -18,6 +18,10 @@ import {VectorMother} from '../../../../../utils/object-mother/VectorMother';
 
 const RESULTS_LIMIT = 24;
 
+const TIED_RESOURCES = 12;
+
+const TIE_LIMIT = 3;
+
 const ANOTHER_MODEL: ModelIdentity = {...VISION_MODEL, repository: 'another/model'};
 
 const ANOTHER_DTYPE: ModelIdentity = {...VISION_MODEL, dtype: 'q8'};
@@ -132,6 +136,23 @@ describe('DrizzlePictureResultReader', () => {
         middle.id.value,
         far.id.value
       ]);
+    });
+
+    it('should order the Resources of an equal distance by their id, across the limit too', async () => {
+      reader = new DrizzlePictureResultReader({connection, resultsLimit: TIE_LIMIT});
+      const resources = await Promise.all(
+        Array.from({length: TIED_RESOURCES}, () => aResource())
+      );
+      for (const resource of resources) {
+        await pictureOf(resource.id.value, 0.1);
+      }
+
+      expect(await idsOfTheResults()).toStrictEqual(
+        resources
+          .map(resource => resource.id.value)
+          .toSorted()
+          .slice(0, TIE_LIMIT)
+      );
     });
 
     it('should count the Resources in the limit', async () => {

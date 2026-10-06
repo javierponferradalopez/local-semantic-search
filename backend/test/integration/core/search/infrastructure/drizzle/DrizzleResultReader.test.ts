@@ -1,7 +1,10 @@
 import type {IngestState} from 'contract/IngestState';
 import {drizzle} from 'drizzle-orm/node-postgres';
 import {CUT} from '../../../../../../src/core/ingestion/domain/Cut';
+import {ChunkMapper} from '../../../../../../src/core/ingestion/infrastructure/drizzle/ChunkMapper';
+import {chunks as chunksTable} from '../../../../../../src/core/ingestion/infrastructure/drizzle/ChunkSchema';
 import {DrizzleChunkRepository} from '../../../../../../src/core/ingestion/infrastructure/drizzle/DrizzleChunkRepository';
+import {vectors384} from '../../../../../../src/core/ingestion/infrastructure/drizzle/Vector384Schema';
 import type {TextResource} from '../../../../../../src/core/resources/domain/TextResource';
 import {ResourceId} from '../../../../../../src/core/resources/domain/value-objects/ResourceId';
 import {DrizzleResourceRepository} from '../../../../../../src/core/resources/infrastructure/drizzle/DrizzleResourceRepository';
@@ -27,6 +30,12 @@ const RESULTS_LIMIT = 50;
 const MATCHES_LIMIT = 10;
 
 const ANOTHER_MODEL: ModelIdentity = {...TEXT_MODEL, repository: 'another/model'};
+
+const TIED_TEXTS = ['The A Chunk.', 'The B Chunk.', 'The C Chunk.', 'The D Chunk.'];
+
+const TIED_RESOURCES = 12;
+
+const TIE_LIMIT = 3;
 
 describe('DrizzleResultReader', () => {
   let resourceRepository: DrizzleResourceRepository;
@@ -84,6 +93,30 @@ describe('DrizzleResultReader', () => {
 
   const idsOfTheResults = async (): Promise<string[]> =>
     (await reader.getBestFirst(VectorMother.axis())).map(result => result.resourceId);
+
+  // The repository draws a random id, so a tie is written by hand: the greatest id goes in first.
+  const aTieOf = async (resourceId: string): Promise<void> => {
+    const ids = TIED_TEXTS.map(() => StringMother.randomUuid())
+      .toSorted()
+      .toReversed();
+    const rows = TIED_TEXTS.map((text, position) =>
+      ChunkMapper.toRows(
+        {
+          chunk: ChunkBuilder.aChunk()
+            .withResourceId(resourceId)
+            .withPosition(position)
+            .withText(text)
+            .build(),
+          vector: VectorMother.withSimilarityToTheAxis(0.8)
+        },
+        ids[position] ?? ''
+      )
+    );
+    const database = connection.database();
+
+    await database.insert(chunksTable).values(rows.map(row => row.chunk));
+    await database.insert(vectors384).values(rows.map(row => row.vector));
+  };
 
   describe('#getBestFirst', () => {
     it('should give nothing when no Chunk is stored', async () => {
@@ -151,6 +184,36 @@ describe('DrizzleResultReader', () => {
         middle.id.value,
         far.id.value
       ]);
+    });
+
+    it('should order the Resources of an equal distance by their id, across the limit too', async () => {
+      reader = new DrizzleResultReader({
+        connection,
+        resultsLimit: TIE_LIMIT,
+        matchesLimit: MATCHES_LIMIT
+      });
+      const resources = await Promise.all(
+        Array.from({length: TIED_RESOURCES}, () => aResource())
+      );
+      for (const resource of resources) {
+        await chunksOf(resource.id.value, [{similarity: 0.8}]);
+      }
+
+      expect(await idsOfTheResults()).toStrictEqual(
+        resources
+          .map(resource => resource.id.value)
+          .toSorted()
+          .slice(0, TIE_LIMIT)
+      );
+    });
+
+    it('should give the Chunk of the least id as the best Match of an equal distance', async () => {
+      const resource = await aResource();
+      await aTieOf(resource.id.value);
+
+      const [result] = await reader.getBestFirst(VectorMother.axis());
+
+      expect(result?.bestMatch.text).toBe(TIED_TEXTS.at(-1));
     });
 
     it('should count the Resources in the limit, and not the Matches', async () => {
@@ -240,6 +303,13 @@ describe('DrizzleResultReader', () => {
         'The middle Chunk.',
         'The far Chunk.'
       ]);
+    });
+
+    it('should order the Matches of an equal distance by their Chunk id', async () => {
+      const resource = await aResource();
+      await aTieOf(resource.id.value);
+
+      expect(await textsOfTheMatches(resource.id)).toStrictEqual(TIED_TEXTS.toReversed());
     });
 
     it('should give the text, the page and the score of each Match', async () => {

@@ -48,14 +48,14 @@ export class DrizzleResultReader implements ResultReader {
       // The INNER JOIN also drops an orphan Chunk, which has no Resource to join (ADR-0020).
       .innerJoin(textResources, eq(textResources.id, chunks.resourceId))
       .where(isReadyAndOfTheModelOf(vector))
-      .orderBy(chunks.resourceId, distance)
+      // The id breaks a tie, so that the same Query always gives the same Match.
+      .orderBy(chunks.resourceId, distance, chunks.id)
       .as('best_matches');
 
-    // The bare distance ascending, which is the order an index can serve.
     const rows = await database
       .select()
       .from(bestMatches)
-      .orderBy(asc(bestMatches.distance))
+      .orderBy(asc(bestMatches.distance), asc(bestMatches.resourceId))
       .limit(this.resultsLimit);
 
     return rows.map(({text, page, distance: rowDistance, ...resource}) => ({
@@ -77,7 +77,7 @@ export class DrizzleResultReader implements ResultReader {
       .innerJoin(vectors384, eq(vectors384.chunkId, chunks.id))
       .innerJoin(textResources, eq(textResources.id, chunks.resourceId))
       .where(and(eq(chunks.resourceId, resourceId.value), isReadyAndOfTheModelOf(vector)))
-      .orderBy(asc(distance))
+      .orderBy(asc(distance), asc(chunks.id))
       .limit(this.matchesLimit);
 
     return rows.map(matchOf);
