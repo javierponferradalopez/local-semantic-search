@@ -26,7 +26,7 @@ pnpm run bootstrap
 pnpm dev
 ```
 
-- `pnpm install` installs the three packages of the workspace.
+- `pnpm install` installs the four packages of the workspace.
 - `pnpm run bootstrap` copies `backend/.env.example` to `backend/.env`, starts
   Postgres, waits until it is healthy, applies the migrations, and gets the weights
   of the Text model, the Vision model and the Reranker into the model store,
@@ -75,6 +75,7 @@ backend/    Express, Drizzle and Postgres. Relative imports.
   src/api/  The HTTP edge. No business logic.
   src/core/ The business, split by capability.
   data/     Git-ignored in full. The stored Files and the model weights.
+mcp/        The MCP server. A client of the HTTP API of the backend, over stdio.
 ```
 
 ## The scripts

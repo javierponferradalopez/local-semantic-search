@@ -2,6 +2,7 @@ packages:
   - contract
   - backend
   - frontend
+  - mcp
 
 allowBuilds:
   cpu-features: false
