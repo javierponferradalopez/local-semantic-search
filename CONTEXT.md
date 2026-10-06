@@ -65,7 +65,15 @@ The fingerprint of the bytes of a File. It is the identity of the content within
 its Content type, as against the name, which is only a label.
 _Avoid_: Hash, Fingerprint, Digest
 
+**Library**:
+The page that lists all the Resources.
+
 ### Ingestion
+
+**Upload**:
+The action in the interface that creates a Resource from a File. The domain code
+still says `create`.
+_Avoid_: Add
 
 **Gate**:
 The check that a File passes before its Resource exists. It judges only what it
