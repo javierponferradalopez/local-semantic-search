@@ -66,4 +66,62 @@ describe('HttpSearchGateway', () => {
       expect(error.address).toBe(NO_BACKEND_URL);
     });
   });
+
+  describe('#thumbnail', () => {
+    it('should give the bytes of the thumbnail and the media type of the response', async () => {
+      const bytes = new Uint8Array([0x52, 0x49, 0x46, 0x46]);
+      const backendUrl = await startAFalseBackend({
+        'GET /files/thumbnails/octopus.webp': (
+          _request: IncomingMessage,
+          response: ServerResponse
+        ): void => {
+          response.writeHead(200, {'content-type': 'image/webp'});
+          response.end(bytes);
+        }
+      });
+
+      const thumbnail = await new HttpSearchGateway({backendUrl}).thumbnail(
+        '/files/thumbnails/octopus.webp'
+      );
+
+      expect(thumbnail).toEqual({bytes, mediaType: 'image/webp'});
+    });
+
+    it('should give the media type with no parameters', async () => {
+      const backendUrl = await startAFalseBackend({
+        'GET /files/thumbnails/octopus.webp': (
+          _request: IncomingMessage,
+          response: ServerResponse
+        ): void => {
+          response.writeHead(200, {'content-type': 'image/webp; charset=binary'});
+          response.end();
+        }
+      });
+
+      const {mediaType} = await new HttpSearchGateway({backendUrl}).thumbnail(
+        '/files/thumbnails/octopus.webp'
+      );
+
+      expect(mediaType).toBe('image/webp');
+    });
+
+    it('should refuse when the backend has no thumbnail at the URL', async () => {
+      const backendUrl = await startAFalseBackend({});
+
+      const error = await new HttpSearchGateway({backendUrl})
+        .thumbnail('/files/thumbnails/gone.webp')
+        .catch(e => e);
+
+      expect(error).toBeInstanceOf(Refusal);
+    });
+
+    it('should be unavailable when the backend refuses the connection', async () => {
+      const error = await new HttpSearchGateway({backendUrl: NO_BACKEND_URL})
+        .thumbnail('/files/thumbnails/octopus.webp')
+        .catch(e => e);
+
+      expect(error).toBeInstanceOf(BackendUnavailable);
+      expect(error.address).toBe(NO_BACKEND_URL);
+    });
+  });
 });
