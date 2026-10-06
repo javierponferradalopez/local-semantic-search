@@ -11,6 +11,10 @@ status: accepted
 > only in the row of the list, as a bare code. The section *What this costs* about
 > 422 covering the catch-all no longer applies.
 
+> **Amended by [ADR-0044](0044-the-mcp-server-is-a-client-of-the-http-api.md).**
+> The API has a second consumer, `mcp`. It is in the same repository and it
+> imports the types of `contract/`, so it does not learn the shape again.
+
 **Every error body has one shape: `{ errors: [ { code, params } ] }`. It is
 always a list, and it is always `application/json`.** RFC 9457 (Problem Details
 for HTTP APIs) was examined and refused.
