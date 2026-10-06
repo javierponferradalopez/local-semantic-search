@@ -1,13 +1,9 @@
-import type {IncomingMessage, ServerResponse} from 'node:http';
-import {startAFalseBackend} from '../../lib/startAFalseBackend';
+import {answerJson, startAFalseBackend} from '../../lib/startAFalseBackend';
 
 describe('startAFalseBackend', () => {
   it('should answer a route as the test says', async () => {
     const backendUrl = await startAFalseBackend({
-      'GET /resources': (_request: IncomingMessage, response: ServerResponse) => {
-        response.writeHead(200, {'content-type': 'application/json'});
-        response.end(JSON.stringify({resources: []}));
-      }
+      'GET /resources': answerJson(200, {resources: []})
     });
 
     const response = await fetch(new URL('/resources?q=a', backendUrl));

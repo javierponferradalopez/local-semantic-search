@@ -3,6 +3,13 @@ import type {AddressInfo} from 'node:net';
 
 export type Answer = (request: IncomingMessage, response: ServerResponse) => void;
 
+export const answerJson =
+  (status: number, body: unknown): Answer =>
+  (_request: IncomingMessage, response: ServerResponse): void => {
+    response.writeHead(status, {'content-type': 'application/json'});
+    response.end(JSON.stringify(body));
+  };
+
 export type Routes = Record<`GET /${string}`, Answer>;
 
 export const startAFalseBackend = async (routes: Routes): Promise<string> => {

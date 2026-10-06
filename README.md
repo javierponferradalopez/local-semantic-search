@@ -34,6 +34,12 @@ pnpm dev
 - `pnpm dev` starts the backend on `http://localhost:3000` and the frontend on
   `http://localhost:5173`.
 
+## Connect an agent
+
+The MCP server in `mcp/` lets an AI agent find the content of your Resources.
+[`mcp/README.md`](mcp/README.md) shows how to connect Claude Code, Claude Desktop,
+Cursor and Gemini CLI.
+
 ## The model store
 
 `backend/data/models/` holds the weights of three models:
