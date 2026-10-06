@@ -19,7 +19,7 @@ import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/tran
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
 import {IMAGE_RESULTS_LIMIT} from '../ImageResultsLimit';
-import {MATCHES_LIMIT} from '../MatchesLimit';
+import {MATCHES_FIRST_STAGE_LIMIT} from '../MatchesFirstStageLimit';
 import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
 
@@ -73,7 +73,7 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     new DrizzleResultReader({
       connection,
       resultsLimit: TEXT_RESULTS_LIMIT,
-      matchesLimit: MATCHES_LIMIT
+      matchesLimit: MATCHES_FIRST_STAGE_LIMIT
     })
   );
   container.registerImplementation(

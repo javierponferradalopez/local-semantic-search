@@ -19,6 +19,7 @@ import {FilesystemFileStore} from '../../../core/shared/infrastructure/Filesyste
 import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {VISION_MODEL} from '../../../core/shared/infrastructure/transformers/VisionModel';
+import {MATCHES_LIMIT} from '../MatchesLimit';
 import {container} from './Container';
 
 export const registerApplicationDependencies = (): void => {
@@ -28,6 +29,7 @@ export const registerApplicationDependencies = (): void => {
   const transactionRunner = container.getDependency(DrizzleConnection);
   const textEmbedder = container.getDependency(TransformersTextEmbedder);
   const resultReader = container.getDependency(DrizzleResultReader);
+  const reranker = container.getDependency(TransformersReranker);
   const contentTypeResolver = container.getDependency(ExtensionContentTypeResolver);
 
   container.registerImplementation(
@@ -81,7 +83,7 @@ export const registerApplicationDependencies = (): void => {
       textEmbedder,
       imageEmbedder: container.getDependency(TransformersImageEmbedder),
       resultReader,
-      reranker: container.getDependency(TransformersReranker),
+      reranker,
       pictureResultReader: container.getDependency(DrizzlePictureResultReader),
       fileStore,
       textFloor: RERANKER_MODEL.floor,
@@ -92,6 +94,12 @@ export const registerApplicationDependencies = (): void => {
 
   container.registerImplementation(
     GetMatches,
-    new GetMatches({textEmbedder, resultReader})
+    new GetMatches({
+      textEmbedder,
+      resultReader,
+      reranker,
+      textFloor: RERANKER_MODEL.floor,
+      matchesLimit: MATCHES_LIMIT
+    })
   );
 };

@@ -5,6 +5,7 @@ import {
   type PreTrainedTokenizer,
   type Tensor
 } from '@huggingface/transformers';
+import type {Match} from '../../../../../../src/core/search/domain/Match';
 import type {Result} from '../../../../../../src/core/search/domain/Result';
 import {RerankerConfig} from '../../../../../../src/core/search/infrastructure/transformers/RerankerConfig';
 import {RERANKER_MODEL} from '../../../../../../src/core/search/infrastructure/transformers/RerankerModel';
@@ -169,6 +170,68 @@ describe('TransformersReranker', () => {
 
     it('should give no Result for no Result', async () => {
       expect(await reranker.rerank('la cadena de la bici', [])).toStrictEqual([]);
+    });
+  });
+
+  describe('#rerankMatches', () => {
+    it('should give one score for each Match, and keep the other fields of each Match', async () => {
+      const matches: Match[] = [
+        {
+          text: 'Engrasa la cadena de la bicicleta cada 300 kilómetros.',
+          page: 4,
+          score: 0.8
+        },
+        {text: 'El contrato de alquiler dura un año.', score: 0.7}
+      ];
+
+      const reranked = await reranker.rerankMatches('la cadena de la bici', matches);
+
+      expect(reranked).toHaveLength(matches.length);
+      expect(reranked).toStrictEqual(
+        expect.arrayContaining(
+          matches.map(match => ({...match, score: expect.any(Number)}))
+        )
+      );
+    });
+
+    it('should give the Matches best first', async () => {
+      const reranked = await reranker.rerankMatches('la cadena de la bici', [
+        {text: 'El contrato de alquiler dura un año.', score: 0.9},
+        {text: 'Engrasa la cadena de la bicicleta cada 300 kilómetros.', score: 0.8},
+        {text: 'La fianza es de dos meses.', score: 0.7}
+      ]);
+
+      const scores = reranked.map(match => match.score);
+      expect(scores).toStrictEqual(scores.toSorted((first, second) => second - first));
+    });
+
+    it('should give the score that #rerank gives to the same Query and text', async () => {
+      const query = 'la cadena de la bici';
+      const result = aResult('Engrasa la cadena de la bicicleta cada 300 kilómetros.');
+
+      const [match] = await reranker.rerankMatches(query, [result.bestMatch]);
+      const [{bestMatch}] = await reranker.rerank(query, [result]);
+
+      expect(match?.score).toBe(bestMatch.score);
+    });
+
+    it('should cut the Chunk to fill the window when only the Chunk is too long', async () => {
+      const query = 'la cadena de la bici';
+      const queryTokens = tokenizer.encode(query, {add_special_tokens: false}).length;
+      const room = WALL_OF_TOKENS - SPECIAL_TOKENS - queryTokens;
+
+      const [match] = await reranker.rerankMatches(query, [
+        {text: `${oneLetterWords(room)} ${oneLetterWords(room, 'b')}`, score: 0.8}
+      ]);
+
+      expect(match?.score).toBeCloseTo(
+        await oneInputScoreOf(query, oneLetterWords(room)),
+        5
+      );
+    });
+
+    it('should give no Match for no Match', async () => {
+      expect(await reranker.rerankMatches('la cadena de la bici', [])).toStrictEqual([]);
     });
   });
 });

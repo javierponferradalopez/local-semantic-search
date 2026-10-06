@@ -9,6 +9,7 @@ import {
   readFromTheModelStore,
   refuseAMissingModel
 } from '../../../shared/infrastructure/transformers/modelStore';
+import type {Match} from '../../domain/Match';
 import type {Result} from '../../domain/Result';
 import type {Reranker} from '../../domain/services/Reranker';
 import {RerankerConfig} from './RerankerConfig';
@@ -73,20 +74,36 @@ export class TransformersReranker implements Reranker {
     return new TransformersReranker({tokenizer, model});
   }
 
-  // One pair for each call: a padded batch is 2.7 times slower (ADR-0040).
   public async rerank(query: string, results: readonly Result[]): Promise<Result[]> {
     const queryIds = this.idsOf(query);
     const reranked: Result[] = [];
 
     for (const result of results) {
-      const score = await this.scoreOf(queryIds, this.idsOf(result.bestMatch.text));
-
-      reranked.push({...result, bestMatch: {...result.bestMatch, score}});
+      reranked.push({
+        ...result,
+        bestMatch: await this.scoredMatchOf(queryIds, result.bestMatch)
+      });
     }
 
     return reranked.sort(
       (first, second) => second.bestMatch.score - first.bestMatch.score
     );
+  }
+
+  public async rerankMatches(query: string, matches: readonly Match[]): Promise<Match[]> {
+    const queryIds = this.idsOf(query);
+    const reranked: Match[] = [];
+
+    for (const match of matches) {
+      reranked.push(await this.scoredMatchOf(queryIds, match));
+    }
+
+    return reranked.sort((first, second) => second.score - first.score);
+  }
+
+  // One pair for each call: a padded batch is 2.7 times slower (ADR-0040).
+  private async scoredMatchOf(queryIds: number[], match: Match): Promise<Match> {
+    return {...match, score: await this.scoreOf(queryIds, this.idsOf(match.text))};
   }
 
   private idsOf(text: string): number[] {

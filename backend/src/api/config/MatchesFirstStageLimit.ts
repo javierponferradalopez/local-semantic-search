@@ -1,0 +1,1 @@
+export const MATCHES_FIRST_STAGE_LIMIT = 20;

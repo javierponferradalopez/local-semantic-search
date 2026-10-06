@@ -8,7 +8,6 @@ import type {ResourceRow} from 'contract/ResourceRow';
 import type {SearchResponse} from 'contract/SearchResponse';
 import {MATCHES_LIMIT} from '../../../../../src/api/config/MatchesLimit';
 import {useTheTestApi} from '../../../../lib/testApi';
-import {countTheChunksAndVectorsOf} from '../../../../lib/testInfrastructure';
 
 const OK = 200;
 const BAD_REQUEST = 400;
@@ -57,17 +56,16 @@ describe('GET /resources/texts/:id/matches', () => {
     ['the lighthouse.md', 'markdown-with-headings.md'],
     ['the salt pans.txt', 'long-text.txt']
   ])(
-    'should give every Match of %s, ten at most, with no Floor',
+    'should give no Match of %s when no Match of it reaches the Floor',
     async (name, fixtureName) => {
       const {id} = await createAReadyResource(name, await fixture(fixtureName));
-      const {chunks} = await countTheChunksAndVectorsOf(id);
       const query = 'receta de tortilla de patatas';
 
       const {text} = (await (await api.search(query)).json()) as SearchResponse;
       const rows = await matchesOf(id, query);
 
       expect(text).toStrictEqual([]);
-      expect(rows).toHaveLength(Math.min(chunks, MATCHES_LIMIT));
+      expect(rows).toStrictEqual([]);
     }
   );
 
@@ -81,11 +79,17 @@ describe('GET /resources/texts/:id/matches', () => {
       await fixture('two-pages-with-text.pdf')
     );
 
-    for (const row of await matchesOf(markdown.id, 'the lighthouse')) {
+    const markdownRows = await matchesOf(markdown.id, 'the lighthouse');
+    const pdfRows = await matchesOf(pdf.id, 'an extractor reads this text');
+
+    expect(markdownRows.length).toBeGreaterThan(0);
+    expect(pdfRows.length).toBeGreaterThan(0);
+
+    for (const row of markdownRows) {
       expectAMatchRow(row, false);
     }
 
-    for (const row of await matchesOf(pdf.id, 'the lighthouse')) {
+    for (const row of pdfRows) {
       expectAMatchRow(row, true);
     }
   });

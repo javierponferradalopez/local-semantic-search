@@ -77,4 +77,43 @@ describe('Floor', () => {
       floor.isReachedBy(mixed);
     });
   });
+
+  describe('#keepTheMatchesThatReachIt', () => {
+    const floor = Floor.of({value: 0.5});
+
+    const aMatch = (score: number): Match => ({text: `The Match at ${score}.`, score});
+
+    it('should keep each Match that reaches it, in its order', () => {
+      const matches = [aMatch(0.9), aMatch(0.5), aMatch(0.7)];
+
+      expect(floor.keepTheMatchesThatReachIt(matches)).toStrictEqual(matches);
+    });
+
+    it('should remove each Match under it', () => {
+      expect(
+        floor.keepTheMatchesThatReachIt([
+          aMatch(0.9),
+          aMatch(0.49),
+          aMatch(0.6),
+          aMatch(0.1)
+        ])
+      ).toStrictEqual([aMatch(0.9), aMatch(0.6)]);
+    });
+
+    it('should give no Match when each Match is under it', () => {
+      expect(floor.keepTheMatchesThatReachIt([aMatch(0.49), aMatch(0.2)])).toStrictEqual(
+        []
+      );
+    });
+
+    it('should give no Match for no Match', () => {
+      expect(floor.keepTheMatchesThatReachIt([])).toStrictEqual([]);
+    });
+
+    it('should keep the page of a Match', () => {
+      const onAPage: Match = {text: 'The text on page four.', page: 4, score: 0.8};
+
+      expect(floor.keepTheMatchesThatReachIt([onAPage])).toStrictEqual([onAPage]);
+    });
+  });
 });

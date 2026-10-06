@@ -1,3 +1,4 @@
+import type {Match} from '../../src/core/search/domain/Match';
 import type {Result} from '../../src/core/search/domain/Result';
 import type {Reranker} from '../../src/core/search/domain/services/Reranker';
 
@@ -20,6 +21,10 @@ export class RecordingReranker implements Reranker {
     this.lastReranking = {firstStage: results, reranked};
 
     return reranked;
+  }
+
+  public rerankMatches(query: string, matches: readonly Match[]): Promise<Match[]> {
+    return this.reranker.rerankMatches(query, matches);
   }
 
   // Undefined when the last Search did not get a Reranking.
