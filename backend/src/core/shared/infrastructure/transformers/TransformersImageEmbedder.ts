@@ -82,7 +82,7 @@ export class TransformersImageEmbedder implements ImageEmbedder {
     });
   }
 
-  // Verbatim: no prefix and no case change, as the probes that set the Floor (ADR-0021).
+  // Verbatim: no prefix and no case change, as the eval measures the Floor (ADR-0042).
   public async embedQuery(query: string): Promise<Vector> {
     const ids = this.tokenizer.encode(query, {add_special_tokens: false});
     const windows: Tensor[] = [];

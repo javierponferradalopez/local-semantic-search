@@ -21,7 +21,7 @@ export class Floor extends ValueObject<number> {
     return new Floor({value});
   }
 
-  // The gate of a group: only the best Match is compared (ADR-0021).
+  // The gate of a group: only the best Match is compared (ADR-0042).
   // One overload for each model, so a list that mixes the two does not compile.
   public isReachedBy(results: readonly {bestMatch: Match}[]): boolean;
   public isReachedBy(results: readonly {bestMatch: PictureMatch}[]): boolean;

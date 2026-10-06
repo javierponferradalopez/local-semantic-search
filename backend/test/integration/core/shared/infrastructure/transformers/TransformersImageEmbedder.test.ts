@@ -67,7 +67,7 @@ describe('TransformersImageEmbedder', () => {
     aDiagram = await pixelsOf('a-diagram-with-only-a-viewbox.svg', 'svg');
   });
 
-  // The Query of the probes that set the Floor: one input, padded to the wall (ADR-0021).
+  // The Query of the probes of the first Floor: one input, padded to the wall (ADR-0021).
   const oneInputValuesOf = async (text: string): Promise<number[]> => {
     const {input_ids} = tokenizer(text, {
       padding: 'max_length',
