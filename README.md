@@ -31,7 +31,7 @@ pnpm dev
   `mcp/.env.example` to `mcp/.env`, starts Postgres, waits until it is healthy,
   applies the migrations, and gets the weights of the Text model, the Vision model
   and the Reranker into the model store, `backend/data/models/`.
-- `pnpm dev` starts the backend on `http://localhost:3000` and the frontend on
+- `pnpm dev` starts the backend on `http://localhost:3001` and the frontend on
   `http://localhost:5173`.
 
 ## Connect an agent

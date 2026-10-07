@@ -17,7 +17,7 @@ All the tools are read-only. No tool creates, deletes or retries a Resource.
 ## Before you connect a client
 
 1. Start the backend from the root of the repository with `pnpm dev`. It listens on
-   `http://localhost:3000`.
+   `http://localhost:3001`.
 2. Get the absolute path of this folder, for example
    `/Users/you/local-semantic-search/mcp`. The examples below write it as
    `/path/to/local-semantic-search/mcp`.

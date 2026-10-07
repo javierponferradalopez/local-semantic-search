@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import {defineConfig} from 'vite';
 
-const BACKEND_ORIGIN = 'http://localhost:3000';
+const BACKEND_ORIGIN = 'http://localhost:3001';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
