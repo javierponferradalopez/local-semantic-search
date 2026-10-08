@@ -181,11 +181,13 @@ _Avoid_: Inference, Request, Span
 **Usage**:
 The units that one Model call used, with the name of its model: the tokens that
 the model read, the Pictures, the pairs. The system measures the Usage. The
-Cost comes from the Usage and a price for each unit, and the system keeps no
-price.
+Cost comes from the Usage and a price for each unit.
 _Avoid_: Consumption, Cost (for the units)
 
 **Cost**:
-The money of a Model call, calculated from its Usage. The Cost of a Session is
-the sum of the Cost of its Model calls.
+The money of a Model call, calculated from its Usage and a reference price for
+each unit. The Cost of a Session is the sum of the Cost of its Model calls. The
+models run locally and have no bill: the reference price is the price of a
+hosted model of the same kind. The domain keeps no price; each model keeps its
+reference price in the infrastructure.
 _Avoid_: Price, Bill
