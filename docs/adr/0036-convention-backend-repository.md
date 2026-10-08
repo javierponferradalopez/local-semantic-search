@@ -5,7 +5,7 @@ status: accepted
 
 # Convention: repository methods
 
-The name and the folder of a repository are in [ADR-0031](0031-convention-backend-ports-and-adapters.md). This convention gives its methods.
+The name and the folder of a repository are in [ADR-0050](0050-convention-backend-ports-and-adapters.md). This convention gives its methods.
 
 - The reads:
   - `find(id)` gives the aggregate, or `undefined`.
