@@ -159,3 +159,33 @@ The model that reads a Query and a Chunk together and gives one score for the
 pair. It orders the text Results and the Matches of one Resource, and the text
 Floor is its score. It makes no Vector.
 _Avoid_: Cross-encoder, Rescorer
+
+### Cost
+
+**Session**:
+The time during which one client works with the system: the conversation of an
+agent through the MCP server, or one tab of a person in the interface. It
+groups each Search, each Upload and each Ingest that the client causes, so the
+Cost of the Session is the sum of the Cost of their Model calls. An Ingest
+belongs to the Session that caused it: the Session of the Upload, or the
+Session that retried the Failed Resource. This stays true also when the Ingest ends after the
+response. A reload of the tab starts a new Session.
+_Avoid_: Conversation, Visit, Connection, User session
+
+**Model call**:
+One time that the system asks a model for Vectors or for scores: one Chunk, one
+Picture or one Query to embed, or one list of Matches to rerank. It belongs to a
+Search, to `get_matches` or to an Ingest, and so to a Session.
+_Avoid_: Inference, Request, Span
+
+**Usage**:
+The units that one Model call used, with the name of its model: the tokens that
+the model read, the Pictures, the pairs. The system measures the Usage. The
+Cost comes from the Usage and a price for each unit, and the system keeps no
+price.
+_Avoid_: Consumption, Cost (for the units)
+
+**Cost**:
+The money of a Model call, calculated from its Usage. The Cost of a Session is
+the sum of the Cost of its Model calls.
+_Avoid_: Price, Bill
