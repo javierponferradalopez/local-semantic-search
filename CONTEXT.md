@@ -169,8 +169,17 @@ groups each Search, each Upload and each Ingest that the client causes, so the
 Cost of the Session is the sum of the Cost of their Model calls. An Ingest
 belongs to the Session that caused it: the Session of the Upload, or the
 Session that retried the Failed Resource. This stays true also when the Ingest ends after the
-response. A reload of the tab starts a new Session.
+response. A reload of the tab starts a new Session. Each Session has one
+Origin.
 _Avoid_: Conversation, Visit, Connection, User session
+
+**Origin**:
+The client of a Session: MCP or Interface. A Session of the MCP server has the
+Origin MCP: an agent works in it for the user. A Session of the interface has
+the Origin Interface: the user works in it. An agent that uses the interface
+gives the Origin Interface. The Origin lets us compare the Cost of the Sessions
+of agents and of persons.
+_Avoid_: Client, Channel, Source, Agent and Person (for the values)
 
 **Model call**:
 One time that the system asks a model for Vectors or for scores: one Chunk, one
