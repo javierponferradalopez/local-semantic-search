@@ -5,13 +5,22 @@ import type {CreateTextResourceResponse} from 'contract/CreateTextResourceRespon
 import type {GetResourcesResponse} from 'contract/GetResourcesResponse';
 import type {RetryImageResourceResponse} from 'contract/RetryImageResourceResponse';
 import type {RetryTextResourceResponse} from 'contract/RetryTextResourceResponse';
+import type {SessionHeaders} from 'contract/SessionHeaders';
 import {fetchJson} from '@/gateways/http/fetchJson';
 import {fetchOrRefuse} from '@/gateways/http/fetchOrRefuse';
 import type {ResourceGateway} from '@/gateways/ResourceGateway';
 
+type ConstructorParams = {sessionHeaders: SessionHeaders};
+
 export class HttpResourceGateway implements ResourceGateway {
+  private readonly sessionHeaders: SessionHeaders;
+
+  public constructor({sessionHeaders}: ConstructorParams) {
+    this.sessionHeaders = sessionHeaders;
+  }
+
   public list(): Promise<GetResourcesResponse> {
-    return fetchJson<GetResourcesResponse>('/resources');
+    return fetchJson<GetResourcesResponse>('/resources', this.sessionHeaders);
   }
 
   public createTextResource(file: File): Promise<CreateTextResourceResponse> {
@@ -19,10 +28,11 @@ export class HttpResourceGateway implements ResourceGateway {
 
     body.append(CreateTextResourceRequest.filePart, file);
 
-    return fetchJson<CreateTextResourceResponse>('/resources/texts', {
-      method: 'POST',
-      body
-    });
+    return fetchJson<CreateTextResourceResponse>(
+      '/resources/texts',
+      this.sessionHeaders,
+      {method: 'POST', body}
+    );
   }
 
   public createImageResource(file: File): Promise<CreateImageResourceResponse> {
@@ -30,25 +40,33 @@ export class HttpResourceGateway implements ResourceGateway {
 
     body.append(CreateImageResourceRequest.filePart, file);
 
-    return fetchJson<CreateImageResourceResponse>('/resources/images', {
-      method: 'POST',
-      body
-    });
+    return fetchJson<CreateImageResourceResponse>(
+      '/resources/images',
+      this.sessionHeaders,
+      {method: 'POST', body}
+    );
   }
 
   public async deleteTextResource(id: string): Promise<void> {
-    await fetchOrRefuse(`/resources/texts/${encodeURIComponent(id)}`, {method: 'DELETE'});
+    await fetchOrRefuse(
+      `/resources/texts/${encodeURIComponent(id)}`,
+      this.sessionHeaders,
+      {method: 'DELETE'}
+    );
   }
 
   public async deleteImageResource(id: string): Promise<void> {
-    await fetchOrRefuse(`/resources/images/${encodeURIComponent(id)}`, {
-      method: 'DELETE'
-    });
+    await fetchOrRefuse(
+      `/resources/images/${encodeURIComponent(id)}`,
+      this.sessionHeaders,
+      {method: 'DELETE'}
+    );
   }
 
   public retryTextResource(id: string): Promise<RetryTextResourceResponse> {
     return fetchJson<RetryTextResourceResponse>(
       `/resources/texts/${encodeURIComponent(id)}/retry`,
+      this.sessionHeaders,
       {method: 'POST'}
     );
   }
@@ -56,6 +74,7 @@ export class HttpResourceGateway implements ResourceGateway {
   public retryImageResource(id: string): Promise<RetryImageResourceResponse> {
     return fetchJson<RetryImageResourceResponse>(
       `/resources/images/${encodeURIComponent(id)}/retry`,
+      this.sessionHeaders,
       {method: 'POST'}
     );
   }

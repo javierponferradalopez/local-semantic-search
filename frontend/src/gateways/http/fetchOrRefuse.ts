@@ -1,11 +1,13 @@
 import type {ErrorItem} from 'contract/ErrorItem';
+import type {SessionHeaders} from 'contract/SessionHeaders';
 import {Refusal} from '@/gateways/Refusal';
 
 export const fetchOrRefuse = async (
   path: string,
-  init?: RequestInit
+  sessionHeaders: SessionHeaders,
+  init?: Omit<RequestInit, 'headers'>
 ): Promise<Response> => {
-  const response = await fetch(path, init);
+  const response = await fetch(path, {...init, headers: sessionHeaders});
 
   if (!response.ok) {
     throw new Refusal(await itemsOf(response));

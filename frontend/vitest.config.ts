@@ -7,7 +7,7 @@ const VITEST_DEFAULT_MODE = 'test';
 type Mode = 'unit';
 
 const MODES: Record<Mode, TestUserConfig> = {
-  unit: {include: ['test/unit/**/*.test.tsx']}
+  unit: {include: ['test/unit/**/*.test.{ts,tsx}']}
 };
 
 const isMode = (name: string): name is Mode => name in MODES;
