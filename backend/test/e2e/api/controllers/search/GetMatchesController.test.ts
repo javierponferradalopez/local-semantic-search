@@ -125,9 +125,7 @@ describe('GET /resources/texts/:id/matches', () => {
     ['is empty', '?q='],
     ['is missing', '']
   ])('should give 400 and invalid_input for a Query that %s', async (_, search) => {
-    const response = await fetch(
-      `${api.origin()}/resources/texts/${randomUUID()}/matches${search}`
-    );
+    const response = await api.fetch(`/resources/texts/${randomUUID()}/matches${search}`);
 
     expect(response.status).toBe(BAD_REQUEST);
     expect(await response.json()).toStrictEqual({

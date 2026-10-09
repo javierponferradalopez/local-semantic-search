@@ -183,7 +183,7 @@ describe('POST /resources/images', () => {
       body.append(CreateImageResourceRequest.filePart, new File(['the first'], 'a.png'));
       body.append(CreateImageResourceRequest.filePart, new File(['the second'], 'b.png'));
 
-      const response = await fetch(`${api.origin()}/resources/images`, {
+      const response = await api.fetch('/resources/images', {
         method: 'POST',
         body
       });

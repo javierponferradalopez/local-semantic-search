@@ -30,6 +30,11 @@ type ResourceNotFailed = {
   params: {resourceId: string; ingestState: IngestState};
 };
 
+type Unauthenticated = {
+  code: 'unauthenticated';
+  params: Record<string, never>;
+};
+
 type InvalidInput = {
   code: 'invalid_input';
   params: {path: string};
@@ -42,4 +47,5 @@ export type ErrorItem =
   | MultipleFiles
   | ResourceNotFound
   | ResourceNotFailed
+  | Unauthenticated
   | InvalidInput;

@@ -2,7 +2,7 @@ import type {ServerResponse} from 'node:http';
 import {extname} from 'node:path';
 import type {ContentType} from 'contract/ContentType';
 import {CONTENT_TYPE_BY_EXTENSION} from 'contract/ContentTypeByExtension';
-import express, {type RequestHandler} from 'express';
+import express, {type Request, type RequestHandler, type Response} from 'express';
 
 const MEDIA_TYPE_BY_CONTENT_TYPE: Record<ContentType, string> = {
   pdf: 'application/pdf',
@@ -18,6 +18,7 @@ const MEDIA_TYPE_BY_CONTENT_TYPE: Record<ContentType, string> = {
   svg: 'image/svg+xml'
 };
 
+const NOT_FOUND = 404;
 const UNKNOWN_MEDIA_TYPE = 'application/octet-stream';
 const ONE_YEAR = '1y';
 
@@ -29,7 +30,11 @@ const mediaTypeOf = (path: string): string => {
     : MEDIA_TYPE_BY_CONTENT_TYPE[contentType];
 };
 
-export const serveTheFiles = (folder: string): RequestHandler =>
+const answerNotFound = (_request: Request, response: Response): void => {
+  response.status(NOT_FOUND).end();
+};
+
+export const serveTheFiles = (folder: string): RequestHandler[] => [
   express.static(folder, {
     dotfiles: 'allow',
     index: false,
@@ -40,4 +45,7 @@ export const serveTheFiles = (folder: string): RequestHandler =>
       response.setHeader('Content-Type', mediaTypeOf(path));
       response.setHeader('Content-Disposition', 'inline');
     }
-  });
+  }),
+  // A path with no file ends here, so it never reaches requireTheSession.
+  answerNotFound
+];

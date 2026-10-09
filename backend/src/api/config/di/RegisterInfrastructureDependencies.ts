@@ -11,6 +11,7 @@ import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructu
 import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {TransformersReranker} from '../../../core/search/infrastructure/transformers/TransformersReranker';
+import {AsyncLocalStorageSessionRunner} from '../../../core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
@@ -47,6 +48,10 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     new FilesystemFileStore({folder: env.files.directory, urlPrefix: FILES_URL_PREFIX})
   );
   container.registerImplementation(EmitteryEventBus, new EmitteryEventBus());
+  container.registerImplementation(
+    AsyncLocalStorageSessionRunner,
+    new AsyncLocalStorageSessionRunner()
+  );
   container.registerImplementation(
     ExtensionContentTypeResolver,
     new ExtensionContentTypeResolver()

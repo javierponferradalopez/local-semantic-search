@@ -28,6 +28,8 @@ const TEXT_BY_CODE: TextOfEachCode = {
     'The library no longer holds this Resource. Reload the page.',
   resource_not_failed: ({ingestState}: ParamsOf<'resource_not_failed'>): string =>
     `This Resource is ${textOfIngestState(ingestState)}. Only a Failed Resource can be ingested again. Reload the page.`,
+  unauthenticated: (): string =>
+    'The interface sent no valid Session to the server. Reload the page.',
   invalid_input: ({path}: ParamsOf<'invalid_input'>): string =>
     `The server refused the value of "${path}".`
 };

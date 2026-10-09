@@ -138,7 +138,7 @@ describe('GET /search', () => {
     ['is empty', '/search?q='],
     ['is missing', '/search']
   ])('should give 400 and invalid_input for a Query that %s', async (_, path) => {
-    const response = await fetch(`${api.origin()}${path}`);
+    const response = await api.fetch(path);
 
     expect(response.status).toBe(BAD_REQUEST);
     expect(await response.json()).toStrictEqual({

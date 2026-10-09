@@ -64,7 +64,7 @@ describe('GET /resources', () => {
   it('should give rows that obey the types that contract/ declares', async () => {
     await api.createTextResource('the notes.md', 'the notes');
 
-    const response = await fetch(`${api.origin()}/resources`);
+    const response = await api.fetch('/resources');
 
     expect(response.status).toBe(OK);
 

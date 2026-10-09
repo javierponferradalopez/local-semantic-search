@@ -6,16 +6,25 @@ import {ResourceNotFoundError} from '../../core/resources/domain/errors/Resource
 import {UnsupportedContentTypeError} from '../../core/resources/domain/errors/UnsupportedContentTypeError';
 import {FileTooLargeError} from './FileTooLargeError';
 import {MultipleFilesError} from './MultipleFilesError';
+import {UnauthenticatedError} from './UnauthenticatedError';
 
 export type ApiErrorResponse = {status: number; body: ApiError};
 
 const BAD_REQUEST = 400;
+const UNAUTHORIZED = 401;
 const NOT_FOUND = 404;
 const CONFLICT = 409;
 const CONTENT_TOO_LARGE = 413;
 
 export const ApiErrorMapper = {
   of(error: unknown): ApiErrorResponse | undefined {
+    if (error instanceof UnauthenticatedError) {
+      return {
+        status: UNAUTHORIZED,
+        body: {errors: [{code: 'unauthenticated', params: {}}]}
+      };
+    }
+
     if (error instanceof UnsupportedContentTypeError) {
       return {
         status: BAD_REQUEST,

@@ -232,7 +232,7 @@ describe('POST /resources/texts', () => {
       body.append(CreateTextResourceRequest.filePart, new File(['the first'], 'a.md'));
       body.append(CreateTextResourceRequest.filePart, new File(['the second'], 'b.md'));
 
-      const response = await fetch(`${api.origin()}/resources/texts`, {
+      const response = await api.fetch('/resources/texts', {
         method: 'POST',
         body
       });
@@ -252,6 +252,7 @@ describe('POST /resources/texts', () => {
       const outgoing = request(`${api.origin()}/resources/texts`, {
         method: 'POST',
         headers: {
+          ...api.sessionHeaders(),
           'content-type': 'multipart/form-data; boundary=the-boundary',
           'content-length': contentLength
         }

@@ -1,6 +1,7 @@
 import {CreateImageResourceRequest} from 'contract/CreateImageResourceRequest';
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {Express} from 'express';
+import {AsyncLocalStorageSessionRunner} from '../../core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
 import {container} from '../config/di/Container';
 import {FILES_URL_PREFIX} from '../config/FilesUrlPrefix';
 import {CreateImageResourceController} from '../controllers/resources/CreateImageResourceController';
@@ -15,6 +16,7 @@ import {SearchController} from '../controllers/search/SearchController';
 import {env} from '../env/env';
 import {handleErrors} from '../middlewares/handleErrors';
 import {refuseAFileTooLarge} from '../middlewares/refuseAFileTooLarge';
+import {requireTheSession} from '../middlewares/requireTheSession';
 import {serveTheFiles} from '../middlewares/serveTheFiles';
 import {takeOneFile} from '../middlewares/takeOneFile';
 import {takeTheFiles} from '../middlewares/takeTheFiles';
@@ -29,6 +31,12 @@ export const configureRoutes = (app: Express): void => {
   const retryImageResource = container.getDependency(RetryImageResourceController);
   const search = container.getDependency(SearchController);
   const getMatches = container.getDependency(GetMatchesController);
+  const sessionRunner = container.getDependency(AsyncLocalStorageSessionRunner);
+
+  // Before the Session: an <img> cannot send a header (ADR-0047).
+  app.use(FILES_URL_PREFIX, serveTheFiles(env.files.directory));
+
+  app.use(requireTheSession(sessionRunner));
 
   app.post(
     '/resources/texts',
@@ -69,8 +77,6 @@ export const configureRoutes = (app: Express): void => {
   app.get('/resources/texts/:id/matches', (request, response) =>
     getMatches.run(request, response)
   );
-
-  app.use(FILES_URL_PREFIX, serveTheFiles(env.files.directory));
 
   app.use(handleErrors);
 };
