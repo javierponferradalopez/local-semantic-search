@@ -1,22 +1,130 @@
 # Local semantic search
 
-A local product that finds your own content by meaning. You create Resources
-from your files, the system stores their vectors, and you find the content when
-you type text.
+A local product that finds your own content by meaning. You upload your files: PDF,
+plain text, Markdown and images. Then you type what you remember, in your own words,
+and the product shows the files and the passages that match. The words of your text
+do not have to be the words of the file.
 
-The words this product uses are in [`CONTEXT.md`](CONTEXT.md). The decisions are in
-[`docs/adr/`](docs/adr/). The words of the evals, such as F0.5, `holdout` and the
-verdict, are in [`docs/evals-glossary.md`](docs/evals-glossary.md), for a
-person who is new to search and RAG.
+All the work runs on your machine. The models run locally, and your files never go
+to a cloud service.
+
+The project started as a proof of concept of semantic search. It is now the
+retrieval part of a RAG system: an AI agent connects to it through MCP, gets the
+passages that match a question, and writes the answer from them.
+
+## What you can do with it
+
+- **A local knowledge center.** Keep your PDFs, notes and Markdown in one place, and
+  find a passage when you do not remember the exact words.
+- **A memory for an AI agent.** Claude Code, Cursor or another agent reads the
+  documentation of a project, a specification or the minutes of a meeting through
+  MCP, and answers with that information. This is the full RAG case.
+- **Find images by a description.** Type "a sunset on the beach" or "a diagram with
+  arrows", and the images that look like that come back. The image does not need a
+  name or a tag.
+- **Search across languages.** Type in Spanish and find a document in English. The
+  text model is multilingual.
+- **Keep private content private.** The product needs the network only one time, to
+  get the models. After that, it works offline.
+
+## How you use it
+
+**1. Upload a file.** Each file that you upload becomes a Resource.
+
+![The Upload drawer](docs/images/upload.png)
+
+**2. Wait until it is Ready.** The Library lists each Resource with its Ingest state.
+`Ingesting` changes to `Ready` when the Resource can be found, or to `Failed` with a
+reason.
+
+![The Library](docs/images/library.png)
+
+**3. Type what you remember.** The search page shows text Results and image Results
+in two groups. Each text Result shows the passage that matched and its page.
+
+![The search page](docs/images/home.png)
+
+## How it works
+
+```mermaid
+flowchart LR
+  subgraph Upload
+    F[File] --> R[Resource]
+    R --> I{Ingest}
+    I -->|text| C[Chunks]
+    I -->|image| P[Picture]
+    C --> V1[Vectors]
+    P --> V2[Vectors]
+  end
+  V1 --> DB[(Postgres)]
+  V2 --> DB
+  subgraph Search
+    Q[Query] --> QV[Vector of the Query]
+    QV --> DB
+    DB --> M[Nearest Matches]
+    M -->|text| RR[Reranker]
+    RR --> RES[Results]
+    M -->|images| RES
+  end
+  RES --> UI[Frontend]
+  RES --> MCP[MCP server] --> AG[AI agent]
+```
+
+A model can turn a text or an image into a list of numbers, a **Vector**. Two texts
+with a similar meaning get Vectors that are near each other, also when they use
+different words. The product uses this to find content by meaning.
+
+1. **Upload.** You give a File, and the product creates a **Resource**: the record of
+   the File and its stored copy.
+2. **Ingest.** The product reads the File. It cuts a text into **Chunks**, which are
+   short passages that keep the page they come from. An image stays whole, as one
+   **Picture**. A model calculates the Vector of each Chunk and each Picture, and the
+   product stores them in Postgres.
+3. **Query.** You type a text. The same models calculate its Vectors.
+4. **Search.** Postgres finds the Chunks and the Pictures whose Vectors are nearest
+   to the Vectors of the Query. These are the **Matches**.
+5. **Rerank.** A third model, the **Reranker**, reads the Query and each text Match
+   together and gives a better score. In each group, the product removes the
+   Matches with a low score and orders the rest.
+6. **Results.** The product groups the Matches by Resource. A **Result** is one
+   Resource with the Matches that found it. The frontend shows the Results, and the
+   MCP server gives them to an agent.
+
+The product uses three models. A text model embeds the Chunks. A vision model embeds
+the Pictures and lets a text find an image. The Reranker orders the text Results. All
+the words in bold are in the glossary, [`CONTEXT.md`](CONTEXT.md).
+
+## What it does not do
+
+- It does not write answers. It finds the content, and the agent that you connect
+  writes the answer.
+- It does not include an agent. You connect your own agent through MCP.
+- It has no users, no accounts and no authentication. It runs for one person on one
+  machine.
+- It does not use the network after it gets the models.
+
+## The applications
+
+The repository is a pnpm workspace with four packages. Each package has its own
+README.
+
+| Package | What it is |
+|---|---|
+| [`backend/`](backend/README.md) | The HTTP API. It stores the Resources, runs the Ingest and the Search, and holds the models. |
+| [`frontend/`](frontend/README.md) | The web interface: search, Library and Upload. |
+| [`mcp/`](mcp/README.md) | The MCP server. It lets an AI agent search your Resources. |
+| [`contract/`](contract/README.md) | The TypeScript types of the HTTP API, which the other three packages read. |
 
 ## Prerequisites
 
 - **Node 24.** The repository holds an `.nvmrc`, so `nvm use` selects it.
-- **Docker.** It runs the store, and nothing else. The application runs natively.
 - **pnpm.** The version is pinned in `package.json`. Run `corepack enable pnpm` one
   time, and Node gets that version for you.
+- **Docker.** It runs Postgres, and nothing else. The applications run natively.
+- **Disk and memory.** The first start downloads about 2.3 GB of models. The backend
+  keeps about 4 GB in memory while it runs.
 
-## Start the application
+## Quick start
 
 Three commands on a clean clone:
 
@@ -26,65 +134,18 @@ pnpm run bootstrap
 pnpm dev
 ```
 
-- `pnpm install` installs the four packages of the workspace.
-- `pnpm run bootstrap` copies `backend/.env.example` to `backend/.env` and
-  `mcp/.env.example` to `mcp/.env`, starts Postgres, waits until it is healthy,
-  applies the migrations, and gets the weights of the Text model, the Vision model
-  and the Reranker into the model store, `backend/data/models/`.
+- `pnpm install` installs the four packages.
+- `pnpm run bootstrap` writes the `.env` files of the backend and of the MCP server,
+  starts Postgres, applies the migrations and downloads the models.
 - `pnpm dev` starts the backend on `http://localhost:3001` and the frontend on
   `http://localhost:5173`.
 
-## Connect an agent
-
-The MCP server in `mcp/` lets an AI agent find the content of your Resources.
-[`mcp/README.md`](mcp/README.md) shows how to connect Claude Code, Claude Desktop,
-Cursor and Gemini CLI.
-
-## The model store
-
-`backend/data/models/` holds the weights of three models:
-
-- The Text model, `intfloat/multilingual-e5-small`, in `fp32`, about 0.5 GB.
-- The Vision model, `onnx-community/siglip2-base-patch16-224-ONNX`, in `fp32`,
-  about 1.5 GB: its text tower and its vision tower.
-- The Reranker, `onnx-community/gte-multilingual-reranker-base`, in `q8`, about
-  0.35 GB.
-
-`pnpm run models:fetch` gets them, and `bootstrap` runs it. It is the only command
-that uses the network: the application never downloads.
-
-The backend loads the three models before it listens. This costs about 3 s at
-every start, `tsx watch` included, and about 4 GB stays resident. If the model
-store does not hold a model, the backend does not start, and it tells you to run
-`pnpm run bootstrap`. If a file of a model is damaged, the backend shows the error
-of the library: delete the folder of the model and run `pnpm run models:fetch` again.
-
-## Start clean
-
-Two commands, because two owners hold the data:
-
-```sh
-docker compose --file backend/docker-compose.yml down -v
-rm -rf backend/data/resources/*
-```
-
-The first command removes the named volume that holds Postgres. The second command
-removes the stored Files. If you run only the first command, the screen shows an
-empty list and the copies stay on your disk.
-
-## The layout
-
-```
-contract/   TypeScript source that both halves read. No dependency, no build step.
-frontend/   React and Vite. Path alias `@/`.
-backend/    Express, Drizzle and Postgres. Relative imports.
-  src/api/  The HTTP edge. No business logic.
-  src/core/ The business, split by capability.
-  data/     Git-ignored in full. The stored Files and the model weights.
-mcp/        The MCP server. A client of the HTTP API of the backend, over stdio.
-```
+Open `http://localhost:5173` and upload a file. To connect an agent, read
+[`mcp/README.md`](mcp/README.md).
 
 ## The scripts
+
+These scripts run from the root of the repository.
 
 | Command | What it does |
 |---|---|
@@ -96,62 +157,42 @@ mcp/        The MCP server. A client of the HTTP API of the backend, over stdio.
 | `pnpm run format` | Runs Biome and writes the fixes |
 | `pnpm run typecheck` | Runs `tsc --noEmit` in each package |
 | `pnpm run test:unit` | Runs the unit tests |
-| `pnpm run test:integration` | Runs the integration tests. Needs Docker |
-| `pnpm run test:e2e` | Runs the end-to-end tests. Needs Docker |
-| `pnpm run test:eval` | Runs the evals. Needs Docker and the models in the model store |
+| `pnpm run test:integration` | Runs the integration tests |
+| `pnpm run test:e2e` | Runs the end-to-end tests |
+| `pnpm run test:eval` | Runs the evals |
 
 ## The tests
 
-Vitest runs in four modes, and each mode has one script. `unit` covers the domain
-and the use cases, with the ports mocked. `integration` covers the adapters, which
-are the parts that talk to the store and to the disk. `e2e` covers the endpoints,
-over the application booted in process. `eval` measures what a `Search` gives.
+Vitest runs in four modes, and each mode has one script.
 
-`test:integration`, `test:e2e` and `test:eval` share one test infrastructure: one
-container with the Postgres image of `backend/docker-compose.yml`, the migrations, and
-a temp directory for the Files. Each run starts its own container, and each suite
-wipes the data before it starts. No test touches
-`backend/data/`.
+| Mode | What it covers | What it needs |
+|---|---|---|
+| `unit` | The domain and the use cases, with the ports mocked | Nothing |
+| `integration` | The adapters that talk to the store, the disk or the backend | Docker, for the backend |
+| `e2e` | The endpoints of the backend, over the application booted in process | Docker |
+| `eval` | How good a Search is, as a score | Docker and the models |
 
-A port is mocked with the helper in `backend/test/utils/mock.ts`, and never with
-`vi.mock`. Everything else is real.
+CI runs Biome, the type check and the unit tests. The README of each package tells
+how its tests run, and [`docs/contributing.md`](docs/contributing.md) gives the rules
+for writing them.
 
-CI runs Biome, the type check and the unit tests, and nothing else. A test never
-loads a model: what a model does is measured by an eval, which
-[ADR-0016](docs/adr/0016-a-model-is-judged-by-an-eval-never-by-a-test.md) describes.
+## How the decisions were made
 
-An eval is a `*.eval.ts` file in `backend/test/eval/`, in the mirror of the code
-that it measures. It calls `runEval` of `backend/test/lib/runEval.ts` with `data`,
-`task` and `scorers`, the shape of Evalite. An eval gives a score, not a pass or a
-fail: the runner prints the score of each case beside the score of the previous run,
-and writes the report into `backend/evals/reports/`. Git versions the reports, so a
-change of model or of cutter carries its evidence in the same commit. CI never runs
-the evals, because CI never downloads a model.
+Two places record why the project is the way it is.
 
-The eval of `Search` starts a Postgres container, so it needs Docker. It ingests the
-corpus of `backend/evals/` through the application, which takes minutes, and runs the
-`Search` that ships. Each report gives a verdict against the previous report: "win",
-"loss" or "tie", for the `tuning` and the `holdout` subjects. The verdict of
-`holdout` is the one that counts.
-[ADR-0041](docs/adr/0041-the-eval-measures-a-search-on-postgres.md) describes it.
+- [`CONTEXT.md`](CONTEXT.md) is the glossary of the domain. The code, the interface
+  and the documentation use its words, and each word has one meaning.
+- [`docs/adr/`](docs/adr/) holds the Architecture Decision Records. Each ADR records
+  one decision of design, taken during the development, with its context and the
+  options that were not chosen. Some ADRs are conventions: how to write each kind of
+  class or file, such as a use case, a controller or a gateway.
 
-## The house style
+When you ask "why is this so?", an ADR probably gives the answer. Before you change
+the code of a package, read its conventions.
 
-`biome.json` holds the style of the reference: single quotes, `{foo}` with no inner
-space, no trailing comma, 90 columns, two spaces, semicolons, type-only imports, no
-`enum`, no barrel, explicit accessibility and an explicit return type. One command
-applies it, and one command checks it.
+## More documentation
 
-Four rules of the reference stay a convention, because Biome cannot see them:
-
-- A folder is kebab-case. Biome reads the name of a file, never the name of a folder.
-- A PascalCase file carries the name of the one thing it exports: a class, a registrar
-  or a constant. Biome reads the case of the name, never the name itself.
-- A blank line comes before a `return` and around an `if`. The formatter has no option
-  for it.
-- A field that is never written is `readonly`, a promise is never left floating, and a
-  type assertion that changes nothing is removed. All three need the types, which Biome
-  does not read.
-- A use case, a controller and an event take the verb the glossary uses. A Resource is
-  created, so the name is `Create`, never `Add`. A read model gives what it holds, so
-  the name is `Get`, never `List`.
+- [`docs/contributing.md`](docs/contributing.md): the house style, what CI runs, and
+  the rules of the tests.
+- [`docs/evals-glossary.md`](docs/evals-glossary.md): the words of the evals, such as
+  F0.5, `holdout` and the verdict, for a person who is new to search and RAG.
