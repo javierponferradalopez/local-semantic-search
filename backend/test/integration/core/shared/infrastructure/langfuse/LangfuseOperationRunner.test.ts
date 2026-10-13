@@ -1,4 +1,8 @@
-import {LangfuseOtelSpanAttributes} from '@langfuse/tracing';
+import {
+  LangfuseOtelSpanAttributes,
+  propagateAttributes,
+  startActiveObservation
+} from '@langfuse/tracing';
 import {hrTimeToMilliseconds} from '@opentelemetry/core';
 import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import type {SessionRunner} from '../../../../../../src/core/shared/domain/services/SessionRunner';
@@ -152,6 +156,45 @@ describe('LangfuseOperationRunner', () => {
         expect(call.attributes[LangfuseOtelSpanAttributes.TRACE_SESSION_ID]).toBe(
           root?.attributes[LangfuseOtelSpanAttributes.TRACE_SESSION_ID]
         );
+      }
+    });
+
+    it('should start a root trace with its own Session, also inside the active span and the Session of another trace', async () => {
+      const ofTheRequest = SessionMother.random('mcp');
+      const ofTheHandler = SessionMother.random('interface');
+
+      await propagateAttributes(
+        {sessionId: ofTheRequest.id.value, tags: [ofTheRequest.origin.value]},
+        () =>
+          startActiveObservation('POST /resources/texts', () =>
+            sessionRunner.run(ofTheHandler, () =>
+              operationRunner.run(
+                'IngestTextResourceOnTextResourceCreatedOrRetried',
+                recordAQueryAfterATick
+              )
+            )
+          )
+      );
+
+      const spans = await langfuse.spans();
+
+      const ofTheOperation = spans.filter(span => span.name !== 'POST /resources/texts');
+      expect(
+        rootsOf(spans)
+          .map(root => root.name)
+          .toSorted()
+      ).toStrictEqual([
+        'IngestTextResourceOnTextResourceCreatedOrRetried',
+        'POST /resources/texts'
+      ]);
+      expect(ofTheOperation).toHaveLength(2);
+      for (const span of ofTheOperation) {
+        expect(span.attributes[LangfuseOtelSpanAttributes.TRACE_SESSION_ID]).toBe(
+          ofTheHandler.id.value
+        );
+        expect(span.attributes[LangfuseOtelSpanAttributes.TRACE_TAGS]).toStrictEqual([
+          'interface'
+        ]);
       }
     });
 

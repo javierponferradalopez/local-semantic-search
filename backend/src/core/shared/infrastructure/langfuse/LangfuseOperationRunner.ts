@@ -1,4 +1,5 @@
 import {type PropagateAttributesParams, propagateAttributes} from '@langfuse/tracing';
+import {context, ROOT_CONTEXT} from '@opentelemetry/api';
 import {NoSessionError} from '../../domain/errors/NoSessionError';
 import type {OperationRunner} from '../../domain/services/OperationRunner';
 import type {SessionRunner} from '../../domain/services/SessionRunner';
@@ -13,7 +14,12 @@ export class LangfuseOperationRunner implements OperationRunner {
     this._sessionRunner = sessionRunner;
   }
 
-  public async run<T>(name: string, work: () => Promise<T>): Promise<T> {
+  // Each operation is a root trace, also a handler that a request published (ADR-0048).
+  public run<T>(name: string, work: () => Promise<T>): Promise<T> {
+    return context.with(ROOT_CONTEXT, () => this.runInATrace(name, work));
+  }
+
+  private async runInATrace<T>(name: string, work: () => Promise<T>): Promise<T> {
     let trace: LazyTrace;
     let attributes: PropagateAttributesParams;
 

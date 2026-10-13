@@ -80,7 +80,7 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
   container.registerImplementation(AsyncLocalStorageSessionRunner, sessionRunner);
   container.registerImplementation(
     EmitteryEventBus,
-    new EmitteryEventBus({sessionRunner})
+    new EmitteryEventBus({sessionRunner, operationRunner})
   );
   container.registerImplementation(
     ExtensionContentTypeResolver,
