@@ -63,5 +63,10 @@ does not change: the Session is not a fact of the domain event.
 - **Each test of the API sends the two headers.**
 - **Code that a request does not start has no Session.** `SessionRunner.current()`
   throws there. The eval opens no Session: it uses the silent adapters.
+- **Only the route and its use case require the Session.** Each other place that
+  uses the Session logs a warning when no Session is open, and does its work
+  with no Session. It never throws. A handler that stops halfway can leave
+  corrupt data. So the bus still runs each handler, and an adapter that tags a
+  trace with the Session gives a trace with no Session.
 - **A login, one day, is a new term.** The Session of a user who logs in is not
   this Session.
