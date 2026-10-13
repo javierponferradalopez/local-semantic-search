@@ -187,6 +187,12 @@ describe('TransformersReranker', () => {
       expect(await reranker.rerank('la cadena de la bici', [])).toStrictEqual([]);
     });
 
+    it('should record no Model call for no Result', async () => {
+      await reranker.rerank('la cadena de la bici', []);
+
+      expect(recorder.takeTheCalls()).toStrictEqual([]);
+    });
+
     it('should record one Model call with its pairs, the tokens of all pairs and the scores in the order of the Results', async () => {
       const query = 'la cadena de la bici';
       const texts = [
@@ -300,6 +306,12 @@ describe('TransformersReranker', () => {
 
     it('should give no Match for no Match', async () => {
       expect(await reranker.rerankMatches('la cadena de la bici', [])).toStrictEqual([]);
+    });
+
+    it('should record no Model call for no Match', async () => {
+      await reranker.rerankMatches('la cadena de la bici', []);
+
+      expect(recorder.takeTheCalls()).toStrictEqual([]);
     });
 
     it('should record one Model call with its pairs and the tokens of all pairs', async () => {

@@ -122,6 +122,11 @@ export class TransformersReranker implements Reranker {
     query: string,
     texts: readonly string[]
   ): Promise<number[]> {
+    // With no pair, the model does not run, so there is no Model call to record.
+    if (texts.length === 0) {
+      return Promise.resolve([]);
+    }
+
     return RecordedModelCall.run({
       recorder: this.recorder,
       name,
