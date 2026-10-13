@@ -8,7 +8,7 @@ import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import type {SessionRunner} from '../../../../../../src/core/shared/domain/services/SessionRunner';
 import type {Session} from '../../../../../../src/core/shared/domain/value-objects/Session';
 import {AsyncLocalStorageSessionRunner} from '../../../../../../src/core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
-import {LangfuseModelCallRecorder} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
+import {LangfuseModelCallTracker} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallTracker';
 import {LangfuseOperationRunner} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseOperationRunner';
 import {useLangfuseSpans} from '../../../../../lib/langfuseSpans';
 import {ModelCallMother} from '../../../../../utils/object-mother/ModelCallMother';
@@ -23,7 +23,7 @@ const traceIdOf = (span: ReadableSpan): string => span.spanContext().traceId;
 
 describe('LangfuseOperationRunner', () => {
   const langfuse = useLangfuseSpans();
-  const recorder = new LangfuseModelCallRecorder({models: []});
+  const tracker = new LangfuseModelCallTracker({models: []});
   let sessionRunner: AsyncLocalStorageSessionRunner;
   let operationRunner: LangfuseOperationRunner;
 
@@ -36,9 +36,9 @@ describe('LangfuseOperationRunner', () => {
     vi.restoreAllMocks();
   });
 
-  const recordAQueryAfterATick = async (): Promise<void> => {
+  const trackAQueryAfterATick = async (): Promise<void> => {
     await aTick();
-    recorder.record(ModelCallMother.embedQuery());
+    tracker.track(ModelCallMother.embedQuery());
   };
 
   describe('#run', () => {
@@ -50,7 +50,7 @@ describe('LangfuseOperationRunner', () => {
       expect(result).toBe('the result');
     });
 
-    it('should send nothing when the work records no Model call', async () => {
+    it('should send nothing when the work tracks no Model call', async () => {
       await sessionRunner.run(SessionMother.random(), () =>
         operationRunner.run('GET /resources', async () => undefined)
       );
@@ -63,8 +63,8 @@ describe('LangfuseOperationRunner', () => {
     it('should make one trace with the name of the operation, which holds each Model call of the work', async () => {
       await sessionRunner.run(SessionMother.random(), () =>
         operationRunner.run('GET /search', async () => {
-          await recordAQueryAfterATick();
-          await recordAQueryAfterATick();
+          await trackAQueryAfterATick();
+          await trackAQueryAfterATick();
         })
       );
 
@@ -89,7 +89,7 @@ describe('LangfuseOperationRunner', () => {
       await sessionRunner.run(SessionMother.random(), () =>
         operationRunner.run('GET /search', async () => {
           await new Promise(resolve => setTimeout(resolve, 20));
-          recorder.record(ModelCallMother.embedQuery());
+          tracker.track(ModelCallMother.embedQuery());
           await new Promise(resolve => setTimeout(resolve, 20));
           endOfWork = Date.now();
         })
@@ -111,7 +111,7 @@ describe('LangfuseOperationRunner', () => {
         const session = SessionMother.random(origin);
 
         await sessionRunner.run(session, () =>
-          operationRunner.run('GET /search', recordAQueryAfterATick)
+          operationRunner.run('GET /search', trackAQueryAfterATick)
         );
 
         const spans = await langfuse.spans();
@@ -134,10 +134,10 @@ describe('LangfuseOperationRunner', () => {
 
       await Promise.all([
         sessionRunner.run(first, () =>
-          operationRunner.run('GET /search', recordAQueryAfterATick)
+          operationRunner.run('GET /search', trackAQueryAfterATick)
         ),
         sessionRunner.run(second, () =>
-          operationRunner.run('GET /resources/texts/:id/matches', recordAQueryAfterATick)
+          operationRunner.run('GET /resources/texts/:id/matches', trackAQueryAfterATick)
         )
       ]);
 
@@ -170,7 +170,7 @@ describe('LangfuseOperationRunner', () => {
             sessionRunner.run(ofTheHandler, () =>
               operationRunner.run(
                 'IngestTextResourceOnTextResourceCreatedOrRetried',
-                recordAQueryAfterATick
+                trackAQueryAfterATick
               )
             )
           )
@@ -198,12 +198,12 @@ describe('LangfuseOperationRunner', () => {
       }
     });
 
-    it('should send a Model call recorded after the work ends with no parent, when the work recorded none', async () => {
+    it('should send a Model call tracked after the work ends with no parent, when the work tracked none', async () => {
       let late: Promise<void> = Promise.resolve();
 
       await sessionRunner.run(SessionMother.random(), () =>
         operationRunner.run('POST /resources/texts', async () => {
-          late = recordAQueryAfterATick();
+          late = trackAQueryAfterATick();
         })
       );
       await late;
@@ -214,13 +214,13 @@ describe('LangfuseOperationRunner', () => {
       expect(spans[0].parentSpanContext).toBeUndefined();
     });
 
-    it('should keep a Model call recorded after the work ends in the trace, when the work recorded one', async () => {
+    it('should keep a Model call tracked after the work ends in the trace, when the work tracked one', async () => {
       let late: Promise<void> = Promise.resolve();
 
       await sessionRunner.run(SessionMother.random(), () =>
         operationRunner.run('POST /resources/texts', async () => {
-          await recordAQueryAfterATick();
-          late = recordAQueryAfterATick();
+          await trackAQueryAfterATick();
+          late = trackAQueryAfterATick();
         })
       );
       await late;
@@ -238,7 +238,7 @@ describe('LangfuseOperationRunner', () => {
       await expect(
         sessionRunner.run(SessionMother.random(), () =>
           operationRunner.run('GET /search', async () => {
-            await recordAQueryAfterATick();
+            await trackAQueryAfterATick();
             throw failure;
           })
         )
@@ -253,7 +253,7 @@ describe('LangfuseOperationRunner', () => {
       const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const result = await operationRunner.run('GET /search', async () => {
-        await recordAQueryAfterATick();
+        await trackAQueryAfterATick();
 
         return 'the result';
       });
@@ -283,7 +283,7 @@ describe('LangfuseOperationRunner', () => {
       const runner = new LangfuseOperationRunner({sessionRunner: aBrokenSessionRunner});
 
       const result = await runner.run('GET /search', async () => {
-        await recordAQueryAfterATick();
+        await trackAQueryAfterATick();
 
         return 'the result';
       });

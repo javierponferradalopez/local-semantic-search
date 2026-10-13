@@ -6,11 +6,11 @@ import {
   type PreTrainedTokenizer
 } from '@huggingface/transformers';
 import {CUT} from '../../../../../../src/core/ingestion/domain/Cut';
-import type {ModelCallName} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
+import type {ModelCallName} from '../../../../../../src/core/shared/domain/services/ModelCallTracker';
 import type {Vector} from '../../../../../../src/core/shared/domain/value-objects/Vector';
 import {TEXT_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/TextModel';
 import {TransformersTextEmbedder} from '../../../../../../src/core/shared/infrastructure/transformers/TransformersTextEmbedder';
-import {RecordingModelCallRecorder} from '../../../../../lib/RecordingModelCallRecorder';
+import {RecordingModelCallTracker} from '../../../../../lib/RecordingModelCallTracker';
 import {StringMother} from '../../../../../utils/object-mother/StringMother';
 
 // The worst cases of ADR-0014, at the length of the cap: each one passes the wall of tokens.
@@ -31,13 +31,13 @@ const oneLetterWords = (count: number, letter = 'a'): string =>
   `${letter} `.repeat(count).trim();
 
 describe('TransformersTextEmbedder', () => {
-  const recorder = new RecordingModelCallRecorder();
+  const tracker = new RecordingModelCallTracker();
   let embedder: TransformersTextEmbedder;
   let tokenizer: PreTrainedTokenizer;
   let model: PreTrainedModel;
 
   beforeAll(async () => {
-    embedder = await TransformersTextEmbedder.load({recorder});
+    embedder = await TransformersTextEmbedder.load({tracker});
     [tokenizer, model] = await Promise.all([
       AutoTokenizer.from_pretrained(TEXT_MODEL.repository),
       AutoModel.from_pretrained(TEXT_MODEL.repository, {dtype: TEXT_MODEL.dtype})
@@ -45,7 +45,7 @@ describe('TransformersTextEmbedder', () => {
   });
 
   beforeEach(() => {
-    recorder.takeTheCalls();
+    tracker.takeTheCalls();
   });
 
   const tokensOf = (text: string): number =>
@@ -153,12 +153,12 @@ describe('TransformersTextEmbedder', () => {
       expect(first.value).not.toStrictEqual(second.value);
     });
 
-    it('should record one Model call of the Text model with the tokens that the model reads', async () => {
+    it('should track one Model call of the Text model with the tokens that the model reads', async () => {
       const text = oneLetterWords(10);
 
       await embed(text);
 
-      const [call] = recorder.takeTheCalls();
+      const [call] = tracker.takeTheCalls();
       expect(call).toStrictEqual({
         name,
         model: {repository: TEXT_MODEL.repository, dtype: TEXT_MODEL.dtype},
@@ -177,18 +177,18 @@ describe('TransformersTextEmbedder', () => {
 
       await embed(oneLetterWords(window + 1));
 
-      const [call] = recorder.takeTheCalls();
+      const [call] = tracker.takeTheCalls();
       expect(call?.usage).toStrictEqual({
         input: window + 1 + 2 * (tokensOf(prefix.trim()) + SPECIAL_TOKENS)
       });
     });
 
-    it('should record the Model call with its error when the call throws', async () => {
+    it('should track the Model call with its error when the call throws', async () => {
       const error = await embed(undefined as unknown as string).catch(
         (thrown: unknown) => thrown
       );
 
-      expect(recorder.takeTheCalls()).toStrictEqual([
+      expect(tracker.takeTheCalls()).toStrictEqual([
         expect.objectContaining({
           name,
           model: {repository: TEXT_MODEL.repository, dtype: TEXT_MODEL.dtype},

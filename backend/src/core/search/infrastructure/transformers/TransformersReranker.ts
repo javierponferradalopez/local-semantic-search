@@ -7,16 +7,16 @@ import {
 } from '@huggingface/transformers';
 import type {
   ModelCallName,
-  ModelCallRecorder
-} from '../../../shared/domain/services/ModelCallRecorder';
+  ModelCallTracker
+} from '../../../shared/domain/services/ModelCallTracker';
 import {
   readFromTheModelStore,
   refuseAMissingModel
 } from '../../../shared/infrastructure/transformers/modelStore';
 import {
   type Count,
-  RecordedModelCall
-} from '../../../shared/infrastructure/transformers/RecordedModelCall';
+  TrackedModelCall
+} from '../../../shared/infrastructure/transformers/TrackedModelCall';
 import type {Match} from '../../domain/Match';
 import type {Result} from '../../domain/Result';
 import type {Reranker} from '../../domain/services/Reranker';
@@ -26,10 +26,10 @@ import {RERANKER_MODEL} from './RerankerModel';
 type ConstructorParams = {
   tokenizer: PreTrainedTokenizer;
   model: PreTrainedModel;
-  recorder: ModelCallRecorder;
+  tracker: ModelCallTracker;
 };
 
-type LoadParams = {recorder: ModelCallRecorder};
+type LoadParams = {tracker: ModelCallTracker};
 
 // The model was trained on 512 tokens. Its tokenizer says 32768, and its positions go to 8192.
 const WALL_OF_TOKENS = 512;
@@ -66,15 +66,15 @@ const lengthsInTheRoom = (
 export class TransformersReranker implements Reranker {
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly model: PreTrainedModel;
-  private readonly recorder: ModelCallRecorder;
+  private readonly tracker: ModelCallTracker;
 
-  private constructor({tokenizer, model, recorder}: ConstructorParams) {
+  private constructor({tokenizer, model, tracker}: ConstructorParams) {
     this.tokenizer = tokenizer;
     this.model = model;
-    this.recorder = recorder;
+    this.tracker = tracker;
   }
 
-  public static async load({recorder}: LoadParams): Promise<TransformersReranker> {
+  public static async load({tracker}: LoadParams): Promise<TransformersReranker> {
     readFromTheModelStore();
     await refuseAMissingModel(RERANKER_MODEL.repository);
 
@@ -87,7 +87,7 @@ export class TransformersReranker implements Reranker {
       {dtype: RERANKER_MODEL.dtype, config}
     );
 
-    return new TransformersReranker({tokenizer, model, recorder});
+    return new TransformersReranker({tokenizer, model, tracker});
   }
 
   public async rerank(query: string, results: readonly Result[]): Promise<Result[]> {
@@ -122,13 +122,13 @@ export class TransformersReranker implements Reranker {
     query: string,
     texts: readonly string[]
   ): Promise<number[]> {
-    // With no pair, the model does not run, so there is no Model call to record.
+    // With no pair, the model does not run, so there is no Model call to track.
     if (texts.length === 0) {
       return Promise.resolve([]);
     }
 
-    return RecordedModelCall.run({
-      recorder: this.recorder,
+    return TrackedModelCall.run({
+      tracker: this.tracker,
       name,
       model: RERANKER_MODEL,
       input: {query, texts},

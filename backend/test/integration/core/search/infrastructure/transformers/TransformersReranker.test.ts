@@ -10,8 +10,8 @@ import type {Result} from '../../../../../../src/core/search/domain/Result';
 import {RerankerConfig} from '../../../../../../src/core/search/infrastructure/transformers/RerankerConfig';
 import {RERANKER_MODEL} from '../../../../../../src/core/search/infrastructure/transformers/RerankerModel';
 import {TransformersReranker} from '../../../../../../src/core/search/infrastructure/transformers/TransformersReranker';
-import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
-import {RecordingModelCallRecorder} from '../../../../../lib/RecordingModelCallRecorder';
+import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallTracker';
+import {RecordingModelCallTracker} from '../../../../../lib/RecordingModelCallTracker';
 import {StringMother} from '../../../../../utils/object-mother/StringMother';
 
 const WALL_OF_TOKENS = 512;
@@ -41,13 +41,13 @@ const THE_RERANKER: ModelCall['model'] = {
 };
 
 describe('TransformersReranker', () => {
-  const recorder = new RecordingModelCallRecorder();
+  const tracker = new RecordingModelCallTracker();
   let reranker: TransformersReranker;
   let tokenizer: PreTrainedTokenizer;
   let model: PreTrainedModel;
 
   beforeAll(async () => {
-    reranker = await TransformersReranker.load({recorder});
+    reranker = await TransformersReranker.load({tracker});
     tokenizer = await AutoTokenizer.from_pretrained(RERANKER_MODEL.repository);
     model = await AutoModelForSequenceClassification.from_pretrained(
       RERANKER_MODEL.repository,
@@ -56,7 +56,7 @@ describe('TransformersReranker', () => {
   });
 
   beforeEach(() => {
-    recorder.takeTheCalls();
+    tracker.takeTheCalls();
   });
 
   const tokensOf = (text: string): number =>
@@ -187,13 +187,13 @@ describe('TransformersReranker', () => {
       expect(await reranker.rerank('la cadena de la bici', [])).toStrictEqual([]);
     });
 
-    it('should record no Model call for no Result', async () => {
+    it('should track no Model call for no Result', async () => {
       await reranker.rerank('la cadena de la bici', []);
 
-      expect(recorder.takeTheCalls()).toStrictEqual([]);
+      expect(tracker.takeTheCalls()).toStrictEqual([]);
     });
 
-    it('should record one Model call with its pairs, the tokens of all pairs and the scores in the order of the Results', async () => {
+    it('should track one Model call with its pairs, the tokens of all pairs and the scores in the order of the Results', async () => {
       const query = 'la cadena de la bici';
       const texts = [
         'El contrato de alquiler dura un año.',
@@ -207,7 +207,7 @@ describe('TransformersReranker', () => {
 
       const scoreOf = (text: string): number | undefined =>
         reranked.find(result => result.bestMatch.text === text)?.bestMatch.score;
-      expect(recorder.takeTheCalls()).toStrictEqual([
+      expect(tracker.takeTheCalls()).toStrictEqual([
         {
           name: 'rerank',
           model: THE_RERANKER,
@@ -231,17 +231,17 @@ describe('TransformersReranker', () => {
         aResult(oneLetterWords(10_000, 'b'))
       ]);
 
-      const [call] = recorder.takeTheCalls();
+      const [call] = tracker.takeTheCalls();
       expect(call?.usage).toStrictEqual({pairs: 1, input: WALL_OF_TOKENS});
     });
 
-    it('should record the Model call with its error when the call throws', async () => {
+    it('should track the Model call with its error when the call throws', async () => {
       const error = await reranker
         .rerank('la cadena de la bici', [aResult(undefined as unknown as string)])
         .catch((thrown: unknown) => thrown);
 
       expect(error).toBeInstanceOf(Error);
-      expect(recorder.takeTheCalls()).toStrictEqual([
+      expect(tracker.takeTheCalls()).toStrictEqual([
         expect.objectContaining({name: 'rerank', model: THE_RERANKER, error})
       ]);
     });
@@ -308,19 +308,19 @@ describe('TransformersReranker', () => {
       expect(await reranker.rerankMatches('la cadena de la bici', [])).toStrictEqual([]);
     });
 
-    it('should record no Model call for no Match', async () => {
+    it('should track no Model call for no Match', async () => {
       await reranker.rerankMatches('la cadena de la bici', []);
 
-      expect(recorder.takeTheCalls()).toStrictEqual([]);
+      expect(tracker.takeTheCalls()).toStrictEqual([]);
     });
 
-    it('should record one Model call with its pairs and the tokens of all pairs', async () => {
+    it('should track one Model call with its pairs and the tokens of all pairs', async () => {
       const query = 'la cadena de la bici';
       const text = 'Engrasa la cadena de la bicicleta cada 300 kilómetros.';
 
       const [match] = await reranker.rerankMatches(query, [{text, score: 0.8}]);
 
-      expect(recorder.takeTheCalls()).toStrictEqual([
+      expect(tracker.takeTheCalls()).toStrictEqual([
         {
           name: 'rerank-matches',
           model: THE_RERANKER,
@@ -333,7 +333,7 @@ describe('TransformersReranker', () => {
       ]);
     });
 
-    it('should record the Model call with its error when the call throws', async () => {
+    it('should track the Model call with its error when the call throws', async () => {
       const error = await reranker
         .rerankMatches('la cadena de la bici', [
           {text: undefined as unknown as string, score: 0.8}
@@ -341,7 +341,7 @@ describe('TransformersReranker', () => {
         .catch((thrown: unknown) => thrown);
 
       expect(error).toBeInstanceOf(Error);
-      expect(recorder.takeTheCalls()).toStrictEqual([
+      expect(tracker.takeTheCalls()).toStrictEqual([
         expect.objectContaining({name: 'rerank-matches', model: THE_RERANKER, error})
       ]);
     });

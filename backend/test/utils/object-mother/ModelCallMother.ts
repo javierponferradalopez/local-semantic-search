@@ -1,4 +1,4 @@
-import type {ModelCall} from '../../../src/core/shared/domain/services/ModelCallRecorder';
+import type {ModelCall} from '../../../src/core/shared/domain/services/ModelCallTracker';
 
 export const ModelCallMother = {
   embedQuery(call: Partial<ModelCall> = {}): ModelCall {

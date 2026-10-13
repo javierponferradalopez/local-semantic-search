@@ -12,17 +12,17 @@ import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/dr
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {RERANKER_MODEL} from '../../../core/search/infrastructure/transformers/RerankerModel';
 import {TransformersReranker} from '../../../core/search/infrastructure/transformers/TransformersReranker';
-import type {ModelCallRecorder} from '../../../core/shared/domain/services/ModelCallRecorder';
+import type {ModelCallTracker} from '../../../core/shared/domain/services/ModelCallTracker';
 import type {OperationRunner} from '../../../core/shared/domain/services/OperationRunner';
 import type {SessionRunner} from '../../../core/shared/domain/services/SessionRunner';
 import {AsyncLocalStorageSessionRunner} from '../../../core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
-import {LangfuseModelCallRecorder} from '../../../core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
+import {LangfuseModelCallTracker} from '../../../core/shared/infrastructure/langfuse/LangfuseModelCallTracker';
 import {LangfuseOperationRunner} from '../../../core/shared/infrastructure/langfuse/LangfuseOperationRunner';
 import {LangfuseTracing} from '../../../core/shared/infrastructure/langfuse/LangfuseTracing';
-import {SilentModelCallRecorder} from '../../../core/shared/infrastructure/SilentModelCallRecorder';
+import {SilentModelCallTracker} from '../../../core/shared/infrastructure/SilentModelCallTracker';
 import {SilentOperationRunner} from '../../../core/shared/infrastructure/SilentOperationRunner';
 import {TEXT_MODEL} from '../../../core/shared/infrastructure/transformers/TextModel';
 import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
@@ -37,10 +37,10 @@ import {container} from './Container';
 
 const startTheCostAdapters = (
   sessionRunner: SessionRunner
-): {recorder: ModelCallRecorder; operationRunner: OperationRunner} => {
+): {tracker: ModelCallTracker; operationRunner: OperationRunner} => {
   if (env.langfuse === null) {
     return {
-      recorder: new SilentModelCallRecorder(),
+      tracker: new SilentModelCallTracker(),
       operationRunner: new SilentOperationRunner()
     };
   }
@@ -48,7 +48,7 @@ const startTheCostAdapters = (
   LangfuseTracing.start(env.langfuse);
 
   return {
-    recorder: new LangfuseModelCallRecorder({
+    tracker: new LangfuseModelCallTracker({
       models: [TEXT_MODEL, VISION_MODEL, RERANKER_MODEL]
     }),
     operationRunner: new LangfuseOperationRunner({sessionRunner})
@@ -57,16 +57,16 @@ const startTheCostAdapters = (
 
 export const registerInfrastructureDependencies = async (): Promise<void> => {
   const sessionRunner = new AsyncLocalStorageSessionRunner();
-  const {recorder, operationRunner} = startTheCostAdapters(sessionRunner);
+  const {tracker, operationRunner} = startTheCostAdapters(sessionRunner);
   const [textEmbedder, imageEmbedder, reranker] = await Promise.all([
-    TransformersTextEmbedder.load({recorder}),
-    TransformersImageEmbedder.load({recorder}),
-    TransformersReranker.load({recorder})
+    TransformersTextEmbedder.load({tracker}),
+    TransformersImageEmbedder.load({tracker}),
+    TransformersReranker.load({tracker})
   ]);
   const pool = new Pool({connectionString: env.database.url});
   const connection = new DrizzleConnection({database: drizzle(pool)});
 
-  container.registerImplementation('ModelCallRecorder', recorder);
+  container.registerImplementation('ModelCallTracker', tracker);
   container.registerImplementation('OperationRunner', operationRunner);
   container.registerImplementation(Pool, pool);
   container.registerImplementation(DrizzleConnection, connection);

@@ -1,13 +1,13 @@
 import type {
   ModelCall,
-  ModelCallRecorder,
+  ModelCallTracker,
   Usage
-} from '../../domain/services/ModelCallRecorder';
+} from '../../domain/services/ModelCallTracker';
 
 export type Count = (usage: Usage) => void;
 
 type Params<T> = {
-  recorder: ModelCallRecorder;
+  tracker: ModelCallTracker;
   name: ModelCall['name'];
   model: ModelCall['model'];
   input: ModelCall['input'];
@@ -16,8 +16,8 @@ type Params<T> = {
   outputOf?: (value: T) => readonly number[];
 };
 
-export const RecordedModelCall = {
-  async run<T>({recorder, name, model, input, work, outputOf}: Params<T>): Promise<T> {
+export const TrackedModelCall = {
+  async run<T>({tracker, name, model, input, work, outputOf}: Params<T>): Promise<T> {
     const call = {name, model: {repository: model.repository, dtype: model.dtype}, input};
     const startTime = new Date();
     let usage: Usage = {};
@@ -28,11 +28,11 @@ export const RecordedModelCall = {
         usage = counted;
       });
     } catch (error) {
-      recorder.record({...call, usage, startTime, endTime: new Date(), error});
+      tracker.track({...call, usage, startTime, endTime: new Date(), error});
       throw error;
     }
 
-    recorder.record({
+    tracker.track({
       ...call,
       usage,
       ...(outputOf && {output: outputOf(value)}),

@@ -7,9 +7,9 @@ import sharp from 'sharp';
 import type {Pixels} from '../../domain/services/ImageEmbedder';
 import type {
   ModelCall,
-  ModelCallRecorder,
+  ModelCallTracker,
   Usage
-} from '../../domain/services/ModelCallRecorder';
+} from '../../domain/services/ModelCallTracker';
 import {LazyTrace} from './LazyTrace';
 
 // The size of the thumbnail of an Image Resource: the queue of spans stays small (ADR-0048).
@@ -82,17 +82,17 @@ const endWithTheWebp = async (
 };
 
 const logTheFailure = (error: unknown): void => {
-  console.error('A Model call cannot be recorded', error);
+  console.error('A Model call cannot be tracked', error);
 };
 
-export class LangfuseModelCallRecorder implements ModelCallRecorder {
+export class LangfuseModelCallTracker implements ModelCallTracker {
   private readonly _prices: ReadonlyMap<string, Price>;
 
   public constructor({models}: ConstructorParams) {
     this._prices = new Map(models.map(({repository, price}) => [repository, price]));
   }
 
-  public record(call: ModelCall): void {
+  public track(call: ModelCall): void {
     try {
       const price = this._prices.get(call.model.repository) ?? {};
       const embedding = startObservation(call.name, attributesOf(call, price), {

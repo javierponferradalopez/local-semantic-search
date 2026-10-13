@@ -21,7 +21,7 @@ export type ModelCall = {
   error?: unknown;
 };
 
-export interface ModelCallRecorder {
-  // Never throws: the record is information about the work, and never breaks it (ADR-0048).
-  record(call: ModelCall): void;
+export interface ModelCallTracker {
+  // Never throws: the tracking is information about the work, and never breaks it (ADR-0048).
+  track(call: ModelCall): void;
 }

@@ -4,8 +4,8 @@ import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import sharp from 'sharp';
 import {RERANKER_MODEL} from '../../../../../../src/core/search/infrastructure/transformers/RerankerModel';
 import type {Pixels} from '../../../../../../src/core/shared/domain/services/ImageEmbedder';
-import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
-import {LangfuseModelCallRecorder} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
+import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallTracker';
+import {LangfuseModelCallTracker} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallTracker';
 import {TEXT_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/TextModel';
 import {VISION_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/VisionModel';
 import {useLangfuseSpans} from '../../../../../lib/langfuseSpans';
@@ -30,9 +30,9 @@ const bytesOf = (dataUri: string): Buffer => {
   return Buffer.from(base64, 'base64');
 };
 
-describe('LangfuseModelCallRecorder', () => {
+describe('LangfuseModelCallTracker', () => {
   const langfuse = useLangfuseSpans();
-  const recorder = new LangfuseModelCallRecorder({
+  const tracker = new LangfuseModelCallTracker({
     models: [TEXT_MODEL, VISION_MODEL, RERANKER_MODEL]
   });
 
@@ -48,12 +48,12 @@ describe('LangfuseModelCallRecorder', () => {
     return spans[0];
   };
 
-  // The WebP of a Picture is made after record() returns, and its observation ends then.
+  // The WebP of a Picture is made after track() returns, and its observation ends then.
   const theOnlySpanOnceItEnds = (): Promise<ReadableSpan> => vi.waitFor(theOnlySpan);
 
-  describe('#record', () => {
+  describe('#track', () => {
     it('should make one embedding with the name, the model, the dtype, the Usage and the input of the Model call', async () => {
-      recorder.record(
+      tracker.track(
         ModelCallMother.embedQuery({
           model: {repository: 'Xenova/multilingual-e5-small', dtype: 'q8'},
           usage: {input: 12},
@@ -87,7 +87,7 @@ describe('LangfuseModelCallRecorder', () => {
     });
 
     it('should give the scores of a rerank as its output, and each key of its Usage', async () => {
-      recorder.record(
+      tracker.track(
         ModelCallMother.embedQuery({
           name: 'rerank',
           usage: {input: 900, pairs: 3},
@@ -135,7 +135,7 @@ describe('LangfuseModelCallRecorder', () => {
     ] as const)(
       'should give the Cost of a Model call of the %s as its Usage times its price (%s)',
       async (_, name, {repository, dtype}, usage, cost) => {
-        recorder.record(
+        tracker.track(
           ModelCallMother.embedQuery({name, model: {repository, dtype}, usage})
         );
 
@@ -150,7 +150,7 @@ describe('LangfuseModelCallRecorder', () => {
       ['the Usage has no key with a price', RERANKER_MODEL.repository, {pairs: 3}],
       ['the model has no price', 'Xenova/multilingual-e5-small', {input: 7}]
     ])('should give no Cost when %s', async (_, repository, usage) => {
-      recorder.record(
+      tracker.track(
         ModelCallMother.embedQuery({model: {repository, dtype: 'fp32'}, usage})
       );
 
@@ -164,7 +164,7 @@ describe('LangfuseModelCallRecorder', () => {
       const startTime = new Date('2026-10-13T10:00:00.000Z');
       const endTime = new Date('2026-10-13T10:00:00.250Z');
 
-      recorder.record(ModelCallMother.embedQuery({startTime, endTime}));
+      tracker.track(ModelCallMother.embedQuery({startTime, endTime}));
 
       const span = await theOnlySpan();
       expect(hrTimeToMilliseconds(span.startTime)).toBe(startTime.getTime());
@@ -172,7 +172,7 @@ describe('LangfuseModelCallRecorder', () => {
     });
 
     it('should give the error level and the message when the Model call threw', async () => {
-      recorder.record(
+      tracker.track(
         ModelCallMother.embedQuery({
           usage: {input: 5},
           error: new Error('the model broke')
@@ -190,7 +190,7 @@ describe('LangfuseModelCallRecorder', () => {
     });
 
     it('should give the error as text when the Model call threw something that is not an Error', async () => {
-      recorder.record(ModelCallMother.embedQuery({error: 'the model broke'}));
+      tracker.track(ModelCallMother.embedQuery({error: 'the model broke'}));
 
       const span = await theOnlySpan();
       expect(span.attributes[LangfuseOtelSpanAttributes.OBSERVATION_LEVEL]).toBe('ERROR');
@@ -205,7 +205,7 @@ describe('LangfuseModelCallRecorder', () => {
     ])(
       'should send a Picture of %ix%i as a WebP of %ix%i, with its Usage',
       async (width, height, webpWidth, webpHeight) => {
-        recorder.record(ModelCallMother.embedPicture({input: aPicture(width, height)}));
+        tracker.track(ModelCallMother.embedPicture({input: aPicture(width, height)}));
 
         const span = await theOnlySpanOnceItEnds();
         const webp = await sharp(
@@ -225,7 +225,7 @@ describe('LangfuseModelCallRecorder', () => {
     it.each([1, 4] as const)(
       'should send a Picture of %i channels as a WebP of 320 px on the long edge',
       async channels => {
-        recorder.record(
+        tracker.track(
           ModelCallMother.embedPicture({
             input: {
               data: new Uint8Array(64 * 32 * channels),
@@ -248,7 +248,7 @@ describe('LangfuseModelCallRecorder', () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       const endTime = new Date('2026-10-13T10:00:00.250Z');
 
-      recorder.record(
+      tracker.track(
         ModelCallMother.embedPicture({
           input: {data: new Uint8Array(1), width: 640, height: 480, channels: 3},
           endTime
@@ -266,7 +266,7 @@ describe('LangfuseModelCallRecorder', () => {
       );
     });
 
-    it('should not throw, and log the error, when the Model call cannot be recorded', () => {
+    it('should not throw, and log the error, when the Model call cannot be tracked', () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       const failure = new Error('the Usage broke');
       const aBrokenCall = {
@@ -276,9 +276,9 @@ describe('LangfuseModelCallRecorder', () => {
         }
       };
 
-      expect(() => recorder.record(aBrokenCall)).not.toThrow();
+      expect(() => tracker.track(aBrokenCall)).not.toThrow();
       expect(consoleError).toHaveBeenCalledWith(
-        'A Model call cannot be recorded',
+        'A Model call cannot be tracked',
         failure
       );
     });

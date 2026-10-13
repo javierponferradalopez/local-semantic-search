@@ -3,13 +3,13 @@ kind: decision
 status: accepted
 ---
 
-# A Model call is recorded by a port that never breaks the work
+# A Model call is tracked by a port that never breaks the work
 
-**Each model adapter calls the port `ModelCallRecorder` one time for each Model
+**Each model adapter calls the port `ModelCallTracker` one time for each Model
 call, also when the call throws, with its Usage. The port `OperationRunner`
 opens the trace at the two edges: an API middleware, and the bus around each
 handler. The trace is lazy: it starts at the first Model call, so an operation
-with no Model call sends nothing. A failure of the record never breaks a Search
+with no Model call sends nothing. A failure of the tracking never breaks a Search
 or an Ingest.** Langfuse Cloud is one adapter of each port. A silent adapter
 with no effect takes its place when the keys of Langfuse are not set.
 
@@ -20,11 +20,11 @@ from the facts of
 and
 [What we measure in each model call, and its name](https://github.com/javierponferradalopez/local-semantic-search/issues/129).
 
-## Why the adapter records
+## Why the adapter tracks
 
 Only the adapter knows the Usage: its tokenizer counts the tokens that the model
 reads. A decorator around the port sees the arguments and the Vectors, not the
-tokens. So the three `Transformers…` adapters get the recorder in `load()`.
+tokens. So the three `Transformers…` adapters get the tracker in `load()`.
 
 ## Why at the edges, and lazy
 
@@ -36,7 +36,7 @@ calls no model; a lazy trace keeps it out of Langfuse.
 
 ## Why it never breaks the work
 
-The Cost is information about the work, not part of it. `record()` is
+The Cost is information about the work, not part of it. `track()` is
 synchronous and catches each error. When the trace cannot open, the work runs
 with no trace. The SDK exports in the background, and it drops a batch when
 Langfuse does not answer. `main.ts` calls `shutdown()` on `SIGTERM` and

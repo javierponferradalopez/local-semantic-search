@@ -8,22 +8,22 @@ import {
 } from '@huggingface/transformers';
 import type {
   ModelCallName,
-  ModelCallRecorder
-} from '../../domain/services/ModelCallRecorder';
+  ModelCallTracker
+} from '../../domain/services/ModelCallTracker';
 import type {TextEmbedder} from '../../domain/services/TextEmbedder';
 import {Vector} from '../../domain/value-objects/Vector';
 import {readFromTheModelStore, refuseAMissingModel} from './modelStore';
-import {type Count, RecordedModelCall} from './RecordedModelCall';
 import {TEXT_MODEL} from './TextModel';
 import {TokenWindows} from './TokenWindows';
+import {type Count, TrackedModelCall} from './TrackedModelCall';
 
 type ConstructorParams = {
   tokenizer: PreTrainedTokenizer;
   model: PreTrainedModel;
-  recorder: ModelCallRecorder;
+  tracker: ModelCallTracker;
 };
 
-type LoadParams = {recorder: ModelCallRecorder};
+type LoadParams = {tracker: ModelCallTracker};
 
 // E5 was trained with these prefixes. They stay here, and the domain never names them.
 // No space ends them: the tokenizer gives that space to the first word of the text.
@@ -39,15 +39,15 @@ const int64TensorOf = (values: readonly number[]): Tensor =>
 export class TransformersTextEmbedder implements TextEmbedder {
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly model: PreTrainedModel;
-  private readonly recorder: ModelCallRecorder;
+  private readonly tracker: ModelCallTracker;
 
-  private constructor({tokenizer, model, recorder}: ConstructorParams) {
+  private constructor({tokenizer, model, tracker}: ConstructorParams) {
     this.tokenizer = tokenizer;
     this.model = model;
-    this.recorder = recorder;
+    this.tracker = tracker;
   }
 
-  public static async load({recorder}: LoadParams): Promise<TransformersTextEmbedder> {
+  public static async load({tracker}: LoadParams): Promise<TransformersTextEmbedder> {
     readFromTheModelStore();
     await refuseAMissingModel(TEXT_MODEL.repository);
 
@@ -56,7 +56,7 @@ export class TransformersTextEmbedder implements TextEmbedder {
       AutoModel.from_pretrained(TEXT_MODEL.repository, {dtype: TEXT_MODEL.dtype})
     ]);
 
-    return new TransformersTextEmbedder({tokenizer, model, recorder});
+    return new TransformersTextEmbedder({tokenizer, model, tracker});
   }
 
   public embedChunk(text: string): Promise<Vector> {
@@ -68,8 +68,8 @@ export class TransformersTextEmbedder implements TextEmbedder {
   }
 
   private embed(name: ModelCallName, prefix: string, text: string): Promise<Vector> {
-    return RecordedModelCall.run({
-      recorder: this.recorder,
+    return TrackedModelCall.run({
+      tracker: this.tracker,
       name,
       model: TEXT_MODEL,
       input: text,

@@ -14,7 +14,7 @@ import type {SessionRunner} from '../../../../../../src/core/shared/domain/servi
 import type {Session} from '../../../../../../src/core/shared/domain/value-objects/Session';
 import {AsyncLocalStorageSessionRunner} from '../../../../../../src/core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
 import {EmitteryEventBus} from '../../../../../../src/core/shared/infrastructure/emittery/EmitteryEventBus';
-import {LangfuseModelCallRecorder} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
+import {LangfuseModelCallTracker} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallTracker';
 import {LangfuseOperationRunner} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseOperationRunner';
 import {SilentOperationRunner} from '../../../../../../src/core/shared/infrastructure/SilentOperationRunner';
 import {useLangfuseSpans} from '../../../../../lib/langfuseSpans';
@@ -73,7 +73,7 @@ const rootsOf = (spans: ReadableSpan[]): ReadableSpan[] =>
 
 describe('EmitteryEventBus', () => {
   const langfuse = useLangfuseSpans();
-  const recorder = new LangfuseModelCallRecorder({models: []});
+  const tracker = new LangfuseModelCallTracker({models: []});
   let sessionRunner: AsyncLocalStorageSessionRunner;
   let eventBus: EmitteryEventBus;
 
@@ -95,9 +95,9 @@ describe('EmitteryEventBus', () => {
       operationRunner: new LangfuseOperationRunner({sessionRunner})
     });
 
-  const recordAChunkAfterATick = async (): Promise<void> => {
+  const trackAChunkAfterATick = async (): Promise<void> => {
     await aTick();
-    recorder.record(ModelCallMother.embedQuery({name: 'embed-chunk'}));
+    tracker.track(ModelCallMother.embedQuery({name: 'embed-chunk'}));
   };
 
   const hasASession = (): boolean => {
@@ -377,7 +377,7 @@ describe('EmitteryEventBus', () => {
     it('should send one root trace named after the handler, with the sessionId and the tag, for a handler with a Model call', async () => {
       const session = SessionMother.random('interface');
       const bus = aBusOnLangfuse();
-      bus.subscribe(new IngestTheNotes({handle: recordAChunkAfterATick}));
+      bus.subscribe(new IngestTheNotes({handle: trackAChunkAfterATick}));
 
       await sessionRunner.run(session, () => bus.publish([anEventOfACreatedResource()]));
 
@@ -413,11 +413,11 @@ describe('EmitteryEventBus', () => {
       const operationRunner = new LangfuseOperationRunner({sessionRunner});
       const bus = aBusOnLangfuse();
       let ingest: Promise<void> = Promise.resolve();
-      bus.subscribe(new IngestTheNotes({handle: recordAChunkAfterATick}));
+      bus.subscribe(new IngestTheNotes({handle: trackAChunkAfterATick}));
 
       await sessionRunner.run(SessionMother.random(), () =>
         operationRunner.run('POST /resources/texts', async () => {
-          recorder.record(ModelCallMother.embedQuery());
+          tracker.track(ModelCallMother.embedQuery());
           ingest = bus.publish([anEventOfACreatedResource()]);
         })
       );
@@ -435,7 +435,7 @@ describe('EmitteryEventBus', () => {
       expect(traceOf('embed-chunk')).not.toBe(traceOf('POST /resources/texts'));
     });
 
-    it('should record the Model calls of a failed handler with the error level, and give a Retry a new trace in the Session that retried', async () => {
+    it('should track the Model calls of a failed handler with the error level, and give a Retry a new trace in the Session that retried', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => {});
       const uploaded = SessionMother.random('interface');
       const retried = SessionMother.random('mcp');
@@ -445,7 +445,7 @@ describe('EmitteryEventBus', () => {
           handle: async (event: DomainEvent): Promise<void> => {
             await aTick();
             if (event instanceof TextResourceCreatedDomainEvent) {
-              recorder.record(
+              tracker.track(
                 ModelCallMother.embedQuery({
                   name: 'embed-chunk',
                   error: new Error('the model broke')
@@ -453,7 +453,7 @@ describe('EmitteryEventBus', () => {
               );
               throw new Error('the Ingest broke');
             }
-            recorder.record(ModelCallMother.embedQuery({name: 'embed-chunk'}));
+            tracker.track(ModelCallMother.embedQuery({name: 'embed-chunk'}));
           }
         })
       );
@@ -481,7 +481,7 @@ describe('EmitteryEventBus', () => {
     it('should run the handler inside its operation with no Session, and log it, when the envelope has no Session', async () => {
       const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const bus = aBusOnLangfuse();
-      bus.subscribe(new IngestTheNotes({handle: recordAChunkAfterATick}));
+      bus.subscribe(new IngestTheNotes({handle: trackAChunkAfterATick}));
       const event = anEventOfACreatedResource();
 
       await expect(bus.publish([event])).resolves.toBeUndefined();

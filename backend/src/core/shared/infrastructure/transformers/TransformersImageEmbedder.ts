@@ -10,11 +10,11 @@ import {
   Tensor
 } from '@huggingface/transformers';
 import type {ImageEmbedder, Pixels} from '../../domain/services/ImageEmbedder';
-import type {ModelCallRecorder} from '../../domain/services/ModelCallRecorder';
+import type {ModelCallTracker} from '../../domain/services/ModelCallTracker';
 import {Vector} from '../../domain/value-objects/Vector';
 import {readFromTheModelStore, refuseAMissingModel} from './modelStore';
-import {type Count, RecordedModelCall} from './RecordedModelCall';
 import {TokenWindows} from './TokenWindows';
+import {type Count, TrackedModelCall} from './TrackedModelCall';
 import {VISION_MODEL} from './VisionModel';
 
 // The text tower was trained on 64 tokens. The model_max_length of the tokenizer does not say it.
@@ -31,33 +31,33 @@ type ConstructorParams = {
   imageProcessor: ImageProcessor;
   textTower: PreTrainedModel;
   visionTower: PreTrainedModel;
-  recorder: ModelCallRecorder;
+  tracker: ModelCallTracker;
 };
 
-type LoadParams = {recorder: ModelCallRecorder};
+type LoadParams = {tracker: ModelCallTracker};
 
 export class TransformersImageEmbedder implements ImageEmbedder {
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly imageProcessor: ImageProcessor;
   private readonly textTower: PreTrainedModel;
   private readonly visionTower: PreTrainedModel;
-  private readonly recorder: ModelCallRecorder;
+  private readonly tracker: ModelCallTracker;
 
   private constructor({
     tokenizer,
     imageProcessor,
     textTower,
     visionTower,
-    recorder
+    tracker
   }: ConstructorParams) {
     this.tokenizer = tokenizer;
     this.imageProcessor = imageProcessor;
     this.textTower = textTower;
     this.visionTower = visionTower;
-    this.recorder = recorder;
+    this.tracker = tracker;
   }
 
-  public static async load({recorder}: LoadParams): Promise<TransformersImageEmbedder> {
+  public static async load({tracker}: LoadParams): Promise<TransformersImageEmbedder> {
     readFromTheModelStore();
     await refuseAMissingModel(VISION_MODEL.repository);
 
@@ -77,13 +77,13 @@ export class TransformersImageEmbedder implements ImageEmbedder {
       imageProcessor,
       textTower,
       visionTower,
-      recorder
+      tracker
     });
   }
 
   public embedPicture(pixels: Pixels): Promise<Vector> {
-    return RecordedModelCall.run({
-      recorder: this.recorder,
+    return TrackedModelCall.run({
+      tracker: this.tracker,
       name: 'embed-picture',
       model: VISION_MODEL,
       input: pixels,
@@ -109,8 +109,8 @@ export class TransformersImageEmbedder implements ImageEmbedder {
 
   // Verbatim: no prefix and no case change, as the eval measures the Floor (ADR-0042).
   public embedQuery(query: string): Promise<Vector> {
-    return RecordedModelCall.run({
-      recorder: this.recorder,
+    return TrackedModelCall.run({
+      tracker: this.tracker,
       name: 'embed-query',
       model: VISION_MODEL,
       input: query,

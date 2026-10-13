@@ -1,13 +1,13 @@
 import type {
   ModelCall,
-  ModelCallRecorder
-} from '../../src/core/shared/domain/services/ModelCallRecorder';
+  ModelCallTracker
+} from '../../src/core/shared/domain/services/ModelCallTracker';
 
 // The tests read the Model calls of an adapter here.
-export class RecordingModelCallRecorder implements ModelCallRecorder {
+export class RecordingModelCallTracker implements ModelCallTracker {
   private calls: ModelCall[] = [];
 
-  public record(call: ModelCall): void {
+  public track(call: ModelCall): void {
     this.calls.push(call);
   }
 
