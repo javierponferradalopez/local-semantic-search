@@ -14,6 +14,8 @@ import {useLangfuseSpans} from '../../../../../lib/langfuseSpans';
 import {ModelCallMother} from '../../../../../utils/object-mother/ModelCallMother';
 import {SessionMother} from '../../../../../utils/object-mother/SessionMother';
 
+const AN_INPUT = {query: {q: 'octopus'}};
+
 const aTick = (): Promise<void> => new Promise(resolve => setImmediate(resolve));
 
 const rootsOf = (spans: ReadableSpan[]): ReadableSpan[] =>
@@ -44,7 +46,7 @@ describe('LangfuseOperationRunner', () => {
   describe('#run', () => {
     it('should give what the work gives', async () => {
       const result = await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('GET /search', async () => 'the result')
+        operationRunner.run('GET /search', async () => 'the result', AN_INPUT)
       );
 
       expect(result).toBe('the result');
@@ -52,7 +54,7 @@ describe('LangfuseOperationRunner', () => {
 
     it('should send nothing when the work tracks no Model call', async () => {
       await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('GET /resources', async () => undefined)
+        operationRunner.run('GET /resources', async () => undefined, AN_INPUT)
       );
 
       const spans = await langfuse.spans();
@@ -62,10 +64,14 @@ describe('LangfuseOperationRunner', () => {
 
     it('should make one trace with the name of the operation, which holds each Model call of the work', async () => {
       await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('GET /search', async () => {
-          await trackAQueryAfterATick();
-          await trackAQueryAfterATick();
-        })
+        operationRunner.run(
+          'GET /search',
+          async () => {
+            await trackAQueryAfterATick();
+            await trackAQueryAfterATick();
+          },
+          AN_INPUT
+        )
       );
 
       const spans = await langfuse.spans();
@@ -82,17 +88,70 @@ describe('LangfuseOperationRunner', () => {
       expect(calls.map(traceIdOf)).toStrictEqual([traceIdOf(root), traceIdOf(root)]);
     });
 
+    it('should put the input and the result of the work on the root of the trace', async () => {
+      await sessionRunner.run(SessionMother.random(), () =>
+        operationRunner.run(
+          'GET /search',
+          async () => {
+            await trackAQueryAfterATick();
+
+            return {text: ['the notes.md']};
+          },
+          AN_INPUT
+        )
+      );
+
+      const spans = await langfuse.spans();
+
+      const [root] = rootsOf(spans);
+      expect(root.attributes[LangfuseOtelSpanAttributes.OBSERVATION_INPUT]).toBe(
+        JSON.stringify(AN_INPUT)
+      );
+      expect(root.attributes[LangfuseOtelSpanAttributes.OBSERVATION_OUTPUT]).toBe(
+        JSON.stringify({text: ['the notes.md']})
+      );
+    });
+
+    it('should put no output on the root of the trace when the work rejects', async () => {
+      await expect(
+        sessionRunner.run(SessionMother.random(), () =>
+          operationRunner.run(
+            'GET /search',
+            async () => {
+              await trackAQueryAfterATick();
+              throw new Error('the work broke');
+            },
+            AN_INPUT
+          )
+        )
+      ).rejects.toThrow('the work broke');
+
+      const spans = await langfuse.spans();
+
+      const [root] = rootsOf(spans);
+      expect(root.attributes).toHaveProperty(
+        LangfuseOtelSpanAttributes.OBSERVATION_INPUT
+      );
+      expect(root.attributes).not.toHaveProperty(
+        LangfuseOtelSpanAttributes.OBSERVATION_OUTPUT
+      );
+    });
+
     it('should start the trace when run() starts, and end it when the work ends', async () => {
       const startOfRun = Date.now();
       let endOfWork = 0;
 
       await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('GET /search', async () => {
-          await new Promise(resolve => setTimeout(resolve, 20));
-          tracker.track(ModelCallMother.embedQuery());
-          await new Promise(resolve => setTimeout(resolve, 20));
-          endOfWork = Date.now();
-        })
+        operationRunner.run(
+          'GET /search',
+          async () => {
+            await new Promise(resolve => setTimeout(resolve, 20));
+            tracker.track(ModelCallMother.embedQuery());
+            await new Promise(resolve => setTimeout(resolve, 20));
+            endOfWork = Date.now();
+          },
+          AN_INPUT
+        )
       );
 
       const spans = await langfuse.spans();
@@ -111,7 +170,7 @@ describe('LangfuseOperationRunner', () => {
         const session = SessionMother.random(origin);
 
         await sessionRunner.run(session, () =>
-          operationRunner.run('GET /search', trackAQueryAfterATick)
+          operationRunner.run('GET /search', trackAQueryAfterATick, AN_INPUT)
         );
 
         const spans = await langfuse.spans();
@@ -134,10 +193,14 @@ describe('LangfuseOperationRunner', () => {
 
       await Promise.all([
         sessionRunner.run(first, () =>
-          operationRunner.run('GET /search', trackAQueryAfterATick)
+          operationRunner.run('GET /search', trackAQueryAfterATick, AN_INPUT)
         ),
         sessionRunner.run(second, () =>
-          operationRunner.run('GET /resources/texts/:id/matches', trackAQueryAfterATick)
+          operationRunner.run(
+            'GET /resources/texts/:id/matches',
+            trackAQueryAfterATick,
+            AN_INPUT
+          )
         )
       ]);
 
@@ -170,7 +233,8 @@ describe('LangfuseOperationRunner', () => {
             sessionRunner.run(ofTheHandler, () =>
               operationRunner.run(
                 'IngestTextResourceOnTextResourceCreatedOrRetried',
-                trackAQueryAfterATick
+                trackAQueryAfterATick,
+                AN_INPUT
               )
             )
           )
@@ -202,9 +266,13 @@ describe('LangfuseOperationRunner', () => {
       let late: Promise<void> = Promise.resolve();
 
       await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('POST /resources/texts', async () => {
-          late = trackAQueryAfterATick();
-        })
+        operationRunner.run(
+          'POST /resources/texts',
+          async () => {
+            late = trackAQueryAfterATick();
+          },
+          AN_INPUT
+        )
       );
       await late;
 
@@ -218,10 +286,14 @@ describe('LangfuseOperationRunner', () => {
       let late: Promise<void> = Promise.resolve();
 
       await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('POST /resources/texts', async () => {
-          await trackAQueryAfterATick();
-          late = trackAQueryAfterATick();
-        })
+        operationRunner.run(
+          'POST /resources/texts',
+          async () => {
+            await trackAQueryAfterATick();
+            late = trackAQueryAfterATick();
+          },
+          AN_INPUT
+        )
       );
       await late;
 
@@ -237,10 +309,14 @@ describe('LangfuseOperationRunner', () => {
 
       await expect(
         sessionRunner.run(SessionMother.random(), () =>
-          operationRunner.run('GET /search', async () => {
-            await trackAQueryAfterATick();
-            throw failure;
-          })
+          operationRunner.run(
+            'GET /search',
+            async () => {
+              await trackAQueryAfterATick();
+              throw failure;
+            },
+            AN_INPUT
+          )
         )
       ).rejects.toBe(failure);
 
@@ -252,11 +328,15 @@ describe('LangfuseOperationRunner', () => {
     it('should run the work in a trace with no sessionId and no tag, and log it, when no Session is open', async () => {
       const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const result = await operationRunner.run('GET /search', async () => {
-        await trackAQueryAfterATick();
+      const result = await operationRunner.run(
+        'GET /search',
+        async () => {
+          await trackAQueryAfterATick();
 
-        return 'the result';
-      });
+          return 'the result';
+        },
+        AN_INPUT
+      );
 
       const spans = await langfuse.spans();
 
@@ -282,11 +362,15 @@ describe('LangfuseOperationRunner', () => {
       };
       const runner = new LangfuseOperationRunner({sessionRunner: aBrokenSessionRunner});
 
-      const result = await runner.run('GET /search', async () => {
-        await trackAQueryAfterATick();
+      const result = await runner.run(
+        'GET /search',
+        async () => {
+          await trackAQueryAfterATick();
 
-        return 'the result';
-      });
+          return 'the result';
+        },
+        AN_INPUT
+      );
 
       const spans = await langfuse.spans();
 

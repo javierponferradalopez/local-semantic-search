@@ -22,6 +22,8 @@ import {ModelCallMother} from '../../../../../utils/object-mother/ModelCallMothe
 import {SessionMother} from '../../../../../utils/object-mother/SessionMother';
 import {StringMother} from '../../../../../utils/object-mother/StringMother';
 
+const AN_INPUT = {params: {}, query: {}};
+
 const anEventOfACreatedResource = (): TextResourceCreatedDomainEvent => {
   const aggregateId = StringMother.randomUuid();
 
@@ -345,12 +347,12 @@ describe('EmitteryEventBus', () => {
       expect(consoleWarn).not.toHaveBeenCalled();
     });
 
-    it('should run the handler inside an operation named after its class, inside the Session of the envelope', async () => {
+    it('should run the handler inside an operation named after its class, with the event as its input, inside the Session of the envelope', async () => {
       const session = SessionMother.random('interface');
-      const operations: {name: string; session: Session}[] = [];
+      const operations: {name: string; input: unknown; session: Session}[] = [];
       const aRecordingOperationRunner: OperationRunner = {
-        run: <T>(name: string, work: () => Promise<T>): Promise<T> => {
-          operations.push({name, session: sessionRunner.current()});
+        run: <T>(name: string, work: () => Promise<T>, input?: unknown): Promise<T> => {
+          operations.push({name, input, session: sessionRunner.current()});
 
           return work();
         }
@@ -368,9 +370,17 @@ describe('EmitteryEventBus', () => {
         })
       );
 
-      await sessionRunner.run(session, () => bus.publish([anEventOfACreatedResource()]));
+      const event = anEventOfACreatedResource();
 
-      expect(operations).toStrictEqual([{name: 'IngestTheNotes', session}]);
+      await sessionRunner.run(session, () => bus.publish([event]));
+
+      expect(operations).toStrictEqual([
+        {
+          name: 'IngestTheNotes',
+          input: {eventName: event.eventName, aggregateId: event.aggregateId},
+          session
+        }
+      ]);
       expect(reachedTheHandler).toBe(true);
     });
 
@@ -416,10 +426,14 @@ describe('EmitteryEventBus', () => {
       bus.subscribe(new IngestTheNotes({handle: trackAChunkAfterATick}));
 
       await sessionRunner.run(SessionMother.random(), () =>
-        operationRunner.run('POST /resources/texts', async () => {
-          tracker.track(ModelCallMother.embedQuery());
-          ingest = bus.publish([anEventOfACreatedResource()]);
-        })
+        operationRunner.run(
+          'POST /resources/texts',
+          async () => {
+            tracker.track(ModelCallMother.embedQuery());
+            ingest = bus.publish([anEventOfACreatedResource()]);
+          },
+          AN_INPUT
+        )
       );
       await ingest;
 

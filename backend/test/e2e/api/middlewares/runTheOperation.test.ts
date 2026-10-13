@@ -38,15 +38,32 @@ describe('runTheOperation', () => {
     await api.fetch(path, {method});
 
     expect(operations).toHaveBeenCalledOnce();
-    expect(operations).toHaveBeenCalledWith(name, expect.any(Function));
+    expect(operations).toHaveBeenCalledWith(
+      name,
+      expect.any(Function),
+      expect.anything()
+    );
   });
 
-  it('should end the operation when the response ends', async () => {
+  it('should give the params and the query of the request as the input of the operation', async () => {
+    const id = StringMother.randomUuid();
     const operations = spyTheOperations();
 
-    await (await api.search('octopus')).json();
+    await api.fetch(`/resources/texts/${id}/matches?q=octopus`);
 
-    await expect(operations.mock.results[0]?.value).resolves.toBeUndefined();
+    expect(operations).toHaveBeenCalledWith(
+      'GET /resources/texts/:id/matches',
+      expect.any(Function),
+      {params: {id}, query: {q: 'octopus'}}
+    );
+  });
+
+  it('should end the operation with the JSON of the response when the response ends', async () => {
+    const operations = spyTheOperations();
+
+    const body: unknown = await (await api.search('octopus')).json();
+
+    await expect(operations.mock.results[0]?.value).resolves.toStrictEqual(body);
   });
 
   it('should open no operation for a request with no Session', async () => {

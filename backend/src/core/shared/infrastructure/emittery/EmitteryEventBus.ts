@@ -46,7 +46,10 @@ export class EmitteryEventBus implements EventBus {
     this.emitter.on(eventNames, ({data: {event, metadata}}) => {
       // Each handler is an operation of its own, so an Ingest has its own trace (ADR-0048).
       const runTheHandler = (): Promise<void> =>
-        this._operationRunner.run(handler.constructor.name, () => handler.handle(event));
+        this._operationRunner.run(handler.constructor.name, () => handler.handle(event), {
+          eventName: event.eventName,
+          aggregateId: event.aggregateId
+        });
 
       if (metadata.session === null) {
         // A handler that stops halfway can leave corrupt data, so it runs also with no Session.

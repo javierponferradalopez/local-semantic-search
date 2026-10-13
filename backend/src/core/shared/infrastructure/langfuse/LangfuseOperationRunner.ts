@@ -15,16 +15,20 @@ export class LangfuseOperationRunner implements OperationRunner {
   }
 
   // Each operation is a root trace, also a handler that a request published (ADR-0048).
-  public run<T>(name: string, work: () => Promise<T>): Promise<T> {
-    return context.with(ROOT_CONTEXT, () => this.runInATrace(name, work));
+  public run<T>(name: string, work: () => Promise<T>, input: unknown): Promise<T> {
+    return context.with(ROOT_CONTEXT, () => this.runInATrace(name, work, input));
   }
 
-  private async runInATrace<T>(name: string, work: () => Promise<T>): Promise<T> {
+  private async runInATrace<T>(
+    name: string,
+    work: () => Promise<T>,
+    input: unknown
+  ): Promise<T> {
     let trace: LazyTrace;
     let attributes: PropagateAttributesParams;
 
     try {
-      trace = LazyTrace.open(name);
+      trace = LazyTrace.open(name, input);
       attributes = this.sessionAttributesOf(name);
     } catch (error) {
       console.error(`The trace of ${name} cannot open`, error);
@@ -32,10 +36,14 @@ export class LangfuseOperationRunner implements OperationRunner {
       return work();
     }
 
+    let output: T | undefined;
+
     try {
-      return await propagateAttributes(attributes, () => trace.run(work));
+      output = await propagateAttributes(attributes, () => trace.run(work));
+
+      return output;
     } finally {
-      trace.end();
+      trace.end(output);
     }
   }
 
