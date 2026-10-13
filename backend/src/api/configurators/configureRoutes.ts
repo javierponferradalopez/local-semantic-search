@@ -1,6 +1,7 @@
 import {CreateImageResourceRequest} from 'contract/CreateImageResourceRequest';
 import {CreateTextResourceRequest} from 'contract/CreateTextResourceRequest';
 import type {Express} from 'express';
+import type {OperationRunner} from '../../core/shared/domain/services/OperationRunner';
 import {AsyncLocalStorageSessionRunner} from '../../core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
 import {container} from '../config/di/Container';
 import {FILES_URL_PREFIX} from '../config/FilesUrlPrefix';
@@ -17,6 +18,7 @@ import {env} from '../env/env';
 import {handleErrors} from '../middlewares/handleErrors';
 import {refuseAFileTooLarge} from '../middlewares/refuseAFileTooLarge';
 import {requireTheSession} from '../middlewares/requireTheSession';
+import {runTheOperation} from '../middlewares/runTheOperation';
 import {serveTheFiles} from '../middlewares/serveTheFiles';
 import {takeOneFile} from '../middlewares/takeOneFile';
 import {takeTheFiles} from '../middlewares/takeTheFiles';
@@ -32,6 +34,9 @@ export const configureRoutes = (app: Express): void => {
   const search = container.getDependency(SearchController);
   const getMatches = container.getDependency(GetMatchesController);
   const sessionRunner = container.getDependency(AsyncLocalStorageSessionRunner);
+  const runTheOperationOfTheRoute = runTheOperation(
+    container.getDependency<OperationRunner>('OperationRunner')
+  );
 
   // Before the Session: an <img> cannot send a header (ADR-0047).
   app.use(FILES_URL_PREFIX, serveTheFiles(env.files.directory));
@@ -40,6 +45,7 @@ export const configureRoutes = (app: Express): void => {
 
   app.post(
     '/resources/texts',
+    runTheOperationOfTheRoute,
     refuseAFileTooLarge,
     takeTheFiles(CreateTextResourceRequest.filePart),
     takeOneFile,
@@ -48,34 +54,43 @@ export const configureRoutes = (app: Express): void => {
 
   app.post(
     '/resources/images',
+    runTheOperationOfTheRoute,
     refuseAFileTooLarge,
     takeTheFiles(CreateImageResourceRequest.filePart),
     takeOneFile,
     (request, response) => createImageResource.run(request, response)
   );
 
-  app.get('/resources', (request, response) => getResources.run(request, response));
+  app.get('/resources', runTheOperationOfTheRoute, (request, response) =>
+    getResources.run(request, response)
+  );
 
-  app.delete('/resources/texts/:id', (request, response) =>
+  app.delete('/resources/texts/:id', runTheOperationOfTheRoute, (request, response) =>
     deleteTextResource.run(request, response)
   );
 
-  app.delete('/resources/images/:id', (request, response) =>
+  app.delete('/resources/images/:id', runTheOperationOfTheRoute, (request, response) =>
     deleteImageResource.run(request, response)
   );
 
-  app.post('/resources/texts/:id/retry', (request, response) =>
+  app.post('/resources/texts/:id/retry', runTheOperationOfTheRoute, (request, response) =>
     retryTextResource.run(request, response)
   );
 
-  app.post('/resources/images/:id/retry', (request, response) =>
-    retryImageResource.run(request, response)
+  app.post(
+    '/resources/images/:id/retry',
+    runTheOperationOfTheRoute,
+    (request, response) => retryImageResource.run(request, response)
   );
 
-  app.get('/search', (request, response) => search.run(request, response));
+  app.get('/search', runTheOperationOfTheRoute, (request, response) =>
+    search.run(request, response)
+  );
 
-  app.get('/resources/texts/:id/matches', (request, response) =>
-    getMatches.run(request, response)
+  app.get(
+    '/resources/texts/:id/matches',
+    runTheOperationOfTheRoute,
+    (request, response) => getMatches.run(request, response)
   );
 
   app.use(handleErrors);

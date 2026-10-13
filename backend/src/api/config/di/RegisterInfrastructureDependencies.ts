@@ -11,11 +11,18 @@ import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructu
 import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
 import {TransformersReranker} from '../../../core/search/infrastructure/transformers/TransformersReranker';
+import type {ModelCallRecorder} from '../../../core/shared/domain/services/ModelCallRecorder';
+import type {OperationRunner} from '../../../core/shared/domain/services/OperationRunner';
+import type {SessionRunner} from '../../../core/shared/domain/services/SessionRunner';
 import {AsyncLocalStorageSessionRunner} from '../../../core/shared/infrastructure/async-hooks/AsyncLocalStorageSessionRunner';
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
+import {LangfuseModelCallRecorder} from '../../../core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
+import {LangfuseOperationRunner} from '../../../core/shared/infrastructure/langfuse/LangfuseOperationRunner';
+import {LangfuseTracing} from '../../../core/shared/infrastructure/langfuse/LangfuseTracing';
 import {SilentModelCallRecorder} from '../../../core/shared/infrastructure/SilentModelCallRecorder';
+import {SilentOperationRunner} from '../../../core/shared/infrastructure/SilentOperationRunner';
 import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
@@ -25,8 +32,27 @@ import {MATCHES_FIRST_STAGE_LIMIT} from '../MatchesFirstStageLimit';
 import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
 
+const startTheCostAdapters = (
+  sessionRunner: SessionRunner
+): {recorder: ModelCallRecorder; operationRunner: OperationRunner} => {
+  if (env.langfuse === null) {
+    return {
+      recorder: new SilentModelCallRecorder(),
+      operationRunner: new SilentOperationRunner()
+    };
+  }
+
+  LangfuseTracing.start(env.langfuse);
+
+  return {
+    recorder: new LangfuseModelCallRecorder(),
+    operationRunner: new LangfuseOperationRunner({sessionRunner})
+  };
+};
+
 export const registerInfrastructureDependencies = async (): Promise<void> => {
-  const recorder = new SilentModelCallRecorder();
+  const sessionRunner = new AsyncLocalStorageSessionRunner();
+  const {recorder, operationRunner} = startTheCostAdapters(sessionRunner);
   const [textEmbedder, imageEmbedder, reranker] = await Promise.all([
     TransformersTextEmbedder.load({recorder}),
     TransformersImageEmbedder.load({recorder}),
@@ -34,9 +60,9 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
   ]);
   const pool = new Pool({connectionString: env.database.url});
   const connection = new DrizzleConnection({database: drizzle(pool)});
-  const sessionRunner = new AsyncLocalStorageSessionRunner();
 
-  container.registerImplementation(SilentModelCallRecorder, recorder);
+  container.registerImplementation('ModelCallRecorder', recorder);
+  container.registerImplementation('OperationRunner', operationRunner);
   container.registerImplementation(Pool, pool);
   container.registerImplementation(DrizzleConnection, connection);
   container.registerImplementation(
