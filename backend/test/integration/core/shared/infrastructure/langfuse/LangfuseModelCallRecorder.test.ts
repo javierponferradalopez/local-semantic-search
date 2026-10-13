@@ -2,9 +2,12 @@ import {LangfuseOtelSpanAttributes} from '@langfuse/tracing';
 import {hrTimeToMilliseconds} from '@opentelemetry/core';
 import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
 import sharp from 'sharp';
+import {RERANKER_MODEL} from '../../../../../../src/core/search/infrastructure/transformers/RerankerModel';
 import type {Pixels} from '../../../../../../src/core/shared/domain/services/ImageEmbedder';
 import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
 import {LangfuseModelCallRecorder} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
+import {TEXT_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/TextModel';
+import {VISION_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/VisionModel';
 import {useLangfuseSpans} from '../../../../../lib/langfuseSpans';
 import {ModelCallMother} from '../../../../../utils/object-mother/ModelCallMother';
 
@@ -29,7 +32,9 @@ const bytesOf = (dataUri: string): Buffer => {
 
 describe('LangfuseModelCallRecorder', () => {
   const langfuse = useLangfuseSpans();
-  const recorder = new LangfuseModelCallRecorder();
+  const recorder = new LangfuseModelCallRecorder({
+    models: [TEXT_MODEL, VISION_MODEL, RERANKER_MODEL]
+  });
 
   afterEach(() => {
     vi.restoreAllMocks();
@@ -107,6 +112,52 @@ describe('LangfuseModelCallRecorder', () => {
       expect(
         parse(span.attributes[LangfuseOtelSpanAttributes.OBSERVATION_OUTPUT])
       ).toStrictEqual([0.9, 0.5, 0.1]);
+    });
+
+    // The prices of the table of ADR-0049, so a constant that moves from it fails here.
+    it.each([
+      ['Text model', 'embed-chunk', TEXT_MODEL, {input: 512}, {input: 512 * 0.00000002}],
+      [
+        'Vision model',
+        'embed-query',
+        VISION_MODEL,
+        {input: 128},
+        {input: 128 * 0.00000012}
+      ],
+      ['Vision model', 'embed-picture', VISION_MODEL, {image: 1}, {image: 0.0000301}],
+      [
+        'Reranker',
+        'rerank',
+        RERANKER_MODEL,
+        {input: 900, pairs: 3},
+        {input: 900 * 0.00000002}
+      ]
+    ] as const)(
+      'should give the Cost of a Model call of the %s as its Usage times its price (%s)',
+      async (_, name, {repository, dtype}, usage, cost) => {
+        recorder.record(
+          ModelCallMother.embedQuery({name, model: {repository, dtype}, usage})
+        );
+
+        const span = await theOnlySpan();
+        expect(
+          parse(span.attributes[LangfuseOtelSpanAttributes.OBSERVATION_COST_DETAILS])
+        ).toStrictEqual(cost);
+      }
+    );
+
+    it.each([
+      ['the Usage has no key with a price', RERANKER_MODEL.repository, {pairs: 3}],
+      ['the model has no price', 'Xenova/multilingual-e5-small', {input: 7}]
+    ])('should give no Cost when %s', async (_, repository, usage) => {
+      recorder.record(
+        ModelCallMother.embedQuery({model: {repository, dtype: 'fp32'}, usage})
+      );
+
+      const span = await theOnlySpan();
+      expect(span.attributes).not.toHaveProperty(
+        LangfuseOtelSpanAttributes.OBSERVATION_COST_DETAILS
+      );
     });
 
     it('should give the start and the end of the Model call', async () => {

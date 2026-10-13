@@ -73,7 +73,7 @@ const rootsOf = (spans: ReadableSpan[]): ReadableSpan[] =>
 
 describe('EmitteryEventBus', () => {
   const langfuse = useLangfuseSpans();
-  const recorder = new LangfuseModelCallRecorder();
+  const recorder = new LangfuseModelCallRecorder({models: []});
   let sessionRunner: AsyncLocalStorageSessionRunner;
   let eventBus: EmitteryEventBus;
 

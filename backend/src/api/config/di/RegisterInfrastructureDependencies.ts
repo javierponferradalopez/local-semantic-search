@@ -10,6 +10,7 @@ import {DrizzleResourceRepository} from '../../../core/resources/infrastructure/
 import {ExtensionContentTypeResolver} from '../../../core/resources/infrastructure/ExtensionContentTypeResolver';
 import {DrizzlePictureResultReader} from '../../../core/search/infrastructure/drizzle/DrizzlePictureResultReader';
 import {DrizzleResultReader} from '../../../core/search/infrastructure/drizzle/DrizzleResultReader';
+import {RERANKER_MODEL} from '../../../core/search/infrastructure/transformers/RerankerModel';
 import {TransformersReranker} from '../../../core/search/infrastructure/transformers/TransformersReranker';
 import type {ModelCallRecorder} from '../../../core/shared/domain/services/ModelCallRecorder';
 import type {OperationRunner} from '../../../core/shared/domain/services/OperationRunner';
@@ -23,8 +24,10 @@ import {LangfuseOperationRunner} from '../../../core/shared/infrastructure/langf
 import {LangfuseTracing} from '../../../core/shared/infrastructure/langfuse/LangfuseTracing';
 import {SilentModelCallRecorder} from '../../../core/shared/infrastructure/SilentModelCallRecorder';
 import {SilentOperationRunner} from '../../../core/shared/infrastructure/SilentOperationRunner';
+import {TEXT_MODEL} from '../../../core/shared/infrastructure/transformers/TextModel';
 import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
+import {VISION_MODEL} from '../../../core/shared/infrastructure/transformers/VisionModel';
 import {env} from '../../env/env';
 import {FILES_URL_PREFIX} from '../FilesUrlPrefix';
 import {IMAGE_RESULTS_LIMIT} from '../ImageResultsLimit';
@@ -45,7 +48,9 @@ const startTheCostAdapters = (
   LangfuseTracing.start(env.langfuse);
 
   return {
-    recorder: new LangfuseModelCallRecorder(),
+    recorder: new LangfuseModelCallRecorder({
+      models: [TEXT_MODEL, VISION_MODEL, RERANKER_MODEL]
+    }),
     operationRunner: new LangfuseOperationRunner({sessionRunner})
   };
 };

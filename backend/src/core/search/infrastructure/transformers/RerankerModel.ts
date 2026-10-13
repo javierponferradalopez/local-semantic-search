@@ -5,5 +5,7 @@ export const RERANKER_MODEL = {
   // 4.3.0 does not know model_type `new`. This value selects only the class that feeds the graph.
   config: {model_type: 'xlm-roberta'},
   floor: -0.3,
-  margin: 0.2
+  margin: 0.2,
+  // rerank-2.5-lite, $0.02 for 1M tokens: https://docs.voyageai.com/docs/pricing (ADR-0049).
+  price: {input: 0.00000002}
 } as const;

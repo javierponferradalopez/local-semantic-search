@@ -5,11 +5,20 @@ import {
 } from '@langfuse/tracing';
 import sharp from 'sharp';
 import type {Pixels} from '../../domain/services/ImageEmbedder';
-import type {ModelCall, ModelCallRecorder} from '../../domain/services/ModelCallRecorder';
+import type {
+  ModelCall,
+  ModelCallRecorder,
+  Usage
+} from '../../domain/services/ModelCallRecorder';
 import {LazyTrace} from './LazyTrace';
 
 // The size of the thumbnail of an Image Resource: the queue of spans stays small (ADR-0048).
 const LONG_EDGE_OF_THE_WEBP = 320;
+
+// USD for each unit of a Usage key (ADR-0049).
+export type Price = {[Key in keyof Usage]?: number};
+
+type ConstructorParams = {models: readonly {repository: string; price: Price}[]};
 
 const isPixels = (input: ModelCall['input']): input is Pixels =>
   typeof input === 'object' && 'data' in input;
@@ -27,6 +36,15 @@ const webpOf = async ({data, width, height, channels}: Pixels): Promise<string> 
 const usageDetailsOf = (usage: ModelCall['usage']): Record<string, number> =>
   Object.fromEntries(Object.entries(usage).filter(([, units]) => units !== undefined));
 
+const costDetailsOf = (usage: Usage, price: Price): Record<string, number> =>
+  Object.fromEntries(
+    Object.entries(usageDetailsOf(usage)).flatMap(([key, units]) => {
+      const unitPrice = price[key as keyof Usage];
+
+      return unitPrice === undefined ? [] : [[key, units * unitPrice]];
+    })
+  );
+
 const errorOf = (
   error: unknown
 ): Pick<LangfuseGenerationAttributes, 'level' | 'statusMessage'> => ({
@@ -34,14 +52,19 @@ const errorOf = (
   statusMessage: error instanceof Error ? error.message : String(error)
 });
 
-const attributesOf = (call: ModelCall): LangfuseGenerationAttributes => ({
-  model: call.model.repository,
-  metadata: {dtype: call.model.dtype},
-  usageDetails: usageDetailsOf(call.usage),
-  input: isPixels(call.input) ? undefined : call.input,
-  output: call.output,
-  ...(call.error !== undefined && errorOf(call.error))
-});
+const attributesOf = (call: ModelCall, price: Price): LangfuseGenerationAttributes => {
+  const costDetails = costDetailsOf(call.usage, price);
+
+  return {
+    model: call.model.repository,
+    metadata: {dtype: call.model.dtype},
+    usageDetails: usageDetailsOf(call.usage),
+    ...(Object.keys(costDetails).length > 0 && {costDetails}),
+    input: isPixels(call.input) ? undefined : call.input,
+    output: call.output,
+    ...(call.error !== undefined && errorOf(call.error))
+  };
+};
 
 // The observation ends after the WebP, so its input is set before it leaves.
 const endWithTheWebp = async (
@@ -63,9 +86,16 @@ const logTheFailure = (error: unknown): void => {
 };
 
 export class LangfuseModelCallRecorder implements ModelCallRecorder {
+  private readonly _prices: ReadonlyMap<string, Price>;
+
+  public constructor({models}: ConstructorParams) {
+    this._prices = new Map(models.map(({repository, price}) => [repository, price]));
+  }
+
   public record(call: ModelCall): void {
     try {
-      const embedding = startObservation(call.name, attributesOf(call), {
+      const price = this._prices.get(call.model.repository) ?? {};
+      const embedding = startObservation(call.name, attributesOf(call, price), {
         asType: 'embedding',
         startTime: call.startTime,
         parentSpanContext: LazyTrace.current()?.rootSpanContext()

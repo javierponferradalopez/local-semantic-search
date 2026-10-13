@@ -23,7 +23,7 @@ const traceIdOf = (span: ReadableSpan): string => span.spanContext().traceId;
 
 describe('LangfuseOperationRunner', () => {
   const langfuse = useLangfuseSpans();
-  const recorder = new LangfuseModelCallRecorder();
+  const recorder = new LangfuseModelCallRecorder({models: []});
   let sessionRunner: AsyncLocalStorageSessionRunner;
   let operationRunner: LangfuseOperationRunner;
 
