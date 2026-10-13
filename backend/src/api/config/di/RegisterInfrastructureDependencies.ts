@@ -34,6 +34,7 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
   ]);
   const pool = new Pool({connectionString: env.database.url});
   const connection = new DrizzleConnection({database: drizzle(pool)});
+  const sessionRunner = new AsyncLocalStorageSessionRunner();
 
   container.registerImplementation(SilentModelCallRecorder, recorder);
   container.registerImplementation(Pool, pool);
@@ -50,10 +51,10 @@ export const registerInfrastructureDependencies = async (): Promise<void> => {
     FilesystemFileStore,
     new FilesystemFileStore({folder: env.files.directory, urlPrefix: FILES_URL_PREFIX})
   );
-  container.registerImplementation(EmitteryEventBus, new EmitteryEventBus());
+  container.registerImplementation(AsyncLocalStorageSessionRunner, sessionRunner);
   container.registerImplementation(
-    AsyncLocalStorageSessionRunner,
-    new AsyncLocalStorageSessionRunner()
+    EmitteryEventBus,
+    new EmitteryEventBus({sessionRunner})
   );
   container.registerImplementation(
     ExtensionContentTypeResolver,
