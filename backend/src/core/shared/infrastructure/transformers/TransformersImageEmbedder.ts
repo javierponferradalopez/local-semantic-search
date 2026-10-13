@@ -10,8 +10,10 @@ import {
   Tensor
 } from '@huggingface/transformers';
 import type {ImageEmbedder, Pixels} from '../../domain/services/ImageEmbedder';
+import type {ModelCallRecorder} from '../../domain/services/ModelCallRecorder';
 import {Vector} from '../../domain/value-objects/Vector';
 import {readFromTheModelStore, refuseAMissingModel} from './modelStore';
+import {type Count, RecordedModelCall} from './RecordedModelCall';
 import {TokenWindows} from './TokenWindows';
 import {VISION_MODEL} from './VisionModel';
 
@@ -29,27 +31,33 @@ type ConstructorParams = {
   imageProcessor: ImageProcessor;
   textTower: PreTrainedModel;
   visionTower: PreTrainedModel;
+  recorder: ModelCallRecorder;
 };
+
+type LoadParams = {recorder: ModelCallRecorder};
 
 export class TransformersImageEmbedder implements ImageEmbedder {
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly imageProcessor: ImageProcessor;
   private readonly textTower: PreTrainedModel;
   private readonly visionTower: PreTrainedModel;
+  private readonly recorder: ModelCallRecorder;
 
   private constructor({
     tokenizer,
     imageProcessor,
     textTower,
-    visionTower
+    visionTower,
+    recorder
   }: ConstructorParams) {
     this.tokenizer = tokenizer;
     this.imageProcessor = imageProcessor;
     this.textTower = textTower;
     this.visionTower = visionTower;
+    this.recorder = recorder;
   }
 
-  public static async load(): Promise<TransformersImageEmbedder> {
+  public static async load({recorder}: LoadParams): Promise<TransformersImageEmbedder> {
     readFromTheModelStore();
     await refuseAMissingModel(VISION_MODEL.repository);
 
@@ -68,32 +76,61 @@ export class TransformersImageEmbedder implements ImageEmbedder {
       tokenizer,
       imageProcessor,
       textTower,
-      visionTower
+      visionTower,
+      recorder
     });
   }
 
-  public async embedPicture({data, width, height, channels}: Pixels): Promise<Vector> {
-    const inputs = await this.imageProcessor(new RawImage(data, width, height, channels));
-    const {pooler_output} = (await this.visionTower(inputs)) as {pooler_output: Tensor};
+  public embedPicture(pixels: Pixels): Promise<Vector> {
+    return RecordedModelCall.run({
+      recorder: this.recorder,
+      name: 'embed-picture',
+      model: VISION_MODEL,
+      input: pixels,
+      work: async (count: Count): Promise<Vector> => {
+        const {data, width, height, channels} = pixels;
 
-    return Vector.of({
-      values: Array.from(pooler_output.normalize(2, -1).data as Float32Array),
-      model: VISION_MODEL
+        count({image: 1});
+
+        const inputs = await this.imageProcessor(
+          new RawImage(data, width, height, channels)
+        );
+        const {pooler_output} = (await this.visionTower(inputs)) as {
+          pooler_output: Tensor;
+        };
+
+        return Vector.of({
+          values: Array.from(pooler_output.normalize(2, -1).data as Float32Array),
+          model: VISION_MODEL
+        });
+      }
     });
   }
 
   // Verbatim: no prefix and no case change, as the eval measures the Floor (ADR-0042).
-  public async embedQuery(query: string): Promise<Vector> {
-    const ids = this.tokenizer.encode(query, {add_special_tokens: false});
-    const windows: Tensor[] = [];
+  public embedQuery(query: string): Promise<Vector> {
+    return RecordedModelCall.run({
+      recorder: this.recorder,
+      name: 'embed-query',
+      model: VISION_MODEL,
+      input: query,
+      work: async (count: Count): Promise<Vector> => {
+        const ids = this.tokenizer.encode(query, {add_special_tokens: false});
+        const windows = TokenWindows.of(ids, WALL_OF_TOKENS - SPECIAL_TOKENS);
+        const vectors: Tensor[] = [];
 
-    for (const window of TokenWindows.of(ids, WALL_OF_TOKENS - SPECIAL_TOKENS)) {
-      windows.push(await this.embedWindow(window));
-    }
+        // The model reads each window padded to the wall.
+        count({input: windows.length * WALL_OF_TOKENS});
 
-    return Vector.of({
-      values: Array.from(TokenWindows.normalizedMeanOf(windows).data as Float32Array),
-      model: VISION_MODEL
+        for (const window of windows) {
+          vectors.push(await this.embedWindow(window));
+        }
+
+        return Vector.of({
+          values: Array.from(TokenWindows.normalizedMeanOf(vectors).data as Float32Array),
+          model: VISION_MODEL
+        });
+      }
     });
   }
 

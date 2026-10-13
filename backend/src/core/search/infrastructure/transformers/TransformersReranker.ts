@@ -5,17 +5,31 @@ import {
   type PreTrainedTokenizer,
   Tensor
 } from '@huggingface/transformers';
+import type {
+  ModelCallName,
+  ModelCallRecorder
+} from '../../../shared/domain/services/ModelCallRecorder';
 import {
   readFromTheModelStore,
   refuseAMissingModel
 } from '../../../shared/infrastructure/transformers/modelStore';
+import {
+  type Count,
+  RecordedModelCall
+} from '../../../shared/infrastructure/transformers/RecordedModelCall';
 import type {Match} from '../../domain/Match';
 import type {Result} from '../../domain/Result';
 import type {Reranker} from '../../domain/services/Reranker';
 import {RerankerConfig} from './RerankerConfig';
 import {RERANKER_MODEL} from './RerankerModel';
 
-type ConstructorParams = {tokenizer: PreTrainedTokenizer; model: PreTrainedModel};
+type ConstructorParams = {
+  tokenizer: PreTrainedTokenizer;
+  model: PreTrainedModel;
+  recorder: ModelCallRecorder;
+};
+
+type LoadParams = {recorder: ModelCallRecorder};
 
 // The model was trained on 512 tokens. Its tokenizer says 32768, and its positions go to 8192.
 const WALL_OF_TOKENS = 512;
@@ -52,13 +66,15 @@ const lengthsInTheRoom = (
 export class TransformersReranker implements Reranker {
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly model: PreTrainedModel;
+  private readonly recorder: ModelCallRecorder;
 
-  private constructor({tokenizer, model}: ConstructorParams) {
+  private constructor({tokenizer, model, recorder}: ConstructorParams) {
     this.tokenizer = tokenizer;
     this.model = model;
+    this.recorder = recorder;
   }
 
-  public static async load(): Promise<TransformersReranker> {
+  public static async load({recorder}: LoadParams): Promise<TransformersReranker> {
     readFromTheModelStore();
     await refuseAMissingModel(RERANKER_MODEL.repository);
 
@@ -71,39 +87,65 @@ export class TransformersReranker implements Reranker {
       {dtype: RERANKER_MODEL.dtype, config}
     );
 
-    return new TransformersReranker({tokenizer, model});
+    return new TransformersReranker({tokenizer, model, recorder});
   }
 
   public async rerank(query: string, results: readonly Result[]): Promise<Result[]> {
-    const queryIds = this.idsOf(query);
-    const reranked: Result[] = [];
-
-    for (const result of results) {
-      reranked.push({
-        ...result,
-        bestMatch: await this.scoredMatchOf(queryIds, result.bestMatch)
-      });
-    }
-
-    return reranked.sort(
-      (first, second) => second.bestMatch.score - first.bestMatch.score
+    const scores = await this.scoresOf(
+      'rerank',
+      query,
+      results.map(result => result.bestMatch.text)
     );
+
+    return results
+      .map((result, index) => ({
+        ...result,
+        bestMatch: {...result.bestMatch, score: scores[index]}
+      }))
+      .sort((first, second) => second.bestMatch.score - first.bestMatch.score);
   }
 
   public async rerankMatches(query: string, matches: readonly Match[]): Promise<Match[]> {
-    const queryIds = this.idsOf(query);
-    const reranked: Match[] = [];
+    const scores = await this.scoresOf(
+      'rerank-matches',
+      query,
+      matches.map(match => match.text)
+    );
 
-    for (const match of matches) {
-      reranked.push(await this.scoredMatchOf(queryIds, match));
-    }
-
-    return reranked.sort((first, second) => second.score - first.score);
+    return matches
+      .map((match, index) => ({...match, score: scores[index]}))
+      .sort((first, second) => second.score - first.score);
   }
 
-  // One pair for each call: a padded batch is 2.7 times slower (ADR-0040).
-  private async scoredMatchOf(queryIds: number[], match: Match): Promise<Match> {
-    return {...match, score: await this.scoreOf(queryIds, this.idsOf(match.text))};
+  private scoresOf(
+    name: ModelCallName,
+    query: string,
+    texts: readonly string[]
+  ): Promise<number[]> {
+    return RecordedModelCall.run({
+      recorder: this.recorder,
+      name,
+      model: RERANKER_MODEL,
+      input: {query, texts},
+      outputOf: (scores: number[]): number[] => scores,
+      work: async (count: Count): Promise<number[]> => {
+        const queryIds = this.idsOf(query);
+        const pairs = texts.map(text => this.pairOf(queryIds, this.idsOf(text)));
+        const scores: number[] = [];
+
+        count({
+          pairs: pairs.length,
+          input: pairs.reduce((sum, inputIds) => sum + inputIds.length, 0)
+        });
+
+        // One pair for each call: a padded batch is 2.7 times slower (ADR-0040).
+        for (const inputIds of pairs) {
+          scores.push(await this.scoreOf(inputIds));
+        }
+
+        return scores;
+      }
+    });
   }
 
   private idsOf(text: string): number[] {
@@ -111,14 +153,15 @@ export class TransformersReranker implements Reranker {
   }
 
   // The cut changes only a score and stores nothing, so ADR-0014 does not apply.
-  private async scoreOf(queryIds: number[], chunkIds: number[]): Promise<number> {
+  private pairOf(queryIds: readonly number[], chunkIds: readonly number[]): number[] {
     const {bos_token_id: bos, eos_token_id: eos} = this.tokenizer;
     const [queryLength, chunkLength] = lengthsInTheRoom(
       queryIds.length,
       chunkIds.length,
       WALL_OF_TOKENS - SPECIAL_TOKENS
     );
-    const inputIds = [
+
+    return [
       bos,
       ...queryIds.slice(0, queryLength),
       eos,
@@ -126,6 +169,9 @@ export class TransformersReranker implements Reranker {
       ...chunkIds.slice(0, chunkLength),
       eos
     ];
+  }
+
+  private async scoreOf(inputIds: readonly number[]): Promise<number> {
     const {logits} = (await this.model({
       input_ids: int64TensorOf(inputIds),
       attention_mask: int64TensorOf(inputIds.map(() => 1))

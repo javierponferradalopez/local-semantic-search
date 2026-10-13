@@ -15,6 +15,7 @@ import {AsyncLocalStorageSessionRunner} from '../../../core/shared/infrastructur
 import {DrizzleConnection} from '../../../core/shared/infrastructure/drizzle/DrizzleConnection';
 import {EmitteryEventBus} from '../../../core/shared/infrastructure/emittery/EmitteryEventBus';
 import {FilesystemFileStore} from '../../../core/shared/infrastructure/FilesystemFileStore';
+import {SilentModelCallRecorder} from '../../../core/shared/infrastructure/SilentModelCallRecorder';
 import {TransformersImageEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {TransformersTextEmbedder} from '../../../core/shared/infrastructure/transformers/TransformersTextEmbedder';
 import {env} from '../../env/env';
@@ -25,14 +26,16 @@ import {TEXT_RESULTS_LIMIT} from '../TextResultsLimit';
 import {container} from './Container';
 
 export const registerInfrastructureDependencies = async (): Promise<void> => {
+  const recorder = new SilentModelCallRecorder();
   const [textEmbedder, imageEmbedder, reranker] = await Promise.all([
-    TransformersTextEmbedder.load(),
-    TransformersImageEmbedder.load(),
-    TransformersReranker.load()
+    TransformersTextEmbedder.load({recorder}),
+    TransformersImageEmbedder.load({recorder}),
+    TransformersReranker.load({recorder})
   ]);
   const pool = new Pool({connectionString: env.database.url});
   const connection = new DrizzleConnection({database: drizzle(pool)});
 
+  container.registerImplementation(SilentModelCallRecorder, recorder);
   container.registerImplementation(Pool, pool);
   container.registerImplementation(DrizzleConnection, connection);
   container.registerImplementation(

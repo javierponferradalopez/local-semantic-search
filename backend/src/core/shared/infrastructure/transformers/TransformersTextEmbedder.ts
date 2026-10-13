@@ -6,13 +6,24 @@ import {
   type PreTrainedTokenizer,
   Tensor
 } from '@huggingface/transformers';
+import type {
+  ModelCallName,
+  ModelCallRecorder
+} from '../../domain/services/ModelCallRecorder';
 import type {TextEmbedder} from '../../domain/services/TextEmbedder';
 import {Vector} from '../../domain/value-objects/Vector';
 import {readFromTheModelStore, refuseAMissingModel} from './modelStore';
+import {type Count, RecordedModelCall} from './RecordedModelCall';
 import {TEXT_MODEL} from './TextModel';
 import {TokenWindows} from './TokenWindows';
 
-type ConstructorParams = {tokenizer: PreTrainedTokenizer; model: PreTrainedModel};
+type ConstructorParams = {
+  tokenizer: PreTrainedTokenizer;
+  model: PreTrainedModel;
+  recorder: ModelCallRecorder;
+};
+
+type LoadParams = {recorder: ModelCallRecorder};
 
 // E5 was trained with these prefixes. They stay here, and the domain never names them.
 // No space ends them: the tokenizer gives that space to the first word of the text.
@@ -28,13 +39,15 @@ const int64TensorOf = (values: readonly number[]): Tensor =>
 export class TransformersTextEmbedder implements TextEmbedder {
   private readonly tokenizer: PreTrainedTokenizer;
   private readonly model: PreTrainedModel;
+  private readonly recorder: ModelCallRecorder;
 
-  private constructor({tokenizer, model}: ConstructorParams) {
+  private constructor({tokenizer, model, recorder}: ConstructorParams) {
     this.tokenizer = tokenizer;
     this.model = model;
+    this.recorder = recorder;
   }
 
-  public static async load(): Promise<TransformersTextEmbedder> {
+  public static async load({recorder}: LoadParams): Promise<TransformersTextEmbedder> {
     readFromTheModelStore();
     await refuseAMissingModel(TEXT_MODEL.repository);
 
@@ -43,29 +56,46 @@ export class TransformersTextEmbedder implements TextEmbedder {
       AutoModel.from_pretrained(TEXT_MODEL.repository, {dtype: TEXT_MODEL.dtype})
     ]);
 
-    return new TransformersTextEmbedder({tokenizer, model});
+    return new TransformersTextEmbedder({tokenizer, model, recorder});
   }
 
   public embedChunk(text: string): Promise<Vector> {
-    return this.embed(PASSAGE_PREFIX, text);
+    return this.embed('embed-chunk', PASSAGE_PREFIX, text);
   }
 
   public embedQuery(query: string): Promise<Vector> {
-    return this.embed(QUERY_PREFIX, query);
+    return this.embed('embed-query', QUERY_PREFIX, query);
   }
 
-  private async embed(prefix: string, text: string): Promise<Vector> {
-    const prefixIds = this.idsOf(prefix);
-    const room = this.tokenizer.model_max_length - SPECIAL_TOKENS - prefixIds.length;
-    const windows: Tensor[] = [];
+  private embed(name: ModelCallName, prefix: string, text: string): Promise<Vector> {
+    return RecordedModelCall.run({
+      recorder: this.recorder,
+      name,
+      model: TEXT_MODEL,
+      input: text,
+      work: async (count: Count): Promise<Vector> => {
+        const prefixIds = this.idsOf(prefix);
+        const room = this.tokenizer.model_max_length - SPECIAL_TOKENS - prefixIds.length;
+        const {bos_token_id: bos, eos_token_id: eos} = this.tokenizer;
+        const inputs = TokenWindows.of(this.idsOf(text), room).map(window => [
+          bos,
+          ...prefixIds,
+          ...window,
+          eos
+        ]);
+        const windows: Tensor[] = [];
 
-    for (const window of TokenWindows.of(this.idsOf(text), room)) {
-      windows.push(await this.embedWindow([...prefixIds, ...window]));
-    }
+        count({input: inputs.reduce((sum, inputIds) => sum + inputIds.length, 0)});
 
-    return Vector.of({
-      values: Array.from(TokenWindows.normalizedMeanOf(windows).data as Float32Array),
-      model: TEXT_MODEL
+        for (const inputIds of inputs) {
+          windows.push(await this.embedWindow(inputIds));
+        }
+
+        return Vector.of({
+          values: Array.from(TokenWindows.normalizedMeanOf(windows).data as Float32Array),
+          model: TEXT_MODEL
+        });
+      }
     });
   }
 
@@ -73,8 +103,7 @@ export class TransformersTextEmbedder implements TextEmbedder {
     return this.tokenizer.encode(text, {add_special_tokens: false});
   }
 
-  private async embedWindow(ids: readonly number[]): Promise<Tensor> {
-    const inputIds = [this.tokenizer.bos_token_id, ...ids, this.tokenizer.eos_token_id];
+  private async embedWindow(inputIds: readonly number[]): Promise<Tensor> {
     const attentionMask = int64TensorOf(inputIds.map(() => 1));
     const {last_hidden_state} = await this.model({
       input_ids: int64TensorOf(inputIds),

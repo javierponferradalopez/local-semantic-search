@@ -6,9 +6,11 @@ import {
   type PreTrainedTokenizer
 } from '@huggingface/transformers';
 import {CUT} from '../../../../../../src/core/ingestion/domain/Cut';
+import type {ModelCallName} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
 import type {Vector} from '../../../../../../src/core/shared/domain/value-objects/Vector';
 import {TEXT_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/TextModel';
 import {TransformersTextEmbedder} from '../../../../../../src/core/shared/infrastructure/transformers/TransformersTextEmbedder';
+import {RecordingModelCallRecorder} from '../../../../../lib/RecordingModelCallRecorder';
 import {StringMother} from '../../../../../utils/object-mother/StringMother';
 
 // The worst cases of ADR-0014, at the length of the cap: each one passes the wall of tokens.
@@ -21,22 +23,33 @@ const WORST_CASES: Record<string, () => string> = {
 
 const WALL_OF_TOKENS = 512;
 
+// The tokenizer puts each input between <s> and </s>.
+const SPECIAL_TOKENS = 2;
+
 // Each one-letter word is one token.
 const oneLetterWords = (count: number, letter = 'a'): string =>
   `${letter} `.repeat(count).trim();
 
 describe('TransformersTextEmbedder', () => {
+  const recorder = new RecordingModelCallRecorder();
   let embedder: TransformersTextEmbedder;
   let tokenizer: PreTrainedTokenizer;
   let model: PreTrainedModel;
 
   beforeAll(async () => {
-    embedder = await TransformersTextEmbedder.load();
+    embedder = await TransformersTextEmbedder.load({recorder});
     [tokenizer, model] = await Promise.all([
       AutoTokenizer.from_pretrained(TEXT_MODEL.repository),
       AutoModel.from_pretrained(TEXT_MODEL.repository, {dtype: TEXT_MODEL.dtype})
     ]);
   });
+
+  beforeEach(() => {
+    recorder.takeTheCalls();
+  });
+
+  const tokensOf = (text: string): number =>
+    tokenizer.encode(text, {add_special_tokens: false}).length;
 
   // The Vectors in the store came from one input to the model, before the windows.
   const oneInputValuesOf = async (text: string): Promise<number[]> => {
@@ -53,14 +66,16 @@ describe('TransformersTextEmbedder', () => {
     [
       '#embedChunk',
       'passage: ',
+      'embed-chunk' as ModelCallName,
       (text: string): Promise<Vector> => embedder.embedChunk(text)
     ],
     [
       '#embedQuery',
       'query: ',
+      'embed-query' as ModelCallName,
       (text: string): Promise<Vector> => embedder.embedQuery(text)
     ]
-  ])('%s', (_, prefix, embed) => {
+  ])('%s', (_, prefix, name, embed) => {
     it.each(Object.entries(WORST_CASES))(
       'should give one Vector for %s',
       async (__, worstCase) => {
@@ -136,6 +151,51 @@ describe('TransformersTextEmbedder', () => {
       const second = await embed(`${start}2`);
 
       expect(first.value).not.toStrictEqual(second.value);
+    });
+
+    it('should record one Model call of the Text model with the tokens that the model reads', async () => {
+      const text = oneLetterWords(10);
+
+      await embed(text);
+
+      const [call] = recorder.takeTheCalls();
+      expect(call).toStrictEqual({
+        name,
+        model: {repository: TEXT_MODEL.repository, dtype: TEXT_MODEL.dtype},
+        usage: {input: tokensOf(prefix.trim()) + 10 + SPECIAL_TOKENS},
+        input: text,
+        startTime: expect.any(Date),
+        endTime: expect.any(Date)
+      });
+      expect(call?.endTime.getTime()).toBeGreaterThanOrEqual(
+        call?.startTime.getTime() ?? 0
+      );
+    });
+
+    it('should count the prefix and the special tokens of each window', async () => {
+      const window = WALL_OF_TOKENS - SPECIAL_TOKENS - tokensOf(prefix.trim());
+
+      await embed(oneLetterWords(window + 1));
+
+      const [call] = recorder.takeTheCalls();
+      expect(call?.usage).toStrictEqual({
+        input: window + 1 + 2 * (tokensOf(prefix.trim()) + SPECIAL_TOKENS)
+      });
+    });
+
+    it('should record the Model call with its error when the call throws', async () => {
+      const error = await embed(undefined as unknown as string).catch(
+        (thrown: unknown) => thrown
+      );
+
+      expect(recorder.takeTheCalls()).toStrictEqual([
+        expect.objectContaining({
+          name,
+          model: {repository: TEXT_MODEL.repository, dtype: TEXT_MODEL.dtype},
+          error
+        })
+      ]);
+      expect(error).toBeInstanceOf(Error);
     });
   });
 });

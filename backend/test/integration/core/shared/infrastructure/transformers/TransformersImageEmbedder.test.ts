@@ -10,9 +10,11 @@ import {
 import {CUT} from '../../../../../../src/core/ingestion/domain/Cut';
 import {SharpImageDecoder} from '../../../../../../src/core/ingestion/infrastructure/sharp/SharpImageDecoder';
 import type {Pixels} from '../../../../../../src/core/shared/domain/services/ImageEmbedder';
+import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
 import type {Vector} from '../../../../../../src/core/shared/domain/value-objects/Vector';
 import {TransformersImageEmbedder} from '../../../../../../src/core/shared/infrastructure/transformers/TransformersImageEmbedder';
 import {VISION_MODEL} from '../../../../../../src/core/shared/infrastructure/transformers/VisionModel';
+import {RecordingModelCallRecorder} from '../../../../../lib/RecordingModelCallRecorder';
 import {StringMother} from '../../../../../utils/object-mother/StringMother';
 
 const FIXTURES = join(import.meta.dirname, '../../../../../fixtures');
@@ -48,7 +50,13 @@ const pixelsOf = async (name: string, contentType: 'png' | 'svg'): Promise<Pixel
 const cosineOf = (first: readonly number[], second: readonly number[]): number =>
   first.reduce((sum, value, index) => sum + value * (second[index] ?? Number.NaN), 0);
 
+const THE_VISION_MODEL: ModelCall['model'] = {
+  repository: VISION_MODEL.repository,
+  dtype: VISION_MODEL.dtype
+};
+
 describe('TransformersImageEmbedder', () => {
+  const recorder = new RecordingModelCallRecorder();
   let embedder: TransformersImageEmbedder;
   let tokenizer: PreTrainedTokenizer;
   let textTower: PreTrainedModel;
@@ -56,7 +64,7 @@ describe('TransformersImageEmbedder', () => {
   let aDiagram: Pixels;
 
   beforeAll(async () => {
-    embedder = await TransformersImageEmbedder.load();
+    embedder = await TransformersImageEmbedder.load({recorder});
     [tokenizer, textTower] = await Promise.all([
       AutoTokenizer.from_pretrained(VISION_MODEL.repository),
       SiglipTextModel.from_pretrained(VISION_MODEL.repository, {
@@ -65,6 +73,10 @@ describe('TransformersImageEmbedder', () => {
     ]);
     aPicture = await pixelsOf('a-small-picture.png', 'png');
     aDiagram = await pixelsOf('a-diagram-with-only-a-viewbox.svg', 'svg');
+  });
+
+  beforeEach(() => {
+    recorder.takeTheCalls();
   });
 
   // The Query of the probes of the first Floor: one input, padded to the wall (ADR-0021).
@@ -106,6 +118,39 @@ describe('TransformersImageEmbedder', () => {
       const second = await embedder.embedPicture(aPicture);
 
       expect(first.value).toStrictEqual(second.value);
+    });
+
+    it('should record one Model call of the Vision model with one image', async () => {
+      await embedder.embedPicture(aPicture);
+
+      expect(recorder.takeTheCalls()).toStrictEqual([
+        {
+          name: 'embed-picture',
+          model: THE_VISION_MODEL,
+          usage: {image: 1},
+          input: aPicture,
+          startTime: expect.any(Date),
+          endTime: expect.any(Date)
+        }
+      ]);
+    });
+
+    it('should record the Model call with its error when the call throws', async () => {
+      const brokenPixels: Pixels = {...aPicture, data: new Uint8Array(3)};
+
+      const error = await embedder
+        .embedPicture(brokenPixels)
+        .catch((thrown: unknown) => thrown);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(recorder.takeTheCalls()).toStrictEqual([
+        expect.objectContaining({
+          name: 'embed-picture',
+          model: THE_VISION_MODEL,
+          usage: {image: 1},
+          error
+        })
+      ]);
     });
   });
 
@@ -192,6 +237,41 @@ describe('TransformersImageEmbedder', () => {
       const second = await embedder.embedQuery(`${start}2`);
 
       expect(first.value).not.toStrictEqual(second.value);
+    });
+
+    it('should record one Model call of the Vision model with the padded window of tokens', async () => {
+      const query = 'una playa al atardecer';
+
+      await embedder.embedQuery(query);
+
+      expect(recorder.takeTheCalls()).toStrictEqual([
+        {
+          name: 'embed-query',
+          model: THE_VISION_MODEL,
+          usage: {input: WALL_OF_TOKENS},
+          input: query,
+          startTime: expect.any(Date),
+          endTime: expect.any(Date)
+        }
+      ]);
+    });
+
+    it('should count the padded tokens of each window', async () => {
+      await embedder.embedQuery(oneLetterWords(WINDOW + 1));
+
+      const [call] = recorder.takeTheCalls();
+      expect(call?.usage).toStrictEqual({input: 2 * WALL_OF_TOKENS});
+    });
+
+    it('should record the Model call with its error when the call throws', async () => {
+      const error = await embedder
+        .embedQuery(undefined as unknown as string)
+        .catch((thrown: unknown) => thrown);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(recorder.takeTheCalls()).toStrictEqual([
+        expect.objectContaining({name: 'embed-query', model: THE_VISION_MODEL, error})
+      ]);
     });
   });
 });
