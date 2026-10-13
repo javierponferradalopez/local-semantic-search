@@ -55,5 +55,10 @@ Langfuse does not answer. `main.ts` calls `shutdown()` on `SIGTERM` and
 
 - **The keys of Langfuse are optional.** With none, the silent adapters run.
   With some but not all, the start fails.
+- **The root of a trace holds the input and the output of its operation.** The
+  view of a Session in Langfuse shows only these two. For a request, the input
+  is the params and the query, and the output is the JSON of the response. For
+  a handler, the input is the name of the event and its `aggregateId`. The JSON
+  of a response is not larger than the input of `rerank`, which holds the texts.
 - **A Picture goes to Langfuse as a WebP of 320 px**, not the full `Pixels`, so
   the queue of spans stays small.
