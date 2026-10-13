@@ -1,6 +1,8 @@
 import {LangfuseOtelSpanAttributes} from '@langfuse/tracing';
 import {hrTimeToMilliseconds} from '@opentelemetry/core';
 import type {ReadableSpan} from '@opentelemetry/sdk-trace-base';
+import sharp from 'sharp';
+import type {Pixels} from '../../../../../../src/core/shared/domain/services/ImageEmbedder';
 import type {ModelCall} from '../../../../../../src/core/shared/domain/services/ModelCallRecorder';
 import {LangfuseModelCallRecorder} from '../../../../../../src/core/shared/infrastructure/langfuse/LangfuseModelCallRecorder';
 import {useLangfuseSpans} from '../../../../../lib/langfuseSpans';
@@ -9,6 +11,21 @@ import {ModelCallMother} from '../../../../../utils/object-mother/ModelCallMothe
 const DTYPE = `${LangfuseOtelSpanAttributes.OBSERVATION_METADATA}.dtype`;
 
 const parse = (attribute: unknown): unknown => JSON.parse(String(attribute));
+
+const aPicture = (width: number, height: number): Pixels => ({
+  data: new Uint8Array(width * height * 3).fill(128),
+  width,
+  height,
+  channels: 3
+});
+
+const bytesOf = (dataUri: string): Buffer => {
+  const [prefix, base64] = dataUri.split(',');
+
+  expect(prefix).toBe('data:image/webp;base64');
+
+  return Buffer.from(base64, 'base64');
+};
 
 describe('LangfuseModelCallRecorder', () => {
   const langfuse = useLangfuseSpans();
@@ -25,6 +42,9 @@ describe('LangfuseModelCallRecorder', () => {
 
     return spans[0];
   };
+
+  // The WebP of a Picture is made after record() returns, and its observation ends then.
+  const theOnlySpanOnceItEnds = (): Promise<ReadableSpan> => vi.waitFor(theOnlySpan);
 
   describe('#record', () => {
     it('should make one embedding with the name, the model, the dtype, the Usage and the input of the Model call', async () => {
@@ -128,24 +148,71 @@ describe('LangfuseModelCallRecorder', () => {
       );
     });
 
-    it('should send the size of a Picture, not its pixels', async () => {
+    it.each([
+      [640, 480, 320, 240],
+      [30, 60, 160, 320]
+    ])(
+      'should send a Picture of %ix%i as a WebP of %ix%i, with its Usage',
+      async (width, height, webpWidth, webpHeight) => {
+        recorder.record(ModelCallMother.embedPicture({input: aPicture(width, height)}));
+
+        const span = await theOnlySpanOnceItEnds();
+        const webp = await sharp(
+          bytesOf(String(span.attributes[LangfuseOtelSpanAttributes.OBSERVATION_INPUT]))
+        ).metadata();
+        expect([webp.format, webp.width, webp.height]).toStrictEqual([
+          'webp',
+          webpWidth,
+          webpHeight
+        ]);
+        expect(
+          parse(span.attributes[LangfuseOtelSpanAttributes.OBSERVATION_USAGE_DETAILS])
+        ).toStrictEqual({image: 1});
+      }
+    );
+
+    it.each([1, 4] as const)(
+      'should send a Picture of %i channels as a WebP of 320 px on the long edge',
+      async channels => {
+        recorder.record(
+          ModelCallMother.embedPicture({
+            input: {
+              data: new Uint8Array(64 * 32 * channels),
+              width: 64,
+              height: 32,
+              channels
+            }
+          })
+        );
+
+        const span = await theOnlySpanOnceItEnds();
+        const webp = await sharp(
+          bytesOf(String(span.attributes[LangfuseOtelSpanAttributes.OBSERVATION_INPUT]))
+        ).metadata();
+        expect([webp.format, webp.width, webp.height]).toStrictEqual(['webp', 320, 160]);
+      }
+    );
+
+    it('should send the Model call with no input, and log the error, when the Picture cannot become a WebP', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const endTime = new Date('2026-10-13T10:00:00.250Z');
+
       recorder.record(
-        ModelCallMother.embedQuery({
-          name: 'embed-picture',
-          usage: {image: 1},
-          input: {data: new Uint8Array(2 * 3 * 4), width: 2, height: 3, channels: 4}
+        ModelCallMother.embedPicture({
+          input: {data: new Uint8Array(1), width: 640, height: 480, channels: 3},
+          endTime
         })
       );
 
-      expect(
-        parse(
-          (await theOnlySpan()).attributes[LangfuseOtelSpanAttributes.OBSERVATION_INPUT]
-        )
-      ).toStrictEqual({
-        width: 2,
-        height: 3,
-        channels: 4
-      });
+      const span = await theOnlySpanOnceItEnds();
+      expect(span.attributes).not.toHaveProperty(
+        LangfuseOtelSpanAttributes.OBSERVATION_INPUT
+      );
+      expect(hrTimeToMilliseconds(span.endTime)).toBe(endTime.getTime());
+      expect(consoleError).toHaveBeenCalledWith(
+        'The Picture of a Model call cannot become a WebP',
+        expect.any(Error)
+      );
     });
 
     it('should not throw, and log the error, when the Model call cannot be recorded', () => {

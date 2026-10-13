@@ -11,5 +11,15 @@ export const ModelCallMother = {
       endTime: new Date(),
       ...call
     };
+  },
+
+  embedPicture(call: Partial<ModelCall> = {}): ModelCall {
+    return ModelCallMother.embedQuery({
+      name: 'embed-picture',
+      model: {repository: 'onnx-community/siglip2-base-patch16-224-ONNX', dtype: 'fp32'},
+      usage: {image: 1},
+      input: {data: new Uint8Array(2 * 2 * 3), width: 2, height: 2, channels: 3},
+      ...call
+    });
   }
 };

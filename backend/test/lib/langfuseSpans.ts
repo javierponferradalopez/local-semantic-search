@@ -3,12 +3,12 @@ import {InMemorySpanExporter, type ReadableSpan} from '@opentelemetry/sdk-trace-
 import type {NodeTracerProvider} from '@opentelemetry/sdk-trace-node';
 import {LangfuseTracing} from '../../src/core/shared/infrastructure/langfuse/LangfuseTracing';
 
-// Starts the Langfuse tracing for the suite that calls it, on an exporter in memory: no test calls Langfuse Cloud.
+// Starts the Langfuse tracing for the suite that calls it, on an exporter in memory and with no media upload: no test calls Langfuse Cloud.
 export const useLangfuseSpans = (): {spans: () => Promise<ReadableSpan[]>} => {
   const exporter = new InMemorySpanExporter();
 
   beforeAll(() => {
-    LangfuseTracing.start({exporter, exportMode: 'immediate'});
+    LangfuseTracing.start({exporter, exportMode: 'immediate', mediaUploadEnabled: false});
   });
 
   afterEach(() => {
